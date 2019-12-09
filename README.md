@@ -47,18 +47,33 @@ LOW PRIO
 - Django2.0+
 
 ## Installation
+
+### Install PostgreSQL
+This step is optional, you can choose whatever DB you prefer for Django
+
+```
+sudo rpm -Uvh https://yum.postgresql.org/11/redhat/rhel-7-x86_64/pgdg-redhat-repo-latest.noarch.rpm
+sudo yum -y install postgresql11-server postgresql11-contrib
+sudo /usr/pgsql-11/bin/postgresql-11-setup initdb
+sudo systemctl enable postgresql-11
+sudo systemctl start postgresql-11
+sudo -u postgres psql
+postgres=# create database panopticum;
+postgres=# create user panopticum with encrypted password 'my secret password';
+postgres=# grant all privileges on database panopticum to panopticum;
+sudo echo "host all all 127.0.0.1/32 md5" > /var/lib/pgsql/11/data/pg_hba.conf
+sudo systemctl restart postgresql-11
+```
+
 ### Install python3
 
 CentOS-7:
 ```
 sudo yum -y install https://centos7.iuscommunity.org/ius-release.rpm
-sudo yum -y install python36u
-sudo yum -y install python36u-pip
-sudo yum -y install openssl-devel
-sudo yum -y install python36u-devel
-export PYCURL_SSL_LIBRARY=openssl
-export LDFLAGS=-L/usr/local/opt/openssl/lib;export CPPFLAGS=-I/usr/local/opt/openssl/include;
-sudo pip3.6 install pycurl
+sudo yum -y install python36
+sudo yum -y install python36-pip
+sudo yum -y install python36-psycopg2
+
 ```
 
 MacOS:
@@ -67,11 +82,7 @@ Install [Mac port](https://www.macports.org/install.php) first
 
 Then:
 ```
-sudo port install openssl
-export PYCURL_SSL_LIBRARY=openssl
-export LDFLAGS=-L/usr/local/opt/openssl/lib;export CPPFLAGS=-I/usr/local/opt/openssl/include;
 sudo port install py36-psycopg2
-pip3.6 install pycurl
 ```
 
 ### Install Django and other requirements
@@ -96,8 +107,8 @@ cat >> panopticum_django/settings_local.py << EOD
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'pt',
-        'USER': 'pt',
+        'NAME': 'panopticum',
+        'USER': 'panopticum',
         'PASSWORD': 'my secret password',
         'HOST': '127.0.0.1',
         'PORT': '5432',
