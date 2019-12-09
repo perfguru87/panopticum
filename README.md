@@ -103,6 +103,8 @@ DATABASES = {
         'PORT': '5432',
     }
 }
+TIME_ZONE = 'Europe/Sofia'
+PAGE_TITLE = 'My Components Registry'
 EOD
 ```
 

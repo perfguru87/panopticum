@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+
+  <title>{{ PAGE_TITLE }}</title>
+  <meta name="description" content="Components Registry">
+
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0/css/bootstrap.css">
+  <link rel="stylesheet" href="//cdn.datatables.net/1.10.16/css/dataTables.bootstrap4.min.css">
+</head>
+
+<body>
+  <div class="container">
+    {% block content %}{% endblock %}
+  </div>
+  <script src="//code.jquery.com/jquery-1.12.4.js"></script>
+  <script src="//cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
+  <script src="//cdn.datatables.net/1.10.16/js/dataTables.bootstrap4.min.js"></script>
+  {% load static %}
+  <link rel='stylesheet' href="{% static "css/panopticum.css" %}">
+  {% block extra_js %}{% endblock %}
+</body>
+</html>
