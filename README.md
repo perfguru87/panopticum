@@ -34,6 +34,11 @@ MED PRIO
 - Custom documentation links: type, title, link
 
 LOW PRIO
+- Integration with git: number of commits per last weeks
+- Integration with git: number of contributors per last weeks
+- Integration with git: overall activity
+- Integration with JIRA: number of bugs per last weeks
+- Integration with JIRA: number of open bugs, tasks
 - Export components dependency graph (all, selected components)
 - Components diagram (all, selected components)
 - Integration with ADN (auto documentation)
