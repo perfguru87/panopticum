@@ -25,6 +25,8 @@ HIGH PRIO
 - Show 100 rows by default and increase scale by: 25, 100, 500, all
 
 MED PRIO
+- Property change audit (author and time of every property change)
+- Component data change history (who changed what, like in JIRA)
 - Integration with Active Directory: user auth
 - Integration with Active Directory: people and org chart syncup
 - Roles: allow users to manage only their components (QA manages QA fields, Dev - manage dev fields, etc)
