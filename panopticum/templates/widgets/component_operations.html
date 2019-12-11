@@ -1,0 +1,46 @@
+        <div class="x_panel tile">
+          <div class="x_title">
+            <h2>Operations</h2>
+            <ul class="nav navbar-right panel_toolbox">
+              <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
+              <li><a class="close-link"><i class="fa fa-close"></i></a></li>
+            </ul>
+            <div class="clearfix"></div>
+          </div>
+          <div class='x_content'>
+            <table width='100%'><tr>
+            <td width='55%' style='vertical-align: top; background-color: #ddd; text-align: center; border-right: 10px solid #fff;'>
+              <h4>Requirements</h4>
+            </td><td width='45%' rowspan=2>
+              {% include "widgets/component_cloud_requirements_completion.html" %}
+            </td></tr>
+            <tr><td style='vertical-align: top; border-left: 1px solid #eee; padding: 10px; background-color: #eee; border-right: 10px solid #fff;' rowspan=4>
+              <table class='dc-table first-td-left'>
+                <thead><tr><th>Requirement</th><th>Yes/No</th><th>Signed</th></tr></thead>
+                <tbody>
+                  <tr><td>Operational guide</td><td><a href='#'>YES</a></td><td><i style='color: green;' class='fa fa-check-square'></i></td></tr>
+                  <tr><td>Failover</td><td><a href='#'>YES</a></td><td><i style='color: green;' class='fa fa-check-square'></i></td></tr>
+                  <tr><td>Horizontal scale</td><td><a href='#'>YES</a></td><td><i style='color: green;' class='fa fa-check-square'></i></td></tr>
+                  <tr><td>Scaling guide</td><td><a href='#'>YES</a></td><td><i style='color: green;' class='fa fa-check-square'></i></td></tr>
+                  <tr><td>SLO/SLI</td><td><a href='#'>YES</a></td><td><i style='color: green;' class='fa fa-check-square'></i></td></tr>
+                  <tr><td>Metrics</td><td><a href='#'>YES</a></td><td><i style='color: green;' class='fa fa-check-square'></i></td></tr>
+                  <tr><td>Alerts</td><td><a href='#'>YES</a></td><td><i style='color: green;' class='fa fa-check-square'></i></td></tr>
+                  <tr><td>Zero-downtime</td><td><a href='#'>YES</a></td><td><i style='color: green;' class='fa fa-check-square'></i></td></tr>
+                </tbody>
+              </table>
+            </td>
+            </tr>
+            <tr><td>&nbsp;</td></tr>
+            <tr><td style='vertical-align: top; background-color: #ddd; text-align: center;'>
+              <h4>Operations hints</h4>
+            </td></tr>
+            <tr><td style='vertical-align: top; border-left: 1px solid #eee; padding: 10px 15px 10px 5px; padding-right: 10%; background-color: #f8f8f8; text-align: right;'>
+              Safe restart : YES<br>
+              Safe delete : YES<br>
+              Safe redeploy : YES
+            </tr>
+            </table>
+          </div>
+
+
+        </div>

@@ -110,8 +110,12 @@ div.progress {
 }
 
 /* Component view */
+table.component-details {
+    margin: 5px 0px;
+}
 .component-details tr td {
-    padding: 1px 10px 1px 0px;
+    padding: 1px 5px 1px 0px;
+    vertical-align: top;
 }
 .component-details tr td li {
     text-align: right;
@@ -185,4 +189,40 @@ div.owners-list td.owner img {
     width: 28px;
     height: 27px;
     display: table-cell;
+}
+
+/* Datacenter table */
+table.dc-table {
+    width: 100%;
+}
+table.dc-table tbody tr:first-child td {
+    padding-top: 5px;
+}
+table.dc-table th, table.dc-table td {
+    padding: 1px 2px;
+    border-left: 1px solid #aaa;
+    text-align: center;
+}
+table.dc-table th {
+    font-weight: bold;
+    border-bottom: 1px solid #aaa;
+    background-color: #ddd;
+} 
+table.dc-table th:first-child, table.dc-table td:first-child {
+    border-left: 0px;
+}
+table.dc-table tr:nth-child(even) td {
+    background-color: #f0f0f0;
+}
+table.dc-table tr:nth-child(odd) td {
+    background-color: #fff;
+}
+
+table.first-td-left th:first-child,
+table.first-td-left td:first-child {
+    text-align: left;
+}
+
+table.tests-table tbody tr:nth-child(even) td {
+    background-color: #f0f0f0;
 }

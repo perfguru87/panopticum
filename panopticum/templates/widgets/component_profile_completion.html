@@ -1,11 +1,62 @@
                     <table style='float: right;'><tr>
                     <td style='text-align: right; padding-right: 10px;'>
-                        <p>Component<br>profile<br>completion</p>
+                        <p>Component profile<br>completion</p>
                     </td>
+                    <td style='text-align: right; padding-right: 10px;'>
+                        <canvas width="100" height="60" id="profile-gauge" class="" style="width: 100px; height: 60px;"></canvas>
+                        <div class="goal-wrapper" style='text-align: center; top: -5px; left: 5px; position: relative;'>
+                          <span id="profile-gauge-text" class="gauge-value" style='font-size: 16px; line-height: 20px; font-weight: bold;'>0</span>
+                          <span class="gauge-value">%</span>
+                        </div>
+                    </td>
+<!--
                     <td>
                       <div style="text-align: center; margin-bottom: 17px">
                         <span class="chart" style="width: 80px; height: 80px;" data-percent="86" data-size="70" data-line-width="6">
                                             <span class="percent" style='line-height: 70px;'>86</span>
                       </div>
                     </td>
+//-->
                     </tr></table>
+
+{% block extra_js %}
+<script>
+function init_profile_gauge() {
+
+    if (typeof(Gauge) === 'undefined') {
+        return;
+    }
+
+    var chart_gauge_settings = {
+        lines: 12,
+        angle: 0,
+        lineWidth: 0.3,
+        pointer: {
+            length: 0.75,
+            strokeWidth: 0.042,
+            color: '#1D212A'
+        },
+        limitMax: 'false',
+        colorStart: '#1ABC9C',
+        colorStop: '#1ABC9C',
+        strokeColor: '#e0e0e0',
+        generateGradient: true
+    };
+
+    if ($('#profile-gauge').length) {
+        var profile_gauge_elem = document.getElementById('profile-gauge');
+        var profile_gauge = new Gauge(profile_gauge_elem).setOptions(chart_gauge_settings);
+    }
+
+    if ($('#profile-gauge-text').length) {
+        profile_gauge.maxValue = 100;
+        profile_gauge.animationSpeed = 10;
+        profile_gauge.set(64);
+        profile_gauge.setTextField(document.getElementById("profile-gauge-text"));
+    }
+}
+$(document).ready(function() {
+    init_profile_gauge();
+});
+</script>
+{% endblock %}
