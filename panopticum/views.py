@@ -37,5 +37,9 @@ class ComponentCategoryViewSet(viewsets.ModelViewSet):
     serializer_class = ComponentCategorySerializer
 
 
+def component(request):
+    return render(request, 'page_layout/component.html')
+
+
 def index(request):
-    return render(request, 'components.html')
+    return render(request, 'page_layout/components.html')

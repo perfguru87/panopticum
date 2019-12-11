@@ -32,6 +32,7 @@ router.register(r'component_data_privacy_class', views.ComponentDataPrivacyClass
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    url('^component/', views.component, name='Component'),
     url('^api/', include(router.urls)),
-    url('', views.index, name='Component')
+    url('', views.index, name='Components')
 ]

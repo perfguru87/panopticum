@@ -5,6 +5,8 @@ Software services registry for IT, RnD, DevOps, Support, Maintenance, Documentat
 
 Inspired by ["Persistent Fabric"](https://translate.google.com/translate?hl=en&sl=auto&tl=en&u=https%3A%2F%2Fhabr.com%2Fru%2Fcompany%2Foleg-bunin%2Fblog%2F462937%2F) (c) Avito and ["Panopticon"](https://en.wikipedia.org/wiki/Panopticon)
 
+UI is based on ["django-gentelella"](https://github.com/GiriB/django-gentelella)
+
 # Features
 
 - Components registry

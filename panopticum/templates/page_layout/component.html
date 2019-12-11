@@ -1,0 +1,38 @@
+{% extends "page_layout/_base.html" %}
+
+{% block title %} Component X {% endblock title %}
+
+{% block stylesheets %}
+  {{ block.super }}
+{% endblock stylesheets %}
+
+{% block content %}
+
+  <div class="right_col" role="main">
+    <div class="">
+
+      <div class='row top_tiles'>
+        <div class="col-md-10 tile">
+          {% include "widgets/component_page_title.html" %}
+        </div>
+        <div class="col-md-2 tile">
+          {% include "widgets/component_profile_completion.html" %}
+        </div>
+      </div>
+
+      <div class="clearfix"></div>
+
+      <div class="row">
+        <div class="col-md-4 col-sm-4 col-xs-12">
+          {% include "widgets/component_summary.html" %}
+        </div>
+        <div class="col-md-4 col-sm-4 col-xs-12">
+          {% include "widgets/component_owners.html" %}
+        </div>
+        <div class="col-md-4 col-sm-4 col-xs-12">
+          {% include "widgets/component_quality_assurance.html" %}
+        </div>
+      </div>
+
+
+{% endblock %}

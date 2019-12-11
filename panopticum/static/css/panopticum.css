@@ -5,13 +5,17 @@ div.container {
   max-width: 100% !important;
 }
 
+footer {
+    margin-left: 0px;
+}
+
 .container-fluid {
   padding-left: 0px;
   padding-right: 0px;
 }
 
 select.form-control:not([size]):not([multiple]) {
-  height: calc(1.5rem + 2px);
+  height: calc(2.0rem + 2px);
   font-size: 12px;
 }
 
@@ -52,13 +56,133 @@ table.dataTable thead .sorting_asc:before, table.dataTable thead .sorting_desc:a
     opacity: 1;
 }
 
+#components_filter input { margin-left: 10px; }
+table#components {
+    top: 10px;
+    position: relative;
+}
+table#components tr th {
+    background-color: #f8f8f8;
+}
+table#components tr th:first-child,
+table#components tr td:first-child {
+    padding-left: 10px;
+}
 table#components tr th,
 table#components tr td {
-    padding: 1px 2px 1px 3px;
+    padding: 3px 2px 3px 3px;
     border: none;
 }
 table#components tr td {
     border: none;
 }
 
+table#components thead tr:first-child th {
+    padding-top: 10px;
+    border-top: 1px solid #777;
+}
+
+table#components thead tr:last-child th {
+    padding-bottom: 10px;
+    border-bottom: 1px solid #777;
+}
+table#components tbody tr:first-child td {
+    padding-top: 6px;
+}
+
 table#components th select { width: 100%; }
+
+/* Bootstrap-progressbar */
+div.progress {
+    margin-bottom: 16px;
+}
+
+/* Quality Assurance test links */
+.widget_summary .w_right span {
+    font-size: 12px;
+}
+.w_40 {
+    width: 40%
+}
+
+.fixed_height_380 {
+    height: 380px;
+}
+
+/* Component view */
+.component-details tr td {
+    padding: 1px 10px 1px 0px;
+}
+.component-details tr td li {
+    text-align: right;
+    float: right;
+    list-style: none;
+    padding-left: 5px;
+    width: 100px;
+}
+p.component-links {
+    margin-top: 5px;
+}
+p.component-links span {
+    padding: 0px 10px 0px 10px;
+    border-left: 1px solid #444;
+}
+p.component-links span:first-child {
+    border-left: 0px;
+    padding-left: 0px;
+}
+
+.panel_toolbox {
+    min-width: 40px;
+}
+
+.body { color: #4a5159; }
+
+/* Owners */
+div.owners-list table td {
+    margin: 2px 0px;
+    padding: 2px 0px;
+}
+div.owners-list table td.ownership {
+    width: 20%;
+    vertical-align: middle;
+    text-align: left;
+    padding-right: 7px;
+    line-height: 1.2;
+}
+div.owners-list table td.owner {
+    width: 80%;
+}
+div.owners-list table td.owner .block {
+    background: #f7f7f7;
+    display: -ms-flexbox;
+    display: flex;
+    padding: 5px;
+    width: 100%;
+    line-height: 1.2;
+    max-height: 38px;
+    overflow: scroll;
+}
+div.owners-list table td.owner b {
+    color: #338;
+}
+
+div.owners-list td.owner i {
+    border: 1px solid #444;
+    border-radius: 50%;
+    width: 25px;
+    height: 25px;
+    font-size: 13px;
+    line-height: 25px;
+    margin-right: 5px;
+    text-align: center;
+}
+div.owners-list td.owner img {
+    border-radius: 2px 2px 2px 2px;
+    -webkit-border-radius: 2px 2px 2px 2px;
+    float: left;
+    margin-right: 5px;
+    width: 28px;
+    height: 27px;
+    display: table-cell;
+}
