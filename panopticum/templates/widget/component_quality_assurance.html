@@ -19,13 +19,13 @@
             <div class="clearfix"></div>
           </div>
           <div class="x_content">
-            <div style='width: 100%; height: 190px;'>
-              <canvas id="qa-radar" style='position: relative; top: -5px;'></canvas>
+            <div style='height: 190px;' align='center'>
+              <canvas id="qa-radar" style='position: relative; top: -5px; max-height: 190px; max-width: 390px;'></canvas>
             </div>
           </div>
           <div class="x_content">
             <table style='width: 100%;'><tr><td width=50% style='border-right: 10px solid #fff;'>
-              <table class='dc-table tests-table'>
+              <table class='dc-table tests-table first-td-left'>
                 <thead>
                   <tr><th>Test</th><th>Scope</th><th>Automation</th></tr>
                 </thead>
@@ -37,13 +37,13 @@
                 </tbody>
               </table>
             </td><td style='vertical-align: top;'>
-              <table class='dc-table tests-table'>
+              <table class='dc-table tests-table first-td-left'>
                 <thead>
                   <tr><th>Test</th><th>Scope</th><th>Automation</th></tr>
                 </thead>
                 <tbody>
-                  <tr><td>Security</td><td>Good</td><td>None</td></tr>
-                  <tr><td>API check</td><td>Good</td><td>Pre-commit</td></tr>
+                  <tr><td>Security</td><td>Bad</td><td>None</td></tr>
+                  <tr><td>API check</td><td>Bad</td><td>Pre-commit</td></tr>
                   <tr><td>Anonymisation</td><td>Good</td><td>None</td></tr>
                 </tbody>
               </table>
@@ -70,9 +70,10 @@ function init_qa_radar()
 
         var ctx = document.getElementById("qa-radar");
         var data = {
-            labels: ["Unit", "End-to-end", "Performance", "Long haul", "Security", "API validation", "Anonymisation"],
-            datasets: [{
-                label: "Tests automation",
+            labels: ["Unit tests", "End-to-end", "Performance", "Long haul", "Security", "API validation", "Anonymisation"],
+            datasets: [
+            {
+                label: "Tests Scope",
                 backgroundColor: "rgba(3, 88, 106, 0.2)",
                 borderColor: "rgba(3, 88, 106, 0.80)",
                 pointBorderColor: "rgba(3, 88, 106, 0.80)",
@@ -81,7 +82,7 @@ function init_qa_radar()
                 pointHoverBorderColor: "rgba(220,220,220,1)",
                 data: [2, 1, 3, 3, 1, 2, 4]
             }, {
-                label: "Tests completeness",
+                label: "Tests Automation",
                 backgroundColor: "rgba(38, 185, 154, 0.2)",
                 borderColor: "rgba(38, 185, 154, 0.85)",
                 pointColor: "rgba(38, 185, 154, 0.85)",

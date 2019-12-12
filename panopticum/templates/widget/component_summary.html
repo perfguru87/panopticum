@@ -19,8 +19,8 @@
               <tr><td><li>Vendor :</li></td><td>My Company</td></tr>
               <tr><td><li>Language :</li></td><td>Go-lang</td></tr>
               <tr><td><li>Frameworks :</li></td><td>-</td></tr>
-              <tr><td><li>Lifecycle :</li></td><td>Legacy</td></tr>
-              <tr><td><li>Logging :</li></td><td>-</td></tr>
+              <tr><td><li>Life status :</li></td><td>Legacy</td></tr>
+              <tr><td><li>API :</li></td><td>Private</td></tr>
               <tr><td><li>Data access :</li></td><td>Metadata only</td></tr>
               </table> 
             </td><td style='vertical-align: top; background-color: #f8f8f8;'>
@@ -28,12 +28,14 @@
               <tr><td><li>RAML :</li></td><td><a href='#'>link</a></td></tr>
               <tr><td><li>Repository :</li></td><td><a href='#'>link</a></td></tr>
               <tr><td><li>JIRA :</li></td><td>-</td></tr>
-              <tr><td><li>Docs :</li></td><td>-</td></tr>
+              <tr><td><li>Public Docs :</li></td><td>-</td></tr>
+              <tr><td><li>Internal Docs :</li></td><td>-</td></tr>
               <tr><td><li>Build job :</li></td><td><a href='#'>link</a></td></tr>
-              <tr><td><li>Operations :<br>guideline&nbsp;&nbsp;</li></td><td>-</td></tr>
               </table>
             </td>
             </tr></table>
+
+            <canvas id="activity-chart" height="110" width="300" style="width: 300px; height: 110px;"></canvas>
 
             <br>
             <table width='100%'><tr>
@@ -73,10 +75,9 @@
               </table>
             </td><td style='vertical-align: top; border-left: 1px solid #eee; padding-left: 0px; background-color: #f8f8f8;'>
               <table class='component-details'>
-              <tr><td><li>API is public :</li></td><td>-</td></tr>
-              <tr><td><li>API guideline :</li></td><td>YES</td></tr>
-              <tr><td><li>GDPR :</li></td><td>YES</td></tr>
-              <tr><td><li>FIPS :</li></td><td>YES</td></tr>
+              <tr><td><li>API guideline :</li></td><td><span class='yes'>YES</span></td></tr>
+              <tr><td><li>GDPR :</li></td><td><span class='no'>NO</span></td></tr>
+              <tr><td><li>FIPS :</li></td><td><span class='na'>N/A</span></td></tr>
               </table>
             </td>
             </tr></table>
@@ -112,3 +113,43 @@
 
           </div>
         </div>
+
+{% block extra_js %}
+<script>
+function init_activity_chart() {
+    if ($('#activity-chart').length) {
+
+        var ctx = document.getElementById("activity-chart");
+        var chart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul"],
+                datasets: [{
+                    label: 'Bugs in JIRA',
+                    backgroundColor: "#26B99A",
+                    data: [51, 30, 40, 28, 92, 50, 45]
+                }, {
+                    label: 'Commits in Git',
+                    backgroundColor: "#03586A",
+                    data: [41, 56, 25, 48, 72, 34, 12]
+                }]
+            },
+
+            options: {
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true
+                        }
+                    }]
+                }
+            }
+        });
+
+    }
+}
+$(document).ready(function() {
+    init_activity_chart();
+});
+</script>
+{% endblock %}

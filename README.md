@@ -36,8 +36,10 @@ MED PRIO
 - Embed static documentation page
 - Add endpoints (URL to component mapping)
 - Custom documentation links: type, title, link
+- New release approval checklist
 
 LOW PRIO
+- External links validation
 - Integration with git: number of commits per last weeks
 - Integration with git: number of contributors per last weeks
 - Integration with git: overall activity
@@ -49,6 +51,7 @@ LOW PRIO
 - Custom attributes/tags on components and search
 - Integrate with git repo: scan libraries dependencies in source code
 - Integrate with publically available product build system: propogate component version and link it with Product version
+- True Single-page-application
 
 ## Requirements
 

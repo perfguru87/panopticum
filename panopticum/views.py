@@ -38,8 +38,8 @@ class ComponentCategoryViewSet(viewsets.ModelViewSet):
 
 
 def component(request):
-    return render(request, 'page_layout/component.html')
+    return render(request, 'page/component.html')
 
 
-def index(request):
-    return render(request, 'page_layout/components.html')
+def dashboard_components(request):
+    return render(request, 'dashboard/components.html')

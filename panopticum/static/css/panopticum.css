@@ -125,7 +125,7 @@ table.component-details {
     width: 100px;
 }
 p.component-links {
-    margin-top: 5px;
+    margin-top: 0px;
 }
 p.component-links span {
     padding: 0px 10px 0px 10px;
@@ -139,6 +139,8 @@ p.component-links span:first-child {
 .panel_toolbox {
     min-width: 40px;
 }
+
+.title_left h3 { margin-top: 4px; }
 
 .body { color: #4a5159; }
 
@@ -226,3 +228,41 @@ table.first-td-left td:first-child {
 table.tests-table tbody tr:nth-child(even) td {
     background-color: #f0f0f0;
 }
+
+/* Menu toggle */
+.toggle {
+    width: 100%;
+    padding-top: 0px;
+}
+.toggle a { padding: 0px; }
+.site_title i { border: 0px; }
+.nav-sm .navbar.nav_title a { text-align: center; }
+.nav-sm .navbar.nav_title a i { margin: 0px; font-size: 24px; }
+.nav-md .navbar.nav_title a i { margin: 0px 12px 0px 18px; font-size: 24px; }
+.nav-sm .navbar.nav_title a i span, .nav-md .navbar.nav_title a i { font-size: 24px; }
+
+/* Yes/No ckecks */
+i.yes, i.no, i.unknown {
+    font-size: 16px;
+    position: relative;
+    top: 1px;
+    width: 16px;
+    text-align: center;
+}
+i.yes { color: green; }
+i.no { color: #bf9e9e; }
+i.unknown { color: #aaa; }
+
+span.yes, span.no, span.na, span.unknown {
+    display: block;
+    width: 35px;
+    line-height: 16px;
+    font-size: 12px;
+    border-radius: 3px;
+    text-align: center;
+    font-weight: bold;
+}
+span.yes { color: white;  background-color: green; }
+span.no { color: #f64f4f; background-color: white; border: 1px solid #f64f4f; }
+span.na { background-color: #eee; color: #777; border: 1px solid #ccc; }
+span.unknown { background-color: #eee; color: #444; border: 1px solid #ccc; }
