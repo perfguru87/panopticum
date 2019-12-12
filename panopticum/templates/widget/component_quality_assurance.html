@@ -1,4 +1,4 @@
-        <div class="x_panel tile fixed_height_380">
+        <div class="x_panel tile min_height_400">
           <div class="x_title">
             <h2>Quality Assurance</h2>
             <ul class="nav navbar-right panel_toolbox">
@@ -19,35 +19,106 @@
             <div class="clearfix"></div>
           </div>
           <div class="x_content">
-            <div style='height: 190px;' align='center'>
-              <canvas id="qa-radar" style='position: relative; top: -5px; max-height: 190px; max-width: 390px;'></canvas>
+            <div style='height: 130px; float: left;' align='center'>
+              <canvas id="qa-radar" style='position: relative; top: -5px; max-height: 130px; max-width: 240px;'></canvas>
+            </div>
+            <div style='height: 100px; float: right;' align='center'>
+              {% include "widget/component_quality_assurance_rating.html" %}
             </div>
           </div>
           <div class="x_content">
-            <table style='width: 100%;'><tr><td width=50% style='border-right: 10px solid #fff;'>
-              <table class='dc-table tests-table first-td-left'>
-                <thead>
-                  <tr><th>Test</th><th>Scope</th><th>Automation</th></tr>
-                </thead>
-                <tbody>
-                  <tr><td>Unit-tests</td><td>Good</td><td>Pre-commit</td></tr>
-                  <tr><td>End-to-end</td><td>Good</td><td>Manual</td></tr>
-                  <tr><td>Performance</td><td>Good</td><td>Pre-commit</td></tr>
-                  <tr><td>Long haul</td><td>Good</td><td>Pre-commit</td></tr>
-                </tbody>
-              </table>
-            </td><td style='vertical-align: top;'>
-              <table class='dc-table tests-table first-td-left'>
-                <thead>
-                  <tr><th>Test</th><th>Scope</th><th>Automation</th></tr>
-                </thead>
-                <tbody>
-                  <tr><td>Security</td><td>Bad</td><td>None</td></tr>
-                  <tr><td>API check</td><td>Bad</td><td>Pre-commit</td></tr>
-                  <tr><td>Anonymisation</td><td>Good</td><td>None</td></tr>
-                </tbody>
-              </table>
-            </td></tr></table>
+            <table class='dc-table tests-table first-td-left'>
+              <thead>
+                <tr>
+                  <th>Test type</th>
+                  <th>Rating</th>
+                  <th>Links</th>
+                  <th>Details</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Unit tests</td>
+                  <td>
+                    <i style='color: green;' class='fa fa-star'></i>
+                    <i style='color: green;' class='fa fa-star'></i>
+                    <i style='color: green;' class='fa fa-star'></i>
+                  </td>
+                  <td>-</td><td>Go-unit CI; 80% code coverage</td>
+                </tr>
+
+                <tr>
+                  <td>End-to-end</td>
+                  <td>
+                    <i style='color: green;' class='fa fa-star'></i>
+                    <i style='color: green;' class='fa fa-star'></i>
+                    <i style='color: green;' class='fa fa-star'></i>
+                  </td>
+                  <td><a href='#'>link</a></td><td>Gerkin CI; Old on spboard</td>
+                </tr>
+
+                <tr>
+                  <td>Performance</td>
+                  <td>
+                    <i style='color: green;' class='fa fa-star'></i>
+                    <i style='color: green;' class='fa fa-star'></i>
+                    <i style='color: green;' class='fa fa-star'></i>
+                  </td>
+                  <td><a href='#'>link</a></td><td>k6i, good coverage, 1M volume</td>
+                </tr>
+
+                <tr>
+                  <td>Long haul</td>
+                  <td>
+                    <i style='color: green;' class='fa fa-star'></i>
+                    <i style='color: green;' class='fa fa-star'></i>
+                    <i style='color: #aaa;' class='fa fa-star-o'></i>
+                  </td>
+                  <td>-</td><td>200K agents</td>
+                </tr>
+
+                <tr>
+                  <td>Security tests</td>
+                  <td>
+                    <i style='color: green;' class='fa fa-star'></i>
+                    <i style='color: #aaa;' class='fa fa-star-o'></i>
+                    <i style='color: #aaa;' class='fa fa-star-o'></i>
+                  </td>
+                  <td>-</td><td>Automated fuzzing</td>
+                </tr>
+
+                <tr>
+                  <td>API tests</td>
+                  <td>
+                    <i style='color: green;' class='fa fa-star'></i>
+                    <i style='color: green;' class='fa fa-star'></i>
+                    <i style='color: #aaa;' class='fa fa-star-o'></i>
+                  </td>
+                  <td>-</td><td>ART CI</td>
+                </tr>
+
+                <tr>
+                  <td>Anonymisation</td>
+                  <td>
+                    <i style='color: #aaa;' class='fa fa-star-o'></i>
+                    <i style='color: #aaa;' class='fa fa-star-o'></i>
+                    <i style='color: #aaa;' class='fa fa-star-o'></i>
+                  </td>
+                  <td>-</td><td>JIRA-123</td>
+                </tr>
+
+                <tr>
+                  <td>Upgrade</td>
+                  <td>
+                    <i style='color: #aaa;' class='fa fa-star-o'></i>
+                    <i style='color: #aaa;' class='fa fa-star-o'></i>
+                    <i style='color: #aaa;' class='fa fa-star-o'></i>
+                  </td>
+                  <td>-</td><td>Manual before release</td>
+                </tr>
+
+              </tbody>
+            </table>
           </div>
         </div>
 
@@ -58,10 +129,10 @@ function init_qa_radar()
     if ($('#qa-radar').length) {
 
         var options = {
+            legend: { display: false },
             scale: {
                 ticks: {
-                    beginAtZero: true,
-                    max: 5,
+                    max: 3,
                     min: 0,
                     stepSize: 1
                 }
@@ -70,7 +141,7 @@ function init_qa_radar()
 
         var ctx = document.getElementById("qa-radar");
         var data = {
-            labels: ["Unit tests", "End-to-end", "Performance", "Long haul", "Security", "API validation", "Anonymisation"],
+            labels: ["Unit tests", "End-to-end", "Performance", "Long haul", "Security", "API validation", "Anonymisation", "Upgrade"],
             datasets: [
             {
                 label: "Tests Scope",
@@ -80,20 +151,12 @@ function init_qa_radar()
                 pointBackgroundColor: "rgba(3, 88, 106, 0.80)",
                 pointHoverBackgroundColor: "#fff",
                 pointHoverBorderColor: "rgba(220,220,220,1)",
-                data: [2, 1, 3, 3, 1, 2, 4]
-            }, {
-                label: "Tests Automation",
-                backgroundColor: "rgba(38, 185, 154, 0.2)",
-                borderColor: "rgba(38, 185, 154, 0.85)",
-                pointColor: "rgba(38, 185, 154, 0.85)",
-                pointStrokeColor: "#fff",
-                pointHighlightFill: "#fff",
-                pointHighlightStroke: "rgba(151,187,205,1)",
-                data: [1, 2, 3, 4, 5, 2, 1]
+                data: [3, 3, 3, 0, 1, 2, 1, 2]
             }]
         };
 
         var canvasRadar = new Chart(ctx, {
+            display: false,
             type: 'radar',
             options: options,
             data: data,

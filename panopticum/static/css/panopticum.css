@@ -1,4 +1,4 @@
-/* Bootstrap4 */
+/* Bootstrap */
 div.container {
   font-size: 12px !important;
   width: 100% !important;
@@ -17,6 +17,17 @@ footer {
 select.form-control:not([size]):not([multiple]) {
   height: calc(2.0rem + 2px);
   font-size: 12px;
+}
+
+.row-eq-height {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display:         flex;
+}
+
+.row-eq-height > [class*='col-'] {
+  display: flex;
 }
 
 hr {
@@ -105,8 +116,8 @@ div.progress {
     width: 40%
 }
 
-.fixed_height_380 {
-    height: 380px;
+.min_height_400 {
+    min-height: 400px;
 }
 
 /* Component view */
@@ -146,18 +157,21 @@ p.component-links span:first-child {
 
 /* Owners */
 div.owners-list table td {
-    margin: 2px 0px;
+    margin: 0px;
     padding: 2px 0px;
+}
+div.owners-list table tr:first-child td {
+    padding-top: 0px;
 }
 div.owners-list table td.ownership {
     width: 20%;
     vertical-align: middle;
     text-align: left;
     padding-right: 7px;
-    line-height: 1.2;
 }
 div.owners-list table td.owner {
-    width: 80%;
+    line-height: 14px;
+    min-height: 44px;
 }
 div.owners-list table td.owner .block {
     background: #f7f7f7;
@@ -165,8 +179,6 @@ div.owners-list table td.owner .block {
     display: flex;
     padding: 5px;
     width: 100%;
-    line-height: 1.2;
-    max-height: 38px;
     overflow: scroll;
 }
 div.owners-list table td.owner b {
@@ -188,8 +200,8 @@ div.owners-list td.owner img {
     -webkit-border-radius: 2px 2px 2px 2px;
     float: left;
     margin-right: 5px;
-    width: 28px;
-    height: 27px;
+    width: 25px;
+    height: 25px;
     display: table-cell;
 }
 
