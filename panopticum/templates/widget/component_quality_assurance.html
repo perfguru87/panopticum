@@ -19,15 +19,21 @@
             <div class="clearfix"></div>
           </div>
           <div class="x_content">
-            <div style='height: 130px; float: left;' align='center'>
-              <canvas id="qa-radar" style='position: relative; top: -5px; max-height: 130px; max-width: 240px;'></canvas>
-            </div>
-            <div style='height: 100px; float: right;' align='center'>
-              {% include "widget/component_quality_assurance_rating.html" %}
+            <div class='row'>
+              <div class='col-sm-12 col-12 col-lg-8'>
+                <div align='center'>
+                  <canvas id="qa-radar" style='position: relative; top: 5px;'></canvas>
+                </div>
+              </div>
+              <div class='col-sm-12 col-12 col-lg-4'>
+                <div align='center'>
+                  {% include "widget/component_quality_assurance_rating.html" %}
+                </div>
+              </div>
             </div>
           </div>
           <div class="x_content">
-            <table class='dc-table tests-table first-td-left'>
+            <table class='dc-table tests-table first-td-left last-td-left'>
               <thead>
                 <tr>
                   <th>Test type</th>

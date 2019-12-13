@@ -121,8 +121,13 @@ div.progress {
 }
 
 /* Component view */
+table.col-3-center { width: 100%; margin: 5px 5px; }
+table.col-3-center tr td { width: 4%; text-align: center; padding: 1px 5px 1px 0px; vertical-align: top; white-space: nowrap; }
+table.col-3-center tr td:first-child { width: 48%; text-align: right; }
+table.col-3-center tr td:last-child { width: 48%; text-align: left; }
 table.component-details {
     margin: 5px 0px;
+    width: 100%;
 }
 .component-details tr td {
     padding: 1px 5px 1px 0px;
@@ -234,6 +239,11 @@ table.dc-table tr:nth-child(odd) td {
 
 table.first-td-left th:first-child,
 table.first-td-left td:first-child {
+    text-align: left;
+}
+
+table.last-td-left th:last-child,
+table.last-td-left td:last-child {
     text-align: left;
 }
 
