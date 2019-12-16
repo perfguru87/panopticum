@@ -46,6 +46,7 @@
 var CURRENT_URL = window.location.href.split('#')[0].split('?')[0],
     $BODY = $('body'),
     $MENU_TOGGLE = $('#menu_toggle'),
+    $MENU_TOGGLE_SMALL = $('#menu_toggle_small'),
     $SIDEBAR_MENU = $('#sidebar-menu'),
     $SIDEBAR_FOOTER = $('.sidebar-footer'),
     $LEFT_COL = $('.left_col'),
@@ -100,8 +101,7 @@ function init_sidebar() {
         }
     });
 
-    // toggle small or large menu
-    $MENU_TOGGLE.on('click', function() {
+    menu_toggle_on_click = function() {
         console.log('clicked - menu toggle');
 
         if ($BODY.hasClass('nav-md')) {
@@ -115,7 +115,11 @@ function init_sidebar() {
         $BODY.toggleClass('nav-md nav-sm');
 
         setContentHeight();
-    });
+    }
+
+    // toggle small or large menu
+    $MENU_TOGGLE.on('click', menu_toggle_on_click);
+    $MENU_TOGGLE_SMALL.on('click', menu_toggle_on_click);
 
     // check active menu
     $SIDEBAR_MENU.find('a[href="' + CURRENT_URL + '"]').parent('li').addClass('current-page');
