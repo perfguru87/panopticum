@@ -8,7 +8,7 @@
 
 {% block content %}
 
-  <div class="right_col" role="main">
+  <div class="right_col" role="main" id="vue-component">
     <div class="">
 
       <div class='row top_tiles'>
@@ -48,4 +48,36 @@
         </div>
       </div>
 
+    </div>
+  </div>
+
+{% endblock %}
+
+{% block extra_js %}
+  {{ block.super }}
+  {% include "widget/component_profile_completion.js" %}
+  {% include "widget/component_summary.js" %}
+  {% include "widget/component_quality_assurance.js" %}
+<script>
+function vue_component_init() {
+    console.log("init vue");
+    const app = new Vue({
+        el: "#vue-component",
+        data: {
+            components: [],
+            component_versions: [],
+        },
+        created () {
+            fetch('/api/component/?format=json')
+                .then((response) => response.json())
+                .then(json => {
+                    this.components = json.results
+                })
+        }
+    });
+}
+$(document).ready(function() {
+    vue_component_init();
+});
+</script>
 {% endblock %}

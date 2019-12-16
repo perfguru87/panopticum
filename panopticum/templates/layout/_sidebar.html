@@ -61,11 +61,8 @@
         </li>
 
         <li><a><i class="fa fa-dot-circle-o"></i>Components<span class="fa fa-chevron-down"></span></a>
-          <ul class="nav child_menu">
-            <li><a href="/component/">Account Server</a>
-            <li><a href="/component/">Task Manager</a>
-            <li><a href="/component/">Frontend</a>
-            <li><a href="/component/">Patroni Cluster</a>
+          <ul id='vue-components' class="nav child_menu">
+<!-- FIXME, see _sidebar.js <li v-for="component in components"><a href="/component/{{ component.id }}">{{ component.name }}</a></li> //-->
           </ul>
         </li>
         <li><a><i class="fa fa-th"></i>Maps<span class="fa fa-chevron-down"></span></a>

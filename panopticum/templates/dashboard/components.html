@@ -55,6 +55,7 @@
 </div>
 {% endblock %}
 {% block extra_js %}
+  {{ block.super }}
 <script>
 
 function populate_options(id, url) {
@@ -145,7 +146,7 @@ $(document).ready(function() {
             {
                 "targets": ["colId", "colComponent"],
                 "render": function(data, type, row) {
-                    return "<a target=_blank href='/component/'>" + data + "</a>";
+                    return "<a target=_blank href='/component/" + data + "'>" + data + "</a>";
                 }
             },
 

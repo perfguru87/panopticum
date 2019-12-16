@@ -12,6 +12,11 @@ class ProductViewSet(viewsets.ModelViewSet):
     serializer_class = ProductSerializer
 
 
+class ComponentViewSet(viewsets.ModelViewSet):
+    queryset = ComponentModel.objects.all()
+    serializer_class = ComponentSerializer
+
+
 class ComponentVersionViewSet(viewsets.ModelViewSet):
     queryset = ComponentVersionModel.objects.all()
     serializer_class = ComponentVersionSerializer

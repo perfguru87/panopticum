@@ -23,6 +23,7 @@ from panopticum import views
 
 router = routers.DefaultRouter()
 router.register(r'product', views.ProductViewSet)
+router.register(r'component', views.ComponentViewSet)
 router.register(r'component_version', views.ComponentVersionViewSet)
 router.register(r'component_category', views.ComponentCategoryViewSet)
 router.register(r'component_runtime_type', views.ComponentRuntimeTypeViewSet)
