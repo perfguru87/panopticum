@@ -38,6 +38,8 @@ MED PRIO
 - Add endpoints (URL to component mapping)
 - Custom documentation links: type, title, link
 - New release approval checklist
+- People - work hours
+- People - vacations
 
 LOW PRIO
 - External links validation
