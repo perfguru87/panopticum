@@ -79,6 +79,9 @@ admin.site.register(LoggerModel)
 admin.site.register(TCPPortModel)
 admin.site.register(TestingModel)
 
+admin.site.register(CountryModel)
+admin.site.register(OrganizationModel)
+admin.site.register(OrgDepartmentModel)
 admin.site.register(PersonRoleModel)
 admin.site.register(PersonModel)
 

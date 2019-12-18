@@ -283,7 +283,7 @@ class PersonModel(models.Model):
         ordering = ['email']
 
     def __str__(self):
-        return "#%d %s" % (self.id, self.email)
+        return self.email
 
 
 class ComponentModel(models.Model):
