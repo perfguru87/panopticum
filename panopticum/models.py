@@ -275,7 +275,7 @@ class PersonModel(models.Model):
     mobile_phone = models.CharField(max_length=64, blank=True, null=True)
     active_directory_guid = models.CharField(max_length=64, blank=True, null=True)
     employee_number = models.CharField(max_length=64, blank=True, null=True)
-    info = models.CharField(max_length=128, blank=True, null=True)
+    info = models.TextField(blank=True, null=True)
     role = models.ForeignKey(PersonRoleModel, on_delete=models.PROTECT, blank=True, null=True)
     manager = models.ForeignKey("self", on_delete=models.PROTECT, blank=True, null=True)
 
