@@ -165,3 +165,14 @@ For more information please refer to [documentation](https://django-auth-ldap.re
 
 ```
 python3.6 ./manage.py runserver 0.0.0.0:8000
+
+# Tools
+
+All the integration tools (like JIRA or Active Directory connectors) live in the `panopticum/tools` folder
+
+## Active Directory users import
+
+```
+ldapdomaindump -o /tmp/ -u "DOMAIN\USER" ldap://LDAP.SERVER.URL:PORT
+python3.6 ./manage.py ad-sync /tmp/domain_users.json
+```

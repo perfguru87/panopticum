@@ -223,8 +223,8 @@ class TestingModel(models.Model):
         return "#%d %s" % (self.id, self.name)
 
 
-class PersonRoleModel(models.Model):
-    name = models.CharField(max_length=64)
+class SimpleNameModel(models.Model):
+    name = models.CharField(max_length=64, default="")
 
     class Meta:
         ordering = ['name']
@@ -233,13 +233,37 @@ class PersonRoleModel(models.Model):
         return "#%d %s" % (self.id, self.name)
 
 
+class CountryModel(SimpleNameModel):
+    pass
+
+
+class OrgDepartmentModel(SimpleNameModel):
+    pass
+
+
+class OrganizationModel(SimpleNameModel):
+    pass
+
+
+class PersonRoleModel(SimpleNameModel):
+    pass
+
+
 class PersonModel(models.Model):
     name = models.CharField(max_length=64)
     surname = models.CharField(max_length=64)
+    title = models.CharField(max_length=64, blank=True, null=True)
     email = models.EmailField()
-    phone = models.EmailField(blank=True)
-    role = models.ForeignKey(PersonRoleModel, on_delete=models.PROTECT)
-    manager = models.ForeignKey("self", blank=True, null=True, on_delete=models.PROTECT)
+    organization = models.ForeignKey(OrganizationModel, on_delete=models.PROTECT, blank=True, null=True)
+    org_department = models.ForeignKey(OrgDepartmentModel, on_delete=models.PROTECT, blank=True, null=True)
+    country = models.ForeignKey(CountryModel, on_delete=models.PROTECT, blank=True, null=True)
+    office_phone = models.CharField(max_length=64, blank=True, null=True)
+    mobile_phone = models.CharField(max_length=64, blank=True, null=True)
+    active_directory_guid = models.CharField(max_length=64, blank=True, null=True)
+    employee_number = models.CharField(max_length=64, blank=True, null=True)
+    info = models.CharField(max_length=128, blank=True, null=True)
+    role = models.ForeignKey(PersonRoleModel, on_delete=models.PROTECT, blank=True, null=True)
+    manager = models.ForeignKey("self", on_delete=models.PROTECT, blank=True, null=True)
 
     class Meta:
         ordering = ['email']
