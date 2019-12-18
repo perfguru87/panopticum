@@ -7,6 +7,8 @@ Inspired by ["Persistent Fabric"](https://translate.google.com/translate?hl=en&s
 
 UI is based on ["django-gentelella"](https://github.com/GiriB/django-gentelella)
 
+![Component info example](https://github.com/perfguru87/panopticum/raw/master/panopticum/static/images/panopticum-component.png)
+
 # Features
 
 - Components registry
