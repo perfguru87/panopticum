@@ -223,7 +223,7 @@ class TestingModel(models.Model):
         return "#%d %s" % (self.id, self.name)
 
 
-class SimpleNameModel(models.Model):
+class CountryModel(models.Model):
     name = models.CharField(max_length=64, default="")
 
     class Meta:
@@ -233,20 +233,34 @@ class SimpleNameModel(models.Model):
         return "#%d %s" % (self.id, self.name)
 
 
-class CountryModel(SimpleNameModel):
-    pass
+class OrgDepartmentModel(models.Model):
+    name = models.CharField(max_length=64, default="")
+
+    class Meta:
+        ordering = ['name']
+
+    def __str__(self):
+        return "#%d %s" % (self.id, self.name)
 
 
-class OrgDepartmentModel(SimpleNameModel):
-    pass
+class OrganizationModel(models.Model):
+    name = models.CharField(max_length=64, default="")
+
+    class Meta:
+        ordering = ['name']
+
+    def __str__(self):
+        return "#%d %s" % (self.id, self.name)
 
 
-class OrganizationModel(SimpleNameModel):
-    pass
+class PersonRoleModel(models.Model):
+    name = models.CharField(max_length=64, default="")
 
+    class Meta:
+        ordering = ['name']
 
-class PersonRoleModel(SimpleNameModel):
-    pass
+    def __str__(self):
+        return "#%d %s" % (self.id, self.name)
 
 
 class PersonModel(models.Model):
