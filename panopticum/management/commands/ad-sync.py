@@ -64,6 +64,7 @@ class DomainUsersParser:
                     skipped += 1
                     continue
 
+                email = email.lower()
                 employee_number = self._get(a, 'employeeNumber', "")
                 guid = self._get(a, 'objectGUID')
 
@@ -74,15 +75,15 @@ class DomainUsersParser:
                     except PersonModel.DoesNotExist as e:
                         pass
 
-                if obj is None and email:
-                    try:
-                        obj = PersonModel.objects.get(email=email)
-                    except PersonModel.DoesNotExist as e:
-                        pass
-
                 if obj is None and guid:
                     try:
                         obj = PersonModel.objects.get(active_directory_guid=guid)
+                    except PersonModel.DoesNotExist as e:
+                        pass
+
+                if obj is None and email:
+                    try:
+                        obj = PersonModel.objects.get(email=email)
                     except PersonModel.DoesNotExist as e:
                         pass
 
@@ -107,7 +108,7 @@ class DomainUsersParser:
                 obj.mobile_phone = self._get(a, 'mobile', "")
                 obj.office_phone = self._get(a, 'telephoneNumber', "")
 
-                print("%s user: %s" % ("Update" if obj.id else "Create", obj.email))
+                print("%s user: %s" % ("Update" if obj.id else "Create", obj.email.encode('utf-8').strip()))
                 obj.save()
 
             print("-" * 80)
