@@ -278,6 +278,7 @@ class PersonModel(models.Model):
     info = models.TextField(blank=True, null=True)
     role = models.ForeignKey(PersonRoleModel, on_delete=models.PROTECT, blank=True, null=True)
     manager = models.ForeignKey("self", on_delete=models.PROTECT, blank=True, null=True)
+    hidden = models.BooleanField(help_text="Hide the person from the potential assignee lists", db_index=True, default=False)
 
     class Meta:
         ordering = ['email']

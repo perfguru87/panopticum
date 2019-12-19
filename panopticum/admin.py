@@ -48,7 +48,21 @@ class ComponentVersionAdmin(admin.ModelAdmin):
                                           ('qa_api_tests_quality', 'qa_api_tests_model', 'qa_api_tests_link'))}),
     )
 
+    def formfield_for_manytomany(self, db_field, request, **kwargs):
+        # standard django method
+        if db_field.name in ("owner_product_manager", "owner_program_manager", "owner_expert",
+                             "owner_escalation_list", "owner_architect"):
+            kwargs["queryset"] = PersonModel.objects.filter(hidden=False)
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        # standard django method
+        if db_field.name in ("owner_maintainer", "owner_responsible_qa"):
+            kwargs["queryset"] = PersonModel.objects.filter(hidden=False)
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
     def save_model(self, request, obj, form, change):
+        # standard django method
         if obj.pk:
             orig_obj = ComponentVersionModel.objects.get(id=obj.id)
             if orig_obj.version != obj.version:

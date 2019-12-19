@@ -28,7 +28,7 @@ class DomainUsersParser:
 
         v = json_data[key]
         if type(v) == list:
-            return ", ".join(v)
+            return ", ".join([str(val) for val in v])
         elif type(v) == dict:
             return v
         return str(v)
@@ -107,6 +107,7 @@ class DomainUsersParser:
                 obj.info = self._get(a, 'info', "")
                 obj.mobile_phone = self._get(a, 'mobile', "")
                 obj.office_phone = self._get(a, 'telephoneNumber', "")
+                obj.hidden = self._get(a, 'msExchHideFromAddressLists', "") != ""
 
                 print("%s user: %s" % ("Update" if obj.id else "Create", obj.email.encode('utf-8').strip()))
                 obj.save()
