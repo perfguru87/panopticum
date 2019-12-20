@@ -42,6 +42,17 @@ MED PRIO
 - New release approval checklist
 - People - work hours
 - People - vacations
+- New field: service is highly loaded
+- Services dependencies: sync/fatal, sync, async
+- Libraries dependencies
+- Multiple links (comma separated list in admin panel) for repo/raml/docs/etc
+- Component profile completion: a tooltip to show what is completed / not completed
+- Component rating: a tooltip to show what is completed / not completed
+- Componet QA rating: to show a formula/rules about how it was calculated
+- Multiple languages/frameworks per component
+- Tooltip (hint) with possible component life state: legacy, new, mature, ...
+- Tooltip (hint) with possible component data accesss: Data, Metadata only, ...
+- Chart with all type of issues from JIRA (not just bugs)
 
 LOW PRIO
 - External links validation
@@ -57,6 +68,8 @@ LOW PRIO
 - Integrate with git repo: scan libraries dependencies in source code
 - Integrate with publically available product build system: propogate component version and link it with Product version
 - True Single-page-application
+- Correlation map between component rating and number of bugs in production
+- Link to language docs
 
 ## Requirements
 
