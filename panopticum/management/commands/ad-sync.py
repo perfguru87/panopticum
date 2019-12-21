@@ -1,4 +1,5 @@
 from django.core.management.base import BaseCommand, CommandError
+from django.core.exceptions import MultipleObjectsReturned
 import json
 
 from panopticum.models import *
@@ -49,6 +50,7 @@ class DomainUsersParser:
         skipped = 0
         created = 0
         updated = 0
+        warnings = 0
 
         with open(self.filename) as json_file:
             data = json.load(json_file)
@@ -56,8 +58,9 @@ class DomainUsersParser:
                 a = self._get(user_data, 'attributes')
 
                 email = self._get(a, 'mail', "")
+                principal_name = self._get(a, 'userPrincipalName', "")
                 if email == "":
-                    email = self._get(a, 'userPrincipalName', "")
+                    email = principal_name
 
                 if email is "":
                     print("Skip user: %s" % (self._get(a, 'name')))
@@ -67,6 +70,7 @@ class DomainUsersParser:
                 email = email.lower()
                 employee_number = self._get(a, 'employeeNumber', "")
                 guid = self._get(a, 'objectGUID')
+                name = self._get(a, 'displayName', "")
 
                 obj = None
                 if employee_number:
@@ -86,9 +90,17 @@ class DomainUsersParser:
                         obj = PersonModel.objects.get(email=email)
                     except PersonModel.DoesNotExist as e:
                         pass
+                    except MultipleObjectsReturned as e:
+                        print("warning: multiple users with email: %s" % email)
+
+                if obj is None and name:
+                    try:
+                        obj = PersonModel.objects.get(name=name)
+                    except PersonModel.DoesNotExist as e:
+                        pass
 
                 if obj is None:
-                    obj = PersonModel(email=email, active_directory_guid=guid, employee_number=employee_number)
+                    obj = PersonModel(name=name, email=email, active_directory_guid=guid, employee_number=employee_number)
                     created += 1
                 else:
                     updated += 1
@@ -101,7 +113,7 @@ class DomainUsersParser:
                 obj.employee_number = employee_number
                 obj.active_directory_guid = guid
 
-                obj.name = self._get(a, 'displayName', email)
+                obj.name = name if name else email
                 obj.title = self._get(a, 'title', "")
                 obj.location = self._get(a, 'l', "")
                 obj.info = self._get(a, 'info', "")
@@ -116,6 +128,7 @@ class DomainUsersParser:
             print("Created: %d" % created)
             print("Updated: %d" % updated)
             print("Skipped: %d" % skipped)
+            print("Warnings: %d" % warnings)
 
 
 class Command(BaseCommand):
