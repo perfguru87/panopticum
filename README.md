@@ -16,6 +16,7 @@ UI is based on ["django-gentelella"](https://github.com/GiriB/django-gentelella)
 - Components dependencies
 - Other connected objects: Products, Persons, 
 - REST API
+- Users sync-up from Active Directory
 
 # Todo
 
@@ -70,6 +71,8 @@ LOW PRIO
 - True Single-page-application
 - Correlation map between component rating and number of bugs in production
 - Link to language docs
+- Org chart browser
+- Git repos branches browser
 
 ## Requirements
 
