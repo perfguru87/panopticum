@@ -19,17 +19,6 @@ select.form-control:not([size]):not([multiple]) {
   font-size: 12px;
 }
 
-.row-eq-height {
-  display: -webkit-box;
-  display: -webkit-flex;
-  display: -ms-flexbox;
-  display:         flex;
-}
-
-.row-eq-height > [class*='col-'] {
-  display: flex;
-}
-
 hr {
   margin-top: 1rem;
   margin-bottom: 1rem;

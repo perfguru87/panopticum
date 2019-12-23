@@ -1,0 +1,51 @@
+.row-eq-height-xs,
+.row-eq-height {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display:         flex;
+}
+
+.row-eq-height-xs > [class*='col-'],
+.row-eq-height > [class*='col-'] {
+  display: flex;
+}
+
+@media (min-width: 768px) {
+  .row-eq-height-sm {
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+  }
+
+  .row-eq-height-sm > [class*='col-'] {
+    display: flex;
+  }
+}
+
+@media (min-width: 992px) {
+  .row-eq-height-md {
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+  }
+
+  .row-eq-height-md > [class*='col-'] {
+    display: flex;
+  }
+}
+
+@media (min-width: 1200px) {
+  .row-eq-height-lg {
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+  }
+
+  .row-eq-height-lg > [class*='col-'] {
+    display: flex;
+  }
+}
