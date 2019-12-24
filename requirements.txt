@@ -2,3 +2,5 @@ Django==2.1.*
 djangorestframework-datatables
 django-datatable-view
 ldapdomaindump
+django-extensions
+pygraphviz

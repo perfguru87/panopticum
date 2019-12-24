@@ -196,3 +196,9 @@ All the integration tools (like JIRA or Active Directory connectors) live in the
 ldapdomaindump -o /tmp/ -u "DOMAIN\USER" ldap://LDAP.SERVER.URL:PORT
 python3.6 ./manage.py ad-sync /tmp/domain_users.json
 ```
+
+## Data model visualization
+
+```
+python3.6 manage.py graph_models -a -g -o model.png
+```
