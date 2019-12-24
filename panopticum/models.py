@@ -188,6 +188,7 @@ class ComponentRuntimeTypeModel(models.Model):
 
 
 LIFE_STATUS = (
+    ('unknown', "?"),
     ('new', "New"),
     ('mature', "Mature"),
     ('legacy', "Legacy"),
@@ -196,6 +197,7 @@ LIFE_STATUS = (
 )
 
 LOW_MODERATE_GOOD = (
+    ('unknown', "?"),
     ('n/a', "N/A"),
     ('none', "None"),
     ('low', "Low"),
@@ -205,6 +207,7 @@ LOW_MODERATE_GOOD = (
 )
 
 NO_PARTIAL_YES = (
+    ('unknown', "?"),
     ('n/a', "N/A"),
     ('no', "No"),
     ('partial', "Partial"),
