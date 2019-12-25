@@ -38,6 +38,34 @@ hr {
 .panopticum-side-by-side-table div:nth-child(even) div h4 { background-color: #d8d8d8; }
 .panopticum-side-by-side-table div:nth-child(even) div { background-color: #f0f0f0; }
 
+.panopticum-side-by-side-cards { margin: -5px; flex-wrap: wrap; display: flex; }
+.panopticum-side-by-side-cards div { padding: 0px; }
+.panopticum-side-by-side-cards div div { width: 100%; }
+.panopticum-side-by-side-cards div.row { flex-wrap: wrap; display: flex; margin: 0px; }
+.panopticum-side-by-side-cards div.card table { margin: 5px; width: 95%; }
+.panopticum-side-by-side-cards div.h-100 { height: 100%!important; }
+.panopticum-side-by-side-cards div.h-50 { height: 50%!important; }
+.panopticum-side-by-side-cards div.card h4 {
+    padding: 0px;
+    margin: 0px;
+    width: 100%;
+    padding: 10px 0px;
+    text-align: center;
+    background-color: #d0d0d0;
+}
+.panopticum-side-by-side-cards div.card {
+    position: relative;
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-direction: column;
+    flex-direction: column;
+    min-width: 0;
+    word-wrap: break-word;
+    background-color: #f0f0f0;
+    background-clip: border-box;
+    border: 3px solid #fff;
+}
+
 /* DataTable */
 table.dataTable thead .sorting:before, table.dataTable thead .sorting_asc:before, table.dataTable thead .sorting_desc:before, table.dataTable thead .sorting_asc_disabled:before, table.dataTable thead .sorting_desc_disabled:before {
     top: 0px;
@@ -122,10 +150,16 @@ div.progress {
 }
 
 /* Component view */
+table.col-3 { width: 100%; margin: 5px 0px; }
+table.col-3 tr td { width: 4px; text-align: center; padding: 1px 5px 1px 0px; vertical-align: top; white-space: nowrap; }
+table.col-3 tr td:first-child { text-align: right; }
+table.col-3 tr td:last-child { text-align: left; }
+
 table.col-3-center { width: 100%; margin: 5px 0px; }
 table.col-3-center tr td { width: 4%; text-align: center; padding: 1px 5px 1px 0px; vertical-align: top; white-space: nowrap; }
 table.col-3-center tr td:first-child { width: 48%; text-align: right; }
 table.col-3-center tr td:last-child { width: 48%; text-align: left; }
+
 table.component-details {
     margin: 5px 5px;
     width: 100%;
