@@ -27,7 +27,6 @@ router.register(r'component', views.ComponentViewSet)
 router.register(r'component_version', views.ComponentVersionViewSet)
 router.register(r'component_category', views.ComponentCategoryViewSet)
 router.register(r'component_runtime_type', views.ComponentRuntimeTypeViewSet)
-router.register(r'component_location_class', views.ComponentLocationClassViewSet)
 router.register(r'component_data_privacy_class', views.ComponentDataPrivacyClassViewSet)
 
 

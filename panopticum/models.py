@@ -3,227 +3,9 @@ from datatableview.views import DatatableView
 from datatableview import helpers
 
 
-class DatacenterModel(models.Model):
-    name = models.CharField(max_length=64, help_text="Datacenter name")
-    info = models.URLField(help_text="Info link", blank=True, null=True)
-    grafana = models.URLField(help_text="Grafana link", blank=True, null=True)
-    metrics = models.URLField(help_text="Grafana link", blank=True, null=True)
-
-    class Meta:
-        ordering = ['name']
-
-    def __str__(self):
-        return "#%d %s" % (self.id, self.name)
-
-
-class ComponentLocationClassModel(models.Model):
-    name = models.CharField(max_length=64, help_text="Global, Datacenter, Customer, Endpoint")
-    description = models.TextField(blank=True, null=True)
-    order = models.IntegerField(help_text="sorting order")
-
-    class Meta:
-        ordering = ['order']
-
-    def __str__(self):
-        return "#%d %s" % (self.id, self.name)
-
-
-class ComponentDataPrivacyClassModel(models.Model):
-    name = models.CharField(max_length=64, help_text="Infrastructure, Metadata management, Data management, Application")
-    order = models.IntegerField(help_text="sorting order")
-
-    class Meta:
-        ordering = ['order']
-
-    def __str__(self):
-        return "#%d %s" % (self.id, self.name)
-
-
-class ComponentCategoryModel(models.Model):
-    name = models.CharField(max_length=64, help_text="Platform, Search engine, ...")
-    description = models.TextField(blank=True, null=True)
-
-    class Meta:
-        ordering = ['name']
-
-    def __str__(self):
-        return "#%d %s" % (self.id, self.name)
-
-
-class ComponentSubcategoryModel(models.Model):
-    name = models.CharField(max_length=64, help_text="Platform, Search engine, ...")
-    description = models.TextField(blank=True, null=True)
-    category = models.ForeignKey(ComponentCategoryModel, on_delete=models.PROTECT)
-
-    class Meta:
-        ordering = ['name']
-
-    def __str__(self):
-        return "#%d %s" % (self.id, self.name)
-
-
-class SoftwareVendorModel(models.Model):
-    name = models.CharField(max_length=64, help_text="Component vendor: OpenSource, MyCompany, ...")
-
-    class Meta:
-        ordering = ['name']
-
-    def __str__(self):
-        return "#%d %s" % (self.id, self.name)
-
-
-class DatabaseVendorModel(models.Model):
-    name = models.CharField(max_length=64, help_text="Database vendor: MSSQl, Oracle, SQLite, PostgreSQL, MySQL, Percona")
-
-    class Meta:
-        ordering = ['name']
-
-    def __str__(self):
-        return "#%d %s" % (self.id, self.name)
-
-
-class DeploymentTypeModel(models.Model):
-    name = models.CharField(max_length=64, help_text="Component deployment type: k8s, Virtuozzo CT, Virtuozzo VM")
-
-    class Meta:
-        ordering = ['name']
-
-    def __str__(self):
-        return "#%d %s" % (self.id, self.name)
-
-
-class ProductFamilyModel(models.Model):
-    name = models.CharField(max_length=64, help_text="Product family")
-
-    class Meta:
-        ordering = ['name']
-
-    def __str__(self):
-        return "#%d %s" % (self.id, self.name)
-
-
-class ProductModel(models.Model):
-    name = models.CharField(max_length=64, help_text="Product")
-    family = models.ForeignKey(ProductFamilyModel, on_delete=models.PROTECT)
-    order = models.IntegerField(help_text="sorting order")
-
-    class Meta:
-        ordering = ['order']
-
-    def __str__(self):
-        return "#%d %s" % (self.id, self.name)
-
-
-class ProgrammingLanguageModel(models.Model):
-    name = models.CharField(max_length=64, help_text="Programming language")
-
-    class Meta:
-        ordering = ['name']
-
-    def __str__(self):
-        return "#%d %s" % (self.id, self.name)
-
-
-class FrameworkModel(models.Model):
-    name = models.CharField(max_length=64, help_text="Framework")
-    language = models.ForeignKey(ProgrammingLanguageModel, on_delete=models.PROTECT)
-
-    class Meta:
-        ordering = ['name']
-
-    def __str__(self):
-        return "#%d %s" % (self.id, self.name)
-
-
-class ORMModel(models.Model):
-    name = models.CharField(max_length=64, help_text="ORM")
-    language = models.ForeignKey(ProgrammingLanguageModel, on_delete=models.PROTECT)
-
-    class Meta:
-        ordering = ['name']
-
-    def __str__(self):
-        return "#%d %s" % (self.id, self.name)
-
-
-class OSFamilyModel(models.Model):
-    name = models.CharField(max_length=64, help_text="Linux, Windows, OSX, Solaris")
-
-    class Meta:
-        ordering = ['name']
-
-    def __str__(self):
-        return "#%d %s" % (self.id, self.name)
-
-
-class LoggerModel(models.Model):
-    name = models.CharField(max_length=64, help_text="Logger model")
-
-    class Meta:
-        ordering = ['name']
-
-    def __str__(self):
-        return "#%d %s" % (self.id, self.name)
-
-
-class TCPPortModel(models.Model):
-    name = models.CharField(max_length=64, help_text="TCP/IP port name: HTTP, SSH, ...")
-    port = models.IntegerField(help_text="TCP/IP port: 80, 21, ...")
-
-    class Meta:
-        ordering = ['name']
-
-    def __str__(self):
-        return "#%d %s" % (self.id, self.name)
-
-
-class ComponentRuntimeTypeModel(models.Model):
-    name = models.CharField(max_length=64, help_text="Library, Framework, Driver, OS Service, OS Process, Web Service, Database, MQ")
-
-    class Meta:
-        ordering = ['name']
-
-    def __str__(self):
-        return "#%d %s" % (self.id, self.name)
-
-
-LIFE_STATUS = (
-    ('unknown', "?"),
-    ('new', "New"),
-    ('mature', "Mature"),
-    ('legacy', "Legacy"),
-    ('eol', "End Of Life"),
-    ('eos', "End Of Support"),
-)
-
-LOW_MODERATE_GOOD = (
-    ('unknown', "?"),
-    ('n/a', "N/A"),
-    ('none', "None"),
-    ('low', "Low"),
-    ('moderate', "Moderate"),
-    ('good', "Good"),
-    ('excellent', "Excellent")
-)
-
-NO_PARTIAL_YES = (
-    ('unknown', "?"),
-    ('n/a', "N/A"),
-    ('no', "No"),
-    ('partial', "Partial"),
-    ('yes', "Yes")
-)
-
-
-class TestingModel(models.Model):
-    name = models.CharField(max_length=64, help_text="n/a, pre-commit, bvt, daily, weekly, manually")
-    order = models.IntegerField(help_text="sorting order")
-
-    class Meta:
-        ordering = ['order']
-
-    def __str__(self):
-        return "#%d %s" % (self.id, self.name)
+##################################################################################################
+# People, Org chart
+##################################################################################################
 
 
 class CountryModel(models.Model):
@@ -290,18 +72,217 @@ class PersonModel(models.Model):
         return self.email
 
 
+##################################################################################################
+# Components
+##################################################################################################
+
+
+LIFE_STATUS = (
+    ('unknown', "?"),
+    ('new', "New"),
+    ('mature', "Mature"),
+    ('legacy', "Legacy"),
+    ('eol', "End Of Life"),
+    ('eos', "End Of Support"),
+)
+
+
+LOW_MED_HIGH = (
+    ('unknown', "?"),
+    ('n/a', "N/A"),
+    ('low', "Low"),
+    ('medium', "Med"),
+    ('high', "High")
+)
+
+
+NO_PARTIAL_YES = (
+    ('unknown', "?"),
+    ('n/a', "N/A"),
+    ('no', "No"),
+    ('partial', "Partial"),
+    ('yes', "Yes")
+)
+
+
+DEPENDENCY_TYPE = (
+    ('sync_rw', "Sync R/W"),
+    ('sync_ro', "Sync R/O"),
+    ('sync_wo', "Sync W/O"),
+    ('async_rw', "Async R/W"),
+    ('async_ro', "Async R/O"),
+    ('async_wo', "Async W/O"),
+)
+
+
+class NoPartialYesField(models.CharField):
+    def __init__(self, _help_text=None, *args, **kwargs):
+        if _help_text:
+            kwargs['help_text'] = _help_text
+        kwargs['max_length'] = 16
+        kwargs['choices'] = NO_PARTIAL_YES
+        kwargs['default'] = kwargs['choices'][0][0]
+        super().__init__(*args, **kwargs)
+
+
+class LowMedHighField(models.CharField):
+    def __init__(self, _help_text=None, *args, **kwargs):
+        if _help_text:
+            kwargs['help_text'] = _help_text
+        kwargs['max_length'] = 16
+        kwargs['choices'] = LOW_MED_HIGH
+        kwargs['default'] = kwargs['choices'][0][0]
+        super().__init__(*args, **kwargs)
+
+
+class URLsField(models.URLField):
+    def __init__(self, _help_text=None, *args, **kwargs):
+        # FIXME: store array of URLs (e.g. "|"-separated)
+        if _help_text:
+            kwargs['help_text'] = _help_text
+        super().__init__(*args, **kwargs)
+
+
+class MarkupField(models.TextField):
+    # FIXME: store arbitrary comments and replace JIRA items and URLs by links
+    def __init__(self, _help_text=None, *args, **kwargs):
+        # FIXME: store array of URLs (e.g. "|"-separated)
+        if _help_text:
+            kwargs['help_text'] = _help_text
+        kwargs['default'] = ""
+        kwargs['blank'] = True
+        super().__init__(*args, **kwargs)
+
+
+class SigneeField(models.ForeignKey):
+    def __init__(self, _help_text=None, *args, **kwargs):
+        if _help_text:
+            kwargs['help_text'] = _help_text
+        kwargs['on_delete'] = on_delete=models.PROTECT
+        kwargs['null'] = True
+        kwargs['blank'] = True
+        kwargs['to'] = 'panopticum.PersonModel'
+        super().__init__(*args, **kwargs)
+
+
+class ComponentDataPrivacyClassModel(models.Model):
+    name = models.CharField(max_length=64,
+                            help_text="Data Access, Secrets Management, Sensitive Metadata, Non-sensitive Metadata")
+    order = models.IntegerField(help_text="sorting order")
+
+    class Meta:
+        ordering = ['order']
+
+    def __str__(self):
+        return "#%d %s" % (self.id, self.name)
+
+
+class ComponentCategoryModel(models.Model):
+    name = models.CharField(max_length=64, help_text="Platform, Search engine, ...")
+    description = models.TextField(blank=True, null=True)
+
+    class Meta:
+        ordering = ['name']
+
+    def __str__(self):
+        return "#%d %s" % (self.id, self.name)
+
+
+class ComponentSubcategoryModel(models.Model):
+    name = models.CharField(max_length=64, help_text="Platform, Search engine, ...")
+    description = models.TextField(blank=True, null=True)
+    category = models.ForeignKey(ComponentCategoryModel, on_delete=models.PROTECT)
+
+    class Meta:
+        ordering = ['name']
+
+    def __str__(self):
+        return "#%d %s" % (self.id, self.name)
+
+
+class SoftwareVendorModel(models.Model):
+    name = models.CharField(max_length=64, help_text="Component vendor: OpenSource, MyCompany, ...")
+
+    class Meta:
+        ordering = ['name']
+
+    def __str__(self):
+        return "#%d %s" % (self.id, self.name)
+
+
+class DatabaseVendorModel(models.Model):
+    name = models.CharField(max_length=64, help_text="Database vendor: MSSQl, Oracle, SQLite, PostgreSQL, MySQL, Percona")
+
+    class Meta:
+        ordering = ['name']
+
+    def __str__(self):
+        return "#%d %s" % (self.id, self.name)
+
+
+class ProgrammingLanguageModel(models.Model):
+    name = models.CharField(max_length=64, help_text="Programming language")
+
+    class Meta:
+        ordering = ['name']
+
+    def __str__(self):
+        return "#%d %s" % (self.id, self.name)
+
+
+class FrameworkModel(models.Model):
+    name = models.CharField(max_length=64, help_text="Framework")
+    language = models.ForeignKey(ProgrammingLanguageModel, on_delete=models.PROTECT)
+
+    class Meta:
+        ordering = ['name']
+
+    def __str__(self):
+        return "#%d %s" % (self.id, self.name)
+
+
+class ORMModel(models.Model):
+    name = models.CharField(max_length=64, help_text="ORM")
+    language = models.ForeignKey(ProgrammingLanguageModel, on_delete=models.PROTECT)
+
+    class Meta:
+        ordering = ['name']
+
+    def __str__(self):
+        return "#%d %s" % (self.id, self.name)
+
+
+class LoggerModel(models.Model):
+    name = models.CharField(max_length=64, help_text="Logger model")
+
+    class Meta:
+        ordering = ['name']
+
+    def __str__(self):
+        return "#%d %s" % (self.id, self.name)
+
+
+class ComponentRuntimeTypeModel(models.Model):
+    name = models.CharField(max_length=64, help_text="Library, Framework, Driver, OS Service, OS Process, Web Service, Database, MQ")
+
+    class Meta:
+        ordering = ['name']
+
+    def __str__(self):
+        return "#%d %s" % (self.id, self.name)
+
+
 class ComponentModel(models.Model):
     name = models.CharField(max_length=64, help_text="Component short name")
     description = models.TextField(blank=True, null=True)
 
+    life_status = models.CharField(max_length=16, choices=LIFE_STATUS, default=LIFE_STATUS[0][0])
     runtime_type = models.ForeignKey(ComponentRuntimeTypeModel, on_delete=models.PROTECT)
     data_privacy_class = models.ForeignKey(ComponentDataPrivacyClassModel, on_delete=models.PROTECT)
-    location_class = models.ManyToManyField(ComponentLocationClassModel)
     category = models.ForeignKey(ComponentCategoryModel, on_delete=models.PROTECT)
     subcategory = models.ForeignKey(ComponentSubcategoryModel, blank=True, null=True, on_delete=models.PROTECT)
 
     vendor = models.ForeignKey(SoftwareVendorModel, on_delete=models.PROTECT)
-    datacenter = models.ManyToManyField(DatacenterModel, blank=True, null=True)
 
     class Meta:
         ordering = ['name']
@@ -316,90 +297,151 @@ class ComponentVersionModel(models.Model):
     version = models.CharField(max_length=64, help_text="note: component version instance will be cloned if you change version!")
     comments = models.TextField(blank=True, null=True)
 
-    product = models.ManyToManyField(ProductModel, help_text="note: product can be linked to only one version of component",
-                                     blank=True, null=True)
-
     # dependencies
-    depends_on = models.ManyToManyField(ComponentModel, related_name='component_blocks', blank=True, null=True)
+
+    depends_on = models.ManyToManyField(ComponentModel, related_name='dependee', through='ComponentDependencyModel')
 
     # ownership
+
     owner_maintainer = models.ForeignKey(PersonModel, related_name='maintainer_of', on_delete=models.PROTECT, blank=True, null=True)
-    owner_responsible_qa = models.ForeignKey(PersonModel, related_name='responsible_qa_of', on_delete=models.PROTECT, blank=True, null=True)
-    owner_product_manager = models.ManyToManyField(PersonModel, related_name='product_manager_of', blank=True, null=True)
-    owner_program_manager = models.ManyToManyField(PersonModel, related_name='program_managed_of', blank=True, null=True)
-    owner_escalation_list = models.ManyToManyField(PersonModel, related_name='escalation_list_of', blank=True, null=True)
-    owner_expert = models.ManyToManyField(PersonModel, related_name='expert_of', blank=True, null=True)
-    owner_architect = models.ManyToManyField(PersonModel, related_name='architect_of', blank=True, null=True)
+    owner_responsible_qa = models.ForeignKey(PersonModel, related_name='responsible_qa_of',
+                                             on_delete=models.PROTECT, blank=True, null=True)
+    owner_product_manager = models.ManyToManyField(PersonModel, related_name='product_manager_of', blank=True)
+    owner_program_manager = models.ManyToManyField(PersonModel, related_name='program_managed_of', blank=True)
+    owner_escalation_list = models.ManyToManyField(PersonModel, related_name='escalation_list_of', blank=True)
+    owner_expert = models.ManyToManyField(PersonModel, related_name='expert_of', blank=True)
+    owner_architect = models.ManyToManyField(PersonModel, related_name='architect_of', blank=True)
 
     # development
-    dev_life_status = models.CharField(max_length=16, choices=LIFE_STATUS, blank=True, null=True)
-    dev_language = models.ManyToManyField(ProgrammingLanguageModel, blank=True, null=True)
-    dev_framework = models.ManyToManyField(FrameworkModel, blank=True, null=True)
-    dev_database = models.ManyToManyField(DatabaseVendorModel, blank=True, null=True)
-    dev_orm = models.ManyToManyField(ORMModel, blank=True, null=True)
-    dev_logging = models.ManyToManyField(LoggerModel, blank=True, null=True)
-    dev_raml = models.URLField(help_text="RAML link", blank=True, null=True)
-    dev_repo = models.URLField(help_text="Repository", blank=True, null=True)
-    dev_api_guideline_compliance = models.CharField(max_length=16, choices=NO_PARTIAL_YES, blank=True, null=True)
-    dev_api_is_public = models.CharField(max_length=16, choices=NO_PARTIAL_YES, blank=True, null=True)
-    dev_autotests_report = models.URLField(help_text="Autotests report link", blank=True, null=True)
-    dev_jira_component = models.URLField(help_text="JIRA component", blank=True, null=True)
-    dev_build_jenkins_job = models.URLField(help_text="Jenkins job to build the component", blank=True, null=True)
-    dev_documentation = models.URLField(help_text="Documentation entry page", blank=True, null=True)
+
+    dev_language = models.ManyToManyField(ProgrammingLanguageModel, blank=True)
+    dev_framework = models.ManyToManyField(FrameworkModel, blank=True)
+    dev_database = models.ManyToManyField(DatabaseVendorModel, blank=True)
+    dev_orm = models.ManyToManyField(ORMModel, blank=True)
+    dev_logging = models.ManyToManyField(LoggerModel, blank=True)
+
+    dev_raml = URLsField("RAML link", blank=True, null=True)
+    dev_repo = URLsField("Repository", blank=True, null=True)
+    dev_public_repo = URLsField("Repository", blank=True, null=True)
+    dev_jira_component = URLsField("JIRA component", blank=True, null=True)
+    dev_build_jenkins_job = URLsField("Jenkins job to build the component", blank=True, null=True)
+    dev_docs = URLsField("Documentation entry page", blank=True, null=True)
+    dev_public_docs = URLsField("Documentation entry page", blank=True, null=True)
+    dev_commit_link = URLsField("Commit link", blank=True, null=True)
+
+    dev_api_is_public = NoPartialYesField("API is public")
 
     # compliance
-    compliance_fips = models.BooleanField(help_text="FIPS compliance")
-    compliance_gdpr = models.BooleanField(help_text="GDPR compliance")
 
-    # operational information
-    op_deployment_name = models.CharField(max_length=64, blank=True, null=True)
-    op_deployment_type = models.ManyToManyField(DeploymentTypeModel, blank=True, null=True)
-    op_open_port = models.ManyToManyField(TCPPortModel, blank=True, null=True)
-    op_binary_name = models.CharField(max_length=64, blank=True, null=True)
-    op_anonymization_support = models.BooleanField(help_text="Is anonymisation supported?", blank=True, null=True)
-    op_metrics = models.BooleanField(help_text="Metrics availability")
-    op_guide_link = models.URLField(help_text="Operations guide link", blank=True, null=True)
-    op_sla_doc_link = models.URLField(help_text="SLA/SLO documentation link", blank=True, null=True)
-    op_capacity_doc_link = models.URLField(help_text="Capacity planning document", blank=True, null=True)
-    op_backup_doc_link = models.URLField(help_text="Backup guide description", blank=True, null=True)
-    op_safe_restart = models.BooleanField(help_text="Is it safe to restart?")
-    op_safe_delete = models.BooleanField(help_text="Is it safe to delete?")
-    op_safe_redeploy = models.BooleanField(help_text="Is it safe to redeploy?")
-    op_horizontal_scalability = models.BooleanField(help_text="Horizontal scalability?")
-    op_high_availability = models.BooleanField(help_text="High availability?")
-    op_zero_downtime_upgrade = models.BooleanField(help_text="Zero-downtime upgrade")
+    compliance_fips_status = NoPartialYesField("FIPS compliance status")
+    compliance_fips_notes = MarkupField("FIPS compliance notes")
+    compliance_fips_signoff = SigneeField(related_name='signed_fips')
+
+    compliance_gdpr_status = NoPartialYesField("GDPR compliance status")
+    compliance_gdpr_notes = MarkupField("GDRP compliance notes")
+    compliance_gdpr_signoff = SigneeField(related_name='signed_gdpr')
+
+    compliance_api_status = NoPartialYesField("API guildeine compliance status")
+    compliance_api_notes = MarkupField("API guideline compliance notes")
+    compliance_api_signoff = SigneeField(related_name='signed_api_guideline')
+
+    # operational readiness information
+
+    op_guide_status = NoPartialYesField("Operations guide capability acceptance status")
+    op_guide_notes = MarkupField("Operations guide capability acceptance notes")
+    op_guide_signoff = SigneeField(related_name='signed_op_guide')
+
+    op_failover_status = NoPartialYesField("Failover capability acceptance status")
+    op_failover_notes = MarkupField("Failover capability acceptance notes")
+    op_failover_signoff = SigneeField(related_name='signed_failover')
+
+    op_horizontal_scalability_status = NoPartialYesField("Horizontal scalability capability acceptance status")
+    op_horizontal_scalability_notes = MarkupField("Horizontal scalability capability acceptance notes")
+    op_horizontal_scalability_signoff = SigneeField(related_name='signed_horizontal_scalability')
+
+    op_scaling_guide_status = NoPartialYesField("Scaling guide acceptance status")
+    op_scaling_guide_notes = MarkupField("Scaling guide acceptance notes")
+    op_scaling_guide_signoff = SigneeField(related_name='signed_scaling_guide')
+
+    op_sla_guide_status = NoPartialYesField("SLA/SLO guide acceptance status")
+    op_sla_guide_notes = MarkupField("SLA/SLO guide acceptance notes")
+    op_sla_guide_signoff = SigneeField(related_name='signed_sla_guide')
+
+    op_metrics_status = NoPartialYesField("Monitoring metrics acceptance status")
+    op_metrics_notes = MarkupField("Monitoring metrics acceptance notes")
+    op_metrics_signoff = SigneeField(related_name='signed_metrics')
+
+    op_alerts_status = NoPartialYesField("Alerts guide acceptance status")
+    op_alerts_notes = MarkupField("Alerts guide acceptance notes")
+    op_alerts_signoff = SigneeField(related_name='signed_alerts')
+
+    op_zero_downtime_status = NoPartialYesField("Zero-downtime upgrade capability acceptance status")
+    op_zero_downtime_notes = MarkupField("Zero-downtime upgrade capability acceptance notes")
+    op_zero_downtime_signoff = SigneeField(related_name='signed_zero_downtime')
+
+    op_backup_status = NoPartialYesField("Backup capability acceptance status")
+    op_backup_notes = MarkupField("Backup capability acceptance notes")
+    op_backup_signoff = SigneeField(related_name='signed_backup')
+
+    op_safe_restart = models.BooleanField(help_text="Is it safe to restart?", blank=True, null=True)
+    op_safe_delete = models.BooleanField(help_text="Is it safe to delete?", blank=True, null=True)
+    op_safe_redeploy = models.BooleanField(help_text="Is it safe to redeploy?", blank=True, null=True)
+
+    # maintainability
+
+    mt_http_tracing_status = NoPartialYesField("HTTP tracing acceptance status")
+    mt_http_tracing_notes = MarkupField("HTTP tracing notes")
+    mt_http_tracing_signoff = SigneeField(related_name='signed_http_tracing')
+
+    mt_logging_sufficiency_status = NoPartialYesField("Logging sufficiency acceptance status")
+    mt_logging_sufficiency_notes = MarkupField("Logging sufficiency acceptance notes")
+    mt_logging_sufficiency_signoff = SigneeField(related_name='signed_logging_sufficiency')
+
+    mt_logging_format_status = NoPartialYesField("Logging format acceptance status")
+    mt_logging_format_notes = MarkupField("Logging format acceptance notes")
+    mt_logging_format_signoff = SigneeField(related_name='signed_logging_format')
+
+    mt_logging_storage_status = NoPartialYesField("Logging storage acceptance status")
+    mt_logging_storage_notes = MarkupField("Logging storage acceptance notes")
+    mt_logging_storage_signoff = SigneeField(related_name='signed_logging_storage')
+
+    mt_anonymisation_status = NoPartialYesField("HTTP tracing acceptance status")
+    mt_anonymisation_notes = MarkupField("HTTP tracing notes")
+    mt_anonymisation_signoff = SigneeField(related_name='signed_anonymisation')
 
     # quality assurance
-    qa_manual_tests_link = models.URLField(help_text="Manual tests link", blank=True, null=True)
-    qa_manual_tests_quality = models.CharField(max_length=16, choices=LOW_MODERATE_GOOD, blank=True, null=True)
-    qa_manual_tests_model = models.ForeignKey(TestingModel, on_delete=models.PROTECT, related_name='manual_tests', blank=True, null=True)
 
-    qa_unit_tests_link = models.URLField(help_text="Unit tests link", blank=True, null=True)
-    qa_unit_tests_quality = models.CharField(max_length=16, choices=LOW_MODERATE_GOOD, blank=True)
-    qa_unit_tests_model = models.ForeignKey(TestingModel, on_delete=models.PROTECT, related_name='unit_tests', blank=True, null=True)
+    qa_manual_tests_quality = LowMedHighField("Manual tests quality")
+    qa_manual_tests_notes = MarkupField("Manual tests notes")
+    qa_manual_tests_signoff = SigneeField(related_name='signed_manual_tests')
 
-    qa_e2e_tests_link = models.URLField(help_text="E2E tests link", blank=True, null=True)
-    qa_e2e_tests_quality = models.CharField(max_length=16, choices=LOW_MODERATE_GOOD, blank=True, null=True)
-    qa_e2e_tests_model = models.ForeignKey(TestingModel, on_delete=models.PROTECT, related_name='e2e_tests', blank=True, null=True)
+    qa_unit_tests_quality = LowMedHighField("Unit tests quality")
+    qa_unit_tests_notes = MarkupField("Unit tests notes")
+    qa_unit_tests_signoff = SigneeField(related_name='signed_unit_tests')
 
-    qa_perf_tests_link = models.URLField(help_text="Performance tests link", blank=True, null=True)
-    qa_perf_tests_quality = models.CharField(max_length=16, choices=LOW_MODERATE_GOOD, blank=True, null=True)
-    qa_perf_tests_model = models.ForeignKey(TestingModel, on_delete=models.PROTECT, related_name='perf_tests', blank=True, null=True)
+    qa_e2e_tests_quality = LowMedHighField("E2E tests quality")
+    qa_e2e_tests_notes = MarkupField("E2E tests notes")
+    qa_e2e_tests_signoff = SigneeField(related_name='signed_e2e_tests')
 
-    qa_longhaul_tests_link = models.URLField(help_text="Long haul tests link", blank=True, null=True)
-    qa_longhaul_tests_quality = models.CharField(max_length=16, choices=LOW_MODERATE_GOOD, blank=True, null=True)
-    qa_longhaul_tests_model = models.ForeignKey(TestingModel, on_delete=models.PROTECT, related_name='longhaul_tests', blank=True, null=True)
+    qa_perf_tests_quality = LowMedHighField("Performance tests quality")
+    qa_perf_tests_notes = MarkupField("Perf tests notes")
+    qa_perf_tests_signoff = SigneeField(related_name='signed_perf_tests')
 
-    qa_security_tests_link = models.URLField(help_text="Security tests link", blank=True, null=True)
-    qa_security_tests_quality = models.CharField(max_length=16, choices=LOW_MODERATE_GOOD, blank=True, null=True)
-    qa_security_tests_model = models.ForeignKey(TestingModel, on_delete=models.PROTECT, related_name='security_tests', blank=True, null=True)
+    qa_longhaul_tests_quality = LowMedHighField("Long-haul tests quality")
+    qa_longhaul_tests_notes = MarkupField("Long-hault tests notes")
+    qa_longhaul_tests_signoff = SigneeField(related_name='signed_longhaul_tests')
 
-    qa_api_tests_link = models.URLField(help_text="API tests link", blank=True, null=True)
-    qa_api_tests_quality = models.CharField(max_length=16, choices=LOW_MODERATE_GOOD, blank=True, null=True)
-    qa_api_tests_model = models.ForeignKey(TestingModel, on_delete=models.PROTECT, related_name='api_tests', blank=True, null=True)
+    qa_security_tests_quality = LowMedHighField("Security tests quality")
+    qa_security_tests_notes = MarkupField("Security tests notes")
+    qa_security_tests_signoff = SigneeField(related_name='signed_security_tests')
+
+    qa_api_tests_quality = LowMedHighField("API tests quality")
+    qa_api_tests_notes = MarkupField("API tests notes")
+    qa_api_tests_signoff = SigneeField(related_name='signed_api_tests')
 
     # meta
-    meta_update_by = models.ForeignKey(PersonModel, on_delete=models.PROTECT, blank=True, null=True)
+
+    meta_update_by = models.ForeignKey(PersonModel, on_delete=models.PROTECT, blank=True, null=True, related_name='updater_of')
     meta_update_date = models.DateTimeField()
     meta_deleted = models.BooleanField()
 
@@ -408,3 +450,99 @@ class ComponentVersionModel(models.Model):
 
     def __str__(self):
         return "#%d %s - %s" % (self.id, self.component.name, self.version)
+
+
+class ComponentDependencyModel(models.Model):
+    type = models.CharField(max_length=16, choices=DEPENDENCY_TYPE, default=DEPENDENCY_TYPE[0][0])
+    component = models.ForeignKey(ComponentModel, on_delete=models.PROTECT)
+    version = models.ForeignKey(ComponentVersionModel, on_delete=models.PROTECT)
+
+
+##################################################################################################
+# Deployments, products, etc
+##################################################################################################
+
+class DeploymentLocationClassModel(models.Model):
+    name = models.CharField(max_length=64, help_text="global, per-datacenter, customer, endpoint")
+    description = models.TextField(blank=True, null=True)
+    order = models.IntegerField(help_text="sorting order")
+
+    class Meta:
+        ordering = ['order']
+
+    def __str__(self):
+        return "#%d %s" % (self.id, self.name)
+
+
+class DeploymentEnvironmentModel(models.Model):
+    name = models.CharField(max_length=64, help_text="K8S, Windows VM, Linux VM,...")
+
+    class Meta:
+        ordering = ['name']
+
+    def __str__(self):
+        return self.name
+
+
+class TCPPortModel(models.Model):
+    name = models.CharField(max_length=64, help_text="TCP/IP port name: HTTP, SSH, ...")
+    port = models.IntegerField(help_text="TCP/IP port: 80, 21, ...")
+
+    class Meta:
+        ordering = ['name']
+
+    def __str__(self):
+        return "#%d %s" % (self.id, self.name)
+
+
+class ComponentDeploymentModel(models.Model):
+    name = models.CharField(max_length=64, help_text="Component deployment type: Cloud Account Server")
+    location_class = models.ManyToManyField(DeploymentLocationClassModel)
+    environment = models.ForeignKey(DeploymentEnvironmentModel, on_delete=models.PROTECT)
+    component_version = models.ForeignKey(ComponentVersionModel, on_delete=models.PROTECT)
+    service_name = models.CharField(max_length=64, help_text="accsrv, taskmngr", blank=True)
+    binary_name = models.CharField(max_length=64, help_text="accsrv.exe", blank=True)
+    open_ports = models.ManyToManyField(TCPPortModel)
+
+    class Meta:
+        ordering = ['name']
+
+    def __str__(self):
+        return "#%d %s" % (self.id, self.name)
+
+
+class ProductFamilyModel(models.Model):
+    name = models.CharField(max_length=64, help_text="Product family")
+
+    class Meta:
+        ordering = ['name']
+
+    def __str__(self):
+        return "#%d %s" % (self.id, self.name)
+
+
+class ProductModel(models.Model):
+    name = models.CharField(max_length=64, help_text="Product")
+    family = models.ForeignKey(ProductFamilyModel, on_delete=models.PROTECT)
+    order = models.IntegerField(help_text="sorting order")
+    components_deployments = models.ManyToManyField(ComponentDeploymentModel)
+
+    class Meta:
+        ordering = ['order']
+
+    def __str__(self):
+        return "#%d %s" % (self.id, self.name)
+
+
+class DatacenterModel(models.Model):
+    name = models.CharField(max_length=64, help_text="Datacenter name")
+    info = URLsField("Info link", blank=True, null=True)
+    grafana = URLsField("Grafana link", blank=True, null=True)
+    metrics = URLsField("Metrics link", blank=True, null=True)
+    components_deployments = models.ManyToManyField(ComponentDeploymentModel)
+
+    class Meta:
+        ordering = ['name']
+
+    def __str__(self):
+        return "#%d %s" % (self.id, self.name)

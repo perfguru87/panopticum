@@ -27,11 +27,6 @@ class ComponentRuntimeTypeViewSet(viewsets.ModelViewSet):
     serializer_class = ComponentRuntimeTypeSerializer
 
 
-class ComponentLocationClassViewSet(viewsets.ModelViewSet):
-    queryset = ComponentLocationClassModel.objects.all()
-    serializer_class = ComponentLocationClassSerializer
-
-
 class ComponentDataPrivacyClassViewSet(viewsets.ModelViewSet):
     queryset = ComponentDataPrivacyClassModel.objects.all()
     serializer_class = ComponentDataPrivacyClassSerializer

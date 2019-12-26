@@ -3,12 +3,6 @@ from rest_framework import serializers
 from .models import *
 
 
-class ComponentLocationClassSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = ComponentLocationClassModel
-        fields = '__all__'
-
-
 class ComponentDataPrivacyClassSerializer(serializers.ModelSerializer):
     class Meta:
         model = ComponentDataPrivacyClassModel
@@ -56,7 +50,6 @@ class PersonSerializer(serializers.ModelSerializer):
 class ComponentSerializer(serializers.ModelSerializer):
     runtime_type = ComponentRuntimeTypeSerializer(read_only=True)
     data_privacy_class = ComponentDataPrivacyClassSerializer(read_only=True)
-    location_class = ComponentLocationClassSerializer(read_only=True, many=True)
     category = ComponentCategorySerializer(read_only=True)
     subcategory = ComponentSubcategorySerializer(read_only=True)
     product = ProductSerializer(read_only=True, many=True)
