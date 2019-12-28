@@ -1,4 +1,3 @@
-<script>
 function init_qa_radar()
 {
     if ($('#qa-radar').length) {
@@ -39,7 +38,4 @@ function init_qa_radar()
     }
 }
 
-$(document).ready(function() {
-    init_qa_radar();
-});
-</script>
+init_qa_radar();

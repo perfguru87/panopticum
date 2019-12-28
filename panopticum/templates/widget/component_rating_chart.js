@@ -1,4 +1,3 @@
-<script>
 function init_rating_chart() {
     $('.chart').easyPieChart({
         easing: 'easeOutElastic',
@@ -15,7 +14,4 @@ function init_rating_chart() {
     });
 }
 
-$(document).ready(function() {
-    init_rating_chart();
-});
-</script>
+init_rating_chart();

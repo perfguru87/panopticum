@@ -1,6 +1,4 @@
-<script>
 function init_profile_gauge() {
-
     if (typeof(Gauge) === 'undefined') {
         return;
     }
@@ -33,7 +31,4 @@ function init_profile_gauge() {
         profile_gauge.setTextField(document.getElementById("profile-gauge-text"));
     }
 }
-$(document).ready(function() {
-    init_profile_gauge();
-});
-</script>
+init_profile_gauge();

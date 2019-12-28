@@ -1,6 +1,6 @@
 {% extends "layout/_base.html" %}
 
-{% block title %} Component X {% endblock title %}
+{% block title %} [[ component.name ]] {% endblock title %}
 
 {% block stylesheets %}
   {{ block.super }}
@@ -9,7 +9,7 @@
 {% block content %}
 
 <!-- Temporary disable, because vue js breaks all the javascripts  <div class="right_col" role="main" id="vue-component2"> //-->
-  <div class="right_col" role="main">
+  <div class="right_col" role="main" id="vue-component">
     <div class="">
 
       <div class='row top_tiles'>
@@ -56,30 +56,47 @@
 
 {% block extra_js %}
   {{ block.super }}
-  {% include "widget/component_profile_completion.js" %}
-  {% include "widget/component_summary.js" %}
-  {% include "widget/component_quality_assurance.js" %}
-  {% include "widget/component_rating_chart.js" %}
 <script>
+function init_component_page_js() {
+    {% include "widget/component_profile_completion.js" %}
+    {% include "widget/component_summary.js" %}
+    {% include "widget/component_quality_assurance.js" %}
+    {% include "widget/component_rating_chart.js" %}
+}
+
 function vue_component_init() {
-    console.log("init vue");
+    console.log("vue_component_init()");
     const app = new Vue({
         el: "#vue-component",
+        delimiters: ['[[', ']]'],
         data: {
-            components: [],
-            component_versions: [],
+            component: {
+                'latest_version':{},
+                'vendor':{},
+                'data_privacy_class':{}
+            },
+            loading: true,
+            erroed: false
         },
-        created () {
-            fetch('/api/component/?format=json')
-                .then((response) => response.json())
-                .then(json => {
-                    this.components = json.results
-                })
+        created: function() {
+           axios
+               .get('/api/component/1/?format=json')
+               .then(response => {
+                   this.component = response.data
+               })
+               .catch(error => {
+                   console.log(error)
+                   this.errored = true
+               })
+               .finally(() => this.loading = false);
+        },
+        mounted: function() {
+           init_component_page_js();
         }
     });
 }
 $(document).ready(function() {
-//    vue_component_init();
+    vue_component_init();
 });
 </script>
 {% endblock %}

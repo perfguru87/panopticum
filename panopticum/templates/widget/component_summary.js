@@ -1,4 +1,3 @@
-<script>
 function init_activity_chart() {
     if ($('#activity-chart').length) {
 
@@ -31,7 +30,4 @@ function init_activity_chart() {
 
     }
 }
-$(document).ready(function() {
-    init_activity_chart();
-});
-</script>
+init_activity_chart();
