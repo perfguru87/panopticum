@@ -71,9 +71,17 @@ function vue_component_init() {
         delimiters: ['[[', ']]'],
         data: {
             component: {
-                'latest_version':{},
+                'latest_version':{
+                    'owner_maintainer': {},
+                    'owner_responsible_qa': {},
+                    'owner_product_manager': {},
+                    'owner_program_manager': {},
+                    'owner_escalation_list': {},
+                    'owner_expert': {},
+                    'owner_architect': {}
+                },
                 'vendor':{},
-                'data_privacy_class':{}
+                'data_privacy_class':{},
             },
             loading: true,
             erroed: false

@@ -68,8 +68,16 @@ class ComponentSerializerSimple(serializers.ModelSerializer):
 
 class ComponentVersionSerializerSimple(serializers.ModelSerializer):
     id = serializers.IntegerField(read_only=True)
+
     owner_maintainer = PersonSerializer(read_only=True)
     owner_responsible_qa = PersonSerializer(read_only=True)
+
+    owner_product_manager = PersonSerializer(read_only=True, many=True)
+    owner_program_manager = PersonSerializer(read_only=True, many=True)
+    owner_escalation_list = PersonSerializer(read_only=True, many=True)
+    owner_expert = PersonSerializer(read_only=True, many=True)
+    owner_architect = PersonSerializer(read_only=True, many=True)
+
     dev_languages = serializers.SerializerMethodField()
     dev_frameworks = serializers.SerializerMethodField()
 

@@ -16,75 +16,94 @@
                   <div class='block'>
                     <div class='image'><img src="/static/images/img.jpg"></div>
                     <div class='details'>
-                      <b>Martin Smith</b> - Team Lead, Platform<br>
-                      <a href='mailto:ms@example.com'>martin.s@example.com</a>, +1234567890
+                      <b>[[ component.latest_version.owner_maintainer.name ]]</b> - Maintainer<br>
+                      <a v-bind:href="'mailto:[[ component.latest_version.owner_maintainer.email ]]'">
+                        [[ component.latest_version.owner_maintainer.email ]]</a>,
+                        [[ component.latest_version.owner_maintainer.mobile_phone ]]
                     </div>
                   </div>
                 </td>
-              </tr><tr>
+              </tr>
+
+              <tr>
                 <td class='owner'>
                   <div class='block'>
                     <div class='image'><img src="/static/images/img.jpg"></div>
                     <div class='details'>
-                      <b>Brad Pitt</b> - Product Manager<br>
-                      <a href='mailto:brad@example.com'>brad@example.com</a>, +1234567890
+                      <b>[[ component.latest_version.owner_responsible_qa.name ]]</b> - Responsible QA<br>
+                      <a v-bind:href="'mailto:[[ component.latest_version.owner_responsible_qa.email ]]'">
+                        [[ component.latest_version.owner_responsible_qa.email ]]</a>,
+                        [[ component.latest_version.owner_responsible_qa.mobile_phone ]]
                     </div>
                   </div>
                 </td>
-              </tr><tr>
+              </tr>
+
+              <tr v-for="p in component.latest_version.owner_product_manager">
                 <td class='owner'>
                   <div class='block'>
                     <div class='image'><img src="/static/images/img.jpg"></div>
                     <div class='details'>
-                      <b>Shane Sinclair</b> - Program Manager<br>
-                      <a href='mailto:ss@example.com'>Shane.Sinclair@example.com</a>, +1234567890
+                      <b>[[ p.name ]]</b> - Product Manager<br>
+                      <a v-bind:href="'mailto:[[ p.email ]]'">[[ p.email ]]</a>, [[ p.mobile_phone ]]
                     </div>
                   </div>
                 </td>
-              </tr><tr>
+              </tr>
+
+              <tr v-for="p in component.latest_version.owner_program_manager">
                 <td class='owner'>
                   <div class='block'>
                     <div class='image'><img src="/static/images/img.jpg"></div>
                     <div class='details'>
-                      <b>Silvana Milani</b> - QA Lead, Platform<br>
-                      <a href='mailto:sm@example.com'>sm@example.com</a>, +1234567890
+                      <b>[[ p.name ]]</b> - Program Manager<br>
+                      <a v-bind:href="'mailto:[[ p.email ]]'">[[ p.email ]]</a>, [[ p.mobile_phone ]]
                     </div>
                   </div>
                 </td>
-              </tr><tr>
+              </tr>
+
+              <tr v-for="p in component.latest_version.owner_architect">
                 <td class='owner'>
                   <div class='block'>
                     <div class='image'><img src="/static/images/img.jpg"></div>
                     <div class='details'>
-                      <b>Rosa A. Jeppesen</b> - Chief Architect<br>
-                      <a href='mailto:rj@example.com'>rosa.jeppensen@example.com</a>, +12345678901
+                      <b>[[ p.name ]]</b> - Architect<br>
+                      <a v-bind:href="'mailto:[[ p.email ]]'">[[ p.email ]]</a>, [[ p.mobile_phone ]]
                     </div>
                   </div>
                 </td>
-              </tr><tr>
+              </tr>
+
+              <tr>
                 <td class='owner'>
                   <div class='block'>
                     <div class='image'><i class='fa fa-phone'></i></div>
                     <div class='details' style='min-height: 42px;'>
                       <b>Escalation list:</b><br>
-                      <a href='mailto:aa@example.com'>miro.lovric@example.com</a>, +12345678901<br>
-                      <a href='mailto:dh@example.com'>david.hake@example.com</a>, +12345678901<br>
+                      <div v-for="p in component.latest_version.owner_escalation_list">
+                        <a v-bind:href="'mailto:[[ p.email ]]'">[[ p.email ]]</a>, [[ p.mobile_phone ]]
+                      </div>
                     </div>
                   </div>
                 </td>
-              </tr><tr>
+              </tr>
+
+              <tr>
                 <td class='owner'>
                   <div class='block'>
                     <div class='image'><i class='fa fa-question'></i></div>
                     <div class='details' style='min-height: 42px;'>
                       <b>Experts:</b><br>
-                      <a href='mailto:am@example.com'>alexander.mcqueen@example.com</a>, +12345678901<br>
-                      <a href='mailto:ld@example.com'>Lela.Decker@example.com</a>, +12345678901<br>
+                      <div v-for="p in component.latest_version.owner_expert">
+                        <a v-bind:href="'mailto:[[ p.email ]]'">[[ p.email ]]</a>, [[ p.mobile_phone ]]
+                      </div>
                     </div>
                   </div>
                 </td>
+              </tr>
 
-              </tr></table>
+              </table>
             </div>
           </div>
         </div>
