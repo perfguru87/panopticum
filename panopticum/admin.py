@@ -1,5 +1,5 @@
 from django.contrib import admin
-from django.forms.widgets import SelectMultiple, NumberInput, TextInput, Select
+from django.forms.widgets import SelectMultiple, NumberInput, TextInput, Textarea, Select
 
 import datetime
 
@@ -16,7 +16,8 @@ class ComponentVersionAdmin(admin.ModelAdmin):
                            models.ManyToManyField: {'widget': SelectMultiple(attrs={'size': '7', 'width': '300px', 'style': 'width:300px'})},
                            models.IntegerField: {'widget': NumberInput(attrs={'width': '300px', 'style': 'width:300px'})},
                            models.CharField: {'widget': TextInput(attrs={'width': '300px', 'style': 'width:300px'})},
-                           models.URLField: {'widget': TextInput(attrs={'width': '300px', 'style': 'width:300px'})}
+                           models.URLField: {'widget': TextInput(attrs={'width': '300px', 'style': 'width:300px'})},
+                           models.TextField: {'widget': Textarea(attrs={'rows': 2, 'cols': 60})},
                            }
 
     inlines = (ComponentDependencyAdmin,)
@@ -35,12 +36,12 @@ class ComponentVersionAdmin(admin.ModelAdmin):
                                      ('dev_docs', 'dev_public_docs'),
                                      ('dev_build_jenkins_job', 'dev_api_is_public'))}),
         ('Compliance', {'classes': ('collapse',),
-                          'fields': (
+                          'fields': ('compliance_applicable',
                                      ('compliance_fips_status', 'compliance_fips_notes'),
                                      ('compliance_gdpr_status', 'compliance_gdpr_notes'),
                                      ('compliance_api_status', 'compliance_api_notes'))}),
         ('Operations capabilities', {'classes': ('collapse',),
-                          'fields': (
+                          'fields': ('op_applicable',
                                      ('op_guide_status', 'op_guide_notes'),
                                      ('op_failover_status', 'op_failover_notes'),
                                      ('op_horizontal_scalability_status', 'op_horizontal_scalability_notes'),
@@ -52,13 +53,15 @@ class ComponentVersionAdmin(admin.ModelAdmin):
                                      ('op_backup_status', 'op_backup_notes'),
                                       'op_safe_restart')}),
         ('Maintenance capabilities', {'classes': ('collapse',),
-                          'fields': (('mt_http_tracing_status', 'mt_http_tracing_notes'),
+                          'fields': ('mt_applicable',
+                                     ('mt_http_tracing_status', 'mt_http_tracing_notes'),
                                      ('mt_logging_sufficiency_status', 'mt_logging_sufficiency_notes'),
                                      ('mt_logging_format_status', 'mt_logging_format_notes'),
                                      ('mt_logging_storage_status', 'mt_logging_storage_notes'),
                                      ('mt_anonymisation_status', 'mt_anonymisation_notes'))}),
         ('Quality Assurance', {'classes': ('collapse',),
-                          'fields': (('qa_manual_tests_quality', 'qa_manual_tests_notes'),
+                          'fields': ('qa_applicable',
+                                     ('qa_manual_tests_quality', 'qa_manual_tests_notes'),
                                      ('qa_unit_tests_quality', 'qa_unit_tests_notes'),
                                      ('qa_e2e_tests_quality', 'qa_e2e_tests_notes'),
                                      ('qa_perf_tests_quality', 'qa_perf_tests_notes'),
@@ -89,6 +92,11 @@ class ComponentVersionAdmin(admin.ModelAdmin):
         obj.meta_update_date = datetime.datetime.now()
         obj.meta_deleted = False
         super().save_model(request, obj, form, change)
+
+    class Media:
+        css = {
+                  'all': ('/static/css/admin.css',)
+              }
 
 
 admin.site.register(CountryModel)

@@ -1,6 +1,7 @@
 from django.db import models
 from datatableview.views import DatatableView
 from datatableview import helpers
+from django.forms.models import model_to_dict
 
 
 ##################################################################################################
@@ -90,10 +91,14 @@ LIFE_STATUS = (
 LOW_MED_HIGH = (
     ('unknown', "?"),
     ('n/a', "N/A"),
+    ('none', "None"),
     ('low', "Low"),
-    ('medium', "Med"),
+    ('med', "Med"),
     ('high', "High")
 )
+
+
+LOW_MED_HIGH_RATING = {'unknown': 0, 'n/a': 3, 'none': 0, 'low': 1, 'med': 2, 'high': 3}
 
 
 NO_PARTIAL_YES = (
@@ -103,6 +108,9 @@ NO_PARTIAL_YES = (
     ('partial', "Partial"),
     ('yes', "Yes")
 )
+
+
+NO_PARTIAL_YES_RATING = {'unknown': 0, 'n/a': 2, 'no': 0, 'partial': 1, 'yes': 2}
 
 
 DEPENDENCY_TYPE = (
@@ -135,11 +143,13 @@ class LowMedHighField(models.CharField):
         super().__init__(*args, **kwargs)
 
 
-class URLsField(models.URLField):
+class URLsField(models.CharField):
     def __init__(self, _help_text=None, *args, **kwargs):
         # FIXME: store array of URLs (e.g. "|"-separated)
         if _help_text:
             kwargs['help_text'] = _help_text
+        kwargs['max_length'] = 2048
+        kwargs['default'] = ""
         super().__init__(*args, **kwargs)
 
 
@@ -333,6 +343,8 @@ class ComponentVersionModel(models.Model):
 
     # compliance
 
+    compliance_applicable = models.BooleanField(help_text="Compliance requirements applicable?", default=True)
+
     compliance_fips_status = NoPartialYesField("FIPS compliance status")
     compliance_fips_notes = MarkupField("FIPS compliance notes")
     compliance_fips_signoff = SigneeField(related_name='signed_fips')
@@ -346,6 +358,8 @@ class ComponentVersionModel(models.Model):
     compliance_api_signoff = SigneeField(related_name='signed_api_guideline')
 
     # operational readiness information
+
+    op_applicable = models.BooleanField(help_text="Operational requirements applicable?", default=True)
 
     op_guide_status = NoPartialYesField("Operations guide capability acceptance status")
     op_guide_notes = MarkupField("Operations guide capability acceptance notes")
@@ -389,6 +403,8 @@ class ComponentVersionModel(models.Model):
 
     # maintainability
 
+    mt_applicable = models.BooleanField(help_text="Maintainability requirements applicable?", default=True)
+
     mt_http_tracing_status = NoPartialYesField("HTTP tracing acceptance status")
     mt_http_tracing_notes = MarkupField("HTTP tracing notes")
     mt_http_tracing_signoff = SigneeField(related_name='signed_http_tracing')
@@ -410,6 +426,8 @@ class ComponentVersionModel(models.Model):
     mt_anonymisation_signoff = SigneeField(related_name='signed_anonymisation')
 
     # quality assurance
+
+    qa_applicable = models.BooleanField(help_text="Tests requirements applicable?", default=True)
 
     qa_manual_tests_quality = LowMedHighField("Manual tests quality")
     qa_manual_tests_notes = MarkupField("Manual tests notes")
@@ -444,6 +462,124 @@ class ComponentVersionModel(models.Model):
     meta_update_by = models.ForeignKey(PersonModel, on_delete=models.PROTECT, blank=True, null=True, related_name='updater_of')
     meta_update_date = models.DateTimeField()
     meta_deleted = models.BooleanField()
+
+    meta_compliance_rating = models.IntegerField(default=0)
+    meta_mt_rating = models.IntegerField(default=0)
+    meta_op_rating = models.IntegerField(default=0)
+    meta_qa_rating = models.IntegerField(default=0)
+    meta_rating = models.IntegerField(default=0)
+    meta_profile_completeness = models.IntegerField(default=0)
+    meta_profile_not_filled_fields = models.TextField(default="")
+    meta_bad_rating_fields = models.TextField(default="")
+
+    def _update_any_rating(self, target, condition, dictionary, fields):
+        rating = 0
+        max_rating = 0
+        bad_rating = []
+
+        if self.__dict__[condition]:
+            m = max(dictionary.values())
+            for f in fields:
+                r = dictionary.get(self.__dict__[f], 0)
+                rating += r
+                max_rating += m
+                if r != m:
+                    bad_rating.append("%s=%s" % (f, self.__dict__[f]))
+        else:
+            rating = 1
+            max_rating = 1
+
+        self.__dict__[target] = int(100 * rating / max_rating)
+        return rating, max_rating, bad_rating
+
+    def _update_compliance_rating(self):
+        return self._update_any_rating('meta_compliance_rating', 'compliance_applicable', NO_PARTIAL_YES_RATING,
+                                       ('compliance_fips_status', 'compliance_gdpr_status',
+                                        'compliance_api_status'))
+
+    def _update_mt_rating(self):
+        return self._update_any_rating('meta_mt_rating', 'mt_applicable', NO_PARTIAL_YES_RATING,
+                                       ('mt_http_tracing_status', 'mt_logging_sufficiency_status',
+                                        'mt_logging_format_status', 'mt_logging_storage_status',
+                                        'mt_anonymisation_status'))
+
+    def _update_op_rating(self):
+        return self._update_any_rating('meta_op_rating', 'op_applicable', NO_PARTIAL_YES_RATING,
+                                       ('op_guide_status', 'op_failover_status',
+                                        'op_horizontal_scalability_status', 'op_scaling_guide_status',
+                                        'op_sla_guide_status', 'op_metrics_status',
+                                        'op_alerts_status', 'op_zero_downtime_status',
+                                        'op_backup_status'))
+
+    def _update_qa_rating(self):
+        return self._update_any_rating('meta_qa_rating', 'qa_applicable', LOW_MED_HIGH_RATING,
+                                       ('qa_manual_tests_quality', 'qa_unit_tests_quality',
+                                        'qa_e2e_tests_quality', 'qa_perf_tests_quality',
+                                        'qa_longhaul_tests_quality', 'qa_security_tests_quality',
+                                        'qa_api_tests_quality'))
+
+    def _get_profile_must_fields(self):
+        ret = ['owner_maintainer', 'owner_responsible_qa', 'owner_product_manager', 'owner_program_manager',
+                'owner_escalation_list', 'owner_expert', 'owner_architect',
+                'dev_language', 'dev_raml', 'dev_repo', 'dev_jira_component', 'dev_docs', 'dev_api_is_public',
+                'compliance_fips_status', 'compliance_gdpr_status', 'compliance_api_status']
+
+        if self.compliance_applicable:
+            ret += ['compliance_fips_status', 'compliance_gdpr_status', 'compliance_api_status']
+
+        if self.op_applicable:
+            ret += ['op_guide_status', 'op_failover_status', 'op_horizontal_scalability_status',
+                    'op_scaling_guide_status', 'op_sla_guide_status', 'op_metrics_status', 'op_alerts_status',
+                    'op_zero_downtime_status', 'op_backup_status', 'op_safe_restart']
+
+        if self.mt_applicable:
+            ret += ['mt_http_tracing_status', 'mt_logging_sufficiency_status', 'mt_logging_format_status',
+                    'mt_logging_storage_status', 'mt_anonymisation_status']
+
+        if self.qa_applicable:
+            ret += ['qa_manual_tests_quality', 'qa_unit_tests_quality', 'qa_e2e_tests_quality',
+                    'qa_perf_tests_quality', 'qa_longhaul_tests_quality', 'qa_security_tests_quality',
+                    'qa_api_tests_quality']
+
+        return ret
+
+    def _field_is_filled(self, field):
+        d = model_to_dict(self)
+        return 0 if d[field] in ("unknown", "", None, "?") else 1
+
+    def _update_profile_completeness(self):
+        completeness = 0
+        max_completeness = 0
+        not_filled_fields = set()
+
+        for f in self._get_profile_must_fields():
+            if self._field_is_filled(f):
+                completeness += 1
+            else:
+                not_filled_fields.add(f)
+            max_completeness += 1
+
+        self.meta_profile_completeness = int(100 * completeness / max_completeness)
+        self.meta_profile_not_filled_fields = ", ".join(sorted(not_filled_fields))
+
+    def _update_rating(self):
+        rating = 0
+        max_rating = 0
+        bad_rating = []
+
+        for f in (self._update_mt_rating, self._update_op_rating, self._update_qa_rating):
+            r, mr, br = f()
+            rating += r
+            max_rating += mr
+            bad_rating += br
+
+        self.meta_rating = int(100 * rating / max_rating)
+        self.meta_bad_rating_fields = ", ".join(bad_rating)
+
+    def save(self, *args, **kwargs):
+        self._update_profile_completeness()
+        self._update_rating()
+        super().save(*args, **kwargs)
 
     class Meta:
         ordering = ['-version']
