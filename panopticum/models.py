@@ -2,6 +2,7 @@ from django.db import models
 from datatableview.views import DatatableView
 from datatableview import helpers
 from django.forms.models import model_to_dict
+import datetime
 
 
 ##################################################################################################
@@ -465,7 +466,7 @@ class ComponentVersionModel(models.Model):
     # meta
 
     meta_update_by = models.ForeignKey(PersonModel, on_delete=models.PROTECT, blank=True, null=True, related_name='updater_of')
-    meta_update_date = models.DateTimeField()
+    meta_update_date = models.DateTimeField(db_index=True)
     meta_deleted = models.BooleanField()
 
     meta_compliance_rating = models.IntegerField(default=0)
@@ -584,6 +585,7 @@ class ComponentVersionModel(models.Model):
     def save(self, *args, **kwargs):
         self._update_profile_completeness()
         self._update_rating()
+        self.meta_update_date = datetime.datetime.now()
         super().save(*args, **kwargs)
 
     class Meta:
