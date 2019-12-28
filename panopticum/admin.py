@@ -23,7 +23,7 @@ class ComponentVersionAdmin(admin.ModelAdmin):
     inlines = (ComponentDependencyAdmin,)
 
     fieldsets = (
-        (None, {'fields': ('component', 'version', 'comments')}),
+        (None, {'fields': ('component', 'version', 'comments', 'locations')}),
         ('Ownership', {'classes': ('collapse',),
                        'fields': (
                                   ('owner_maintainer', 'owner_responsible_qa'),
@@ -121,3 +121,4 @@ admin.site.register(ComponentCategoryModel)
 admin.site.register(ComponentSubcategoryModel)
 admin.site.register(ComponentModel)
 admin.site.register(ComponentVersionModel, ComponentVersionAdmin)
+admin.site.register(DeploymentLocationClassModel)

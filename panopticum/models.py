@@ -306,6 +306,10 @@ class ComponentVersionModel(models.Model):
 
     depends_on = models.ManyToManyField(ComponentModel, related_name='dependee', through='ComponentDependencyModel')
 
+    # deployment capabilities
+
+    locations = models.ManyToManyField('DeploymentLocationClassModel', related_name='component_versions', blank=True)
+
     # ownership
 
     owner_maintainer = models.ForeignKey(PersonModel, related_name='maintainer_of', on_delete=models.PROTECT, blank=True, null=True)
