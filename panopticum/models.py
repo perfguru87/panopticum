@@ -124,9 +124,8 @@ DEPENDENCY_TYPE = (
 
 
 class NoPartialYesField(models.CharField):
-    def __init__(self, _help_text=None, *args, **kwargs):
-        if _help_text:
-            kwargs['help_text'] = _help_text
+    def __init__(self, _title="", *args, **kwargs):
+        kwargs['verbose_name'] = _title
         kwargs['max_length'] = 16
         kwargs['choices'] = NO_PARTIAL_YES
         kwargs['default'] = kwargs['choices'][0][0]
@@ -134,9 +133,8 @@ class NoPartialYesField(models.CharField):
 
 
 class LowMedHighField(models.CharField):
-    def __init__(self, _help_text=None, *args, **kwargs):
-        if _help_text:
-            kwargs['help_text'] = _help_text
+    def __init__(self, _title="", *args, **kwargs):
+        kwargs['verbose_name'] = _title
         kwargs['max_length'] = 16
         kwargs['choices'] = LOW_MED_HIGH
         kwargs['default'] = kwargs['choices'][0][0]
@@ -144,10 +142,9 @@ class LowMedHighField(models.CharField):
 
 
 class URLsField(models.CharField):
-    def __init__(self, _help_text=None, *args, **kwargs):
+    def __init__(self, _title="", *args, **kwargs):
         # FIXME: store array of URLs (e.g. "|"-separated)
-        if _help_text:
-            kwargs['help_text'] = _help_text
+        kwargs['verbose_name'] = _title
         kwargs['max_length'] = 2048
         kwargs['default'] = ""
         super().__init__(*args, **kwargs)
@@ -155,19 +152,17 @@ class URLsField(models.CharField):
 
 class MarkupField(models.TextField):
     # FIXME: store arbitrary comments and replace JIRA items and URLs by links
-    def __init__(self, _help_text=None, *args, **kwargs):
+    def __init__(self, _title="", *args, **kwargs):
         # FIXME: store array of URLs (e.g. "|"-separated)
-        if _help_text:
-            kwargs['help_text'] = _help_text
+        kwargs['verbose_name'] = _title
         kwargs['default'] = ""
         kwargs['blank'] = True
         super().__init__(*args, **kwargs)
 
 
 class SigneeField(models.ForeignKey):
-    def __init__(self, _help_text=None, *args, **kwargs):
-        if _help_text:
-            kwargs['help_text'] = _help_text
+    def __init__(self, _title="", *args, **kwargs):
+        kwargs['verbose_name'] = _title
         kwargs['on_delete'] = on_delete=models.PROTECT
         kwargs['null'] = True
         kwargs['blank'] = True
@@ -345,15 +340,15 @@ class ComponentVersionModel(models.Model):
 
     compliance_applicable = models.BooleanField(help_text="Compliance requirements applicable?", default=True)
 
-    compliance_fips_status = NoPartialYesField("FIPS compliance status")
+    compliance_fips_status = NoPartialYesField("FIPS compliance")
     compliance_fips_notes = MarkupField("FIPS compliance notes")
     compliance_fips_signoff = SigneeField(related_name='signed_fips')
 
-    compliance_gdpr_status = NoPartialYesField("GDPR compliance status")
+    compliance_gdpr_status = NoPartialYesField("GDPR compliance")
     compliance_gdpr_notes = MarkupField("GDRP compliance notes")
     compliance_gdpr_signoff = SigneeField(related_name='signed_gdpr')
 
-    compliance_api_status = NoPartialYesField("API guildeine compliance status")
+    compliance_api_status = NoPartialYesField("API guildeine compliance")
     compliance_api_notes = MarkupField("API guideline compliance notes")
     compliance_api_signoff = SigneeField(related_name='signed_api_guideline')
 
@@ -361,40 +356,40 @@ class ComponentVersionModel(models.Model):
 
     op_applicable = models.BooleanField(help_text="Operational requirements applicable?", default=True)
 
-    op_guide_status = NoPartialYesField("Operations guide capability acceptance status")
-    op_guide_notes = MarkupField("Operations guide capability acceptance notes")
+    op_guide_status = NoPartialYesField("Operations guide")
+    op_guide_notes = MarkupField("Operations guide notes")
     op_guide_signoff = SigneeField(related_name='signed_op_guide')
 
-    op_failover_status = NoPartialYesField("Failover capability acceptance status")
-    op_failover_notes = MarkupField("Failover capability acceptance notes")
+    op_failover_status = NoPartialYesField("Failover")
+    op_failover_notes = MarkupField("Failover notes")
     op_failover_signoff = SigneeField(related_name='signed_failover')
 
-    op_horizontal_scalability_status = NoPartialYesField("Horizontal scalability capability acceptance status")
-    op_horizontal_scalability_notes = MarkupField("Horizontal scalability capability acceptance notes")
+    op_horizontal_scalability_status = NoPartialYesField("Horizontal scalability")
+    op_horizontal_scalability_notes = MarkupField("Horizontal scalability notes")
     op_horizontal_scalability_signoff = SigneeField(related_name='signed_horizontal_scalability')
 
-    op_scaling_guide_status = NoPartialYesField("Scaling guide acceptance status")
-    op_scaling_guide_notes = MarkupField("Scaling guide acceptance notes")
+    op_scaling_guide_status = NoPartialYesField("Scaling guide")
+    op_scaling_guide_notes = MarkupField("Scaling guide notes")
     op_scaling_guide_signoff = SigneeField(related_name='signed_scaling_guide')
 
-    op_sla_guide_status = NoPartialYesField("SLA/SLO guide acceptance status")
-    op_sla_guide_notes = MarkupField("SLA/SLO guide acceptance notes")
+    op_sla_guide_status = NoPartialYesField("SLA/SLO guide")
+    op_sla_guide_notes = MarkupField("SLA/SLO guide")
     op_sla_guide_signoff = SigneeField(related_name='signed_sla_guide')
 
-    op_metrics_status = NoPartialYesField("Monitoring metrics acceptance status")
-    op_metrics_notes = MarkupField("Monitoring metrics acceptance notes")
+    op_metrics_status = NoPartialYesField("Monitoring")
+    op_metrics_notes = MarkupField("Monitoring notes")
     op_metrics_signoff = SigneeField(related_name='signed_metrics')
 
-    op_alerts_status = NoPartialYesField("Alerts guide acceptance status")
-    op_alerts_notes = MarkupField("Alerts guide acceptance notes")
+    op_alerts_status = NoPartialYesField("Alerts guide")
+    op_alerts_notes = MarkupField("Alerts guide notes")
     op_alerts_signoff = SigneeField(related_name='signed_alerts')
 
-    op_zero_downtime_status = NoPartialYesField("Zero-downtime upgrade capability acceptance status")
-    op_zero_downtime_notes = MarkupField("Zero-downtime upgrade capability acceptance notes")
+    op_zero_downtime_status = NoPartialYesField("Zero-downtime upgrade")
+    op_zero_downtime_notes = MarkupField("Zero-downtime upgrade notes")
     op_zero_downtime_signoff = SigneeField(related_name='signed_zero_downtime')
 
-    op_backup_status = NoPartialYesField("Backup capability acceptance status")
-    op_backup_notes = MarkupField("Backup capability acceptance notes")
+    op_backup_status = NoPartialYesField("Backup")
+    op_backup_notes = MarkupField("Backup notes")
     op_backup_signoff = SigneeField(related_name='signed_backup')
 
     op_safe_restart = models.BooleanField(help_text="Is it safe to restart?", blank=True, null=True)
@@ -405,55 +400,59 @@ class ComponentVersionModel(models.Model):
 
     mt_applicable = models.BooleanField(help_text="Maintainability requirements applicable?", default=True)
 
-    mt_http_tracing_status = NoPartialYesField("HTTP tracing acceptance status")
-    mt_http_tracing_notes = MarkupField("HTTP tracing notes")
+    mt_http_tracing_status = NoPartialYesField("HTTP requests tracing", help_text="HTTP request b3 propagation support")
+    mt_http_tracing_notes = MarkupField("HTTP requests tracing notes")
     mt_http_tracing_signoff = SigneeField(related_name='signed_http_tracing')
 
-    mt_logging_sufficiency_status = NoPartialYesField("Logging sufficiency acceptance status")
-    mt_logging_sufficiency_notes = MarkupField("Logging sufficiency acceptance notes")
-    mt_logging_sufficiency_signoff = SigneeField(related_name='signed_logging_sufficiency')
+    mt_logging_completeness_status = NoPartialYesField("Logging completeness", help_text="Are logs sufficient?")
+    mt_logging_completeness_notes = MarkupField("Logging completeness notes")
+    mt_logging_completeness_signoff = SigneeField(related_name='signed_logging_completeness')
 
-    mt_logging_format_status = NoPartialYesField("Logging format acceptance status")
-    mt_logging_format_notes = MarkupField("Logging format acceptance notes")
+    mt_logging_format_status = NoPartialYesField("Logging format")
+    mt_logging_format_notes = MarkupField("Logging format notes")
     mt_logging_format_signoff = SigneeField(related_name='signed_logging_format')
 
-    mt_logging_storage_status = NoPartialYesField("Logging storage acceptance status")
-    mt_logging_storage_notes = MarkupField("Logging storage acceptance notes")
+    mt_logging_storage_status = NoPartialYesField("Logging storage", help_text="Is proper logs storage used?")
+    mt_logging_storage_notes = MarkupField("Logging storage notes")
     mt_logging_storage_signoff = SigneeField(related_name='signed_logging_storage')
 
-    mt_anonymisation_status = NoPartialYesField("HTTP tracing acceptance status")
-    mt_anonymisation_notes = MarkupField("HTTP tracing notes")
-    mt_anonymisation_signoff = SigneeField(related_name='signed_anonymisation')
+    mt_logging_sanitization_status = NoPartialYesField("Logging sanitization")
+    mt_logging_sanitization_notes = MarkupField("Logging sanitization notes")
+    mt_logging_sanitization_signoff = SigneeField(related_name='signed_logggin_sanitization')
+
+    mt_db_anonymisation_status = NoPartialYesField("DataBase anonymisation")
+    mt_db_anonymisation_notes = MarkupField("DataBase anonymisation")
+    mt_db_anonymisation_signoff = SigneeField(related_name='signed_db_anonymisation')
 
     # quality assurance
 
     qa_applicable = models.BooleanField(help_text="Tests requirements applicable?", default=True)
 
-    qa_manual_tests_quality = LowMedHighField("Manual tests quality")
+    qa_manual_tests_quality = LowMedHighField("Manual tests")
     qa_manual_tests_notes = MarkupField("Manual tests notes")
     qa_manual_tests_signoff = SigneeField(related_name='signed_manual_tests')
 
-    qa_unit_tests_quality = LowMedHighField("Unit tests quality")
+    qa_unit_tests_quality = LowMedHighField("Unit tests")
     qa_unit_tests_notes = MarkupField("Unit tests notes")
     qa_unit_tests_signoff = SigneeField(related_name='signed_unit_tests')
 
-    qa_e2e_tests_quality = LowMedHighField("E2E tests quality")
+    qa_e2e_tests_quality = LowMedHighField("E2E tests")
     qa_e2e_tests_notes = MarkupField("E2E tests notes")
     qa_e2e_tests_signoff = SigneeField(related_name='signed_e2e_tests')
 
-    qa_perf_tests_quality = LowMedHighField("Performance tests quality")
+    qa_perf_tests_quality = LowMedHighField("Performance tests")
     qa_perf_tests_notes = MarkupField("Perf tests notes")
     qa_perf_tests_signoff = SigneeField(related_name='signed_perf_tests')
 
-    qa_longhaul_tests_quality = LowMedHighField("Long-haul tests quality")
+    qa_longhaul_tests_quality = LowMedHighField("Long-haul tests")
     qa_longhaul_tests_notes = MarkupField("Long-hault tests notes")
     qa_longhaul_tests_signoff = SigneeField(related_name='signed_longhaul_tests')
 
-    qa_security_tests_quality = LowMedHighField("Security tests quality")
+    qa_security_tests_quality = LowMedHighField("Security tests")
     qa_security_tests_notes = MarkupField("Security tests notes")
     qa_security_tests_signoff = SigneeField(related_name='signed_security_tests')
 
-    qa_api_tests_quality = LowMedHighField("API tests quality")
+    qa_api_tests_quality = LowMedHighField("API tests")
     qa_api_tests_notes = MarkupField("API tests notes")
     qa_api_tests_signoff = SigneeField(related_name='signed_api_tests')
 
@@ -499,9 +498,9 @@ class ComponentVersionModel(models.Model):
 
     def _update_mt_rating(self):
         return self._update_any_rating('meta_mt_rating', 'mt_applicable', NO_PARTIAL_YES_RATING,
-                                       ('mt_http_tracing_status', 'mt_logging_sufficiency_status',
+                                       ('mt_http_tracing_status', 'mt_logging_completeness_status',
                                         'mt_logging_format_status', 'mt_logging_storage_status',
-                                        'mt_anonymisation_status'))
+                                        'mt_logging_sanitization_status', 'mt_db_anonymisation_status'))
 
     def _update_op_rating(self):
         return self._update_any_rating('meta_op_rating', 'op_applicable', NO_PARTIAL_YES_RATING,
@@ -533,8 +532,8 @@ class ComponentVersionModel(models.Model):
                     'op_zero_downtime_status', 'op_backup_status', 'op_safe_restart']
 
         if self.mt_applicable:
-            ret += ['mt_http_tracing_status', 'mt_logging_sufficiency_status', 'mt_logging_format_status',
-                    'mt_logging_storage_status', 'mt_anonymisation_status']
+            ret += ['mt_http_tracing_status', 'mt_logging_completeness_status', 'mt_logging_format_status',
+                    'mt_logging_storage_status', 'mt_logging_sanitization_status', 'mt_db_anonymisation_status']
 
         if self.qa_applicable:
             ret += ['qa_manual_tests_quality', 'qa_unit_tests_quality', 'qa_e2e_tests_quality',
