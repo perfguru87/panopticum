@@ -66,6 +66,9 @@ function init_component_page_js() {
 
 function vue_component_init() {
     console.log("vue_component_init()");
+
+    var url = '/api' + window.location.pathname + '/?format=json'
+
     const app = new Vue({
         el: "#vue-component",
         delimiters: ['[[', ']]'],
@@ -88,7 +91,7 @@ function vue_component_init() {
         },
         created: function() {
            axios
-               .get('/api/component/1/?format=json')
+               .get(url)
                .then(response => {
                    this.component = response.data
                })
