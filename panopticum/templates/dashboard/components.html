@@ -47,6 +47,10 @@
                     <th class='colRepo'>Repo</th>
                     <th class='colDocs'>Docs</th>
                     <th class='colJira'>JIRA</th>
+                    <th class='colProfileCompleteness' title='Profile completeness %'>Profile</th>
+                    <th class='colRating' title='Component rating %'>Rating</th>
+                    <th class='colProfileNotFilledFields'></th>
+                    <th class='colBadRatingFields'></th>
                 </tr>
             </thead>
         </table>
@@ -111,6 +115,9 @@ $(document).ready(function() {
         "fixedHeader": true,
         "serverSide": true,
         "ajax": "/api/component_version/?format=datatables",
+        "initComplete": function(settings, json) {
+            $('[data-toggle="tooltip"]').tooltip();
+        },
         "columns": [
             {"data": "id", "searchable": false},
             {"data": "component.name"},
@@ -124,11 +131,15 @@ $(document).ready(function() {
             {"data": "dev_raml"},
             {"data": "dev_repo"},
             {"data": "dev_documentation"},
-            {"data": "dev_jira_component"}
+            {"data": "dev_jira_component"},
+            {"data": "meta_profile_completeness"},
+            {"data": "meta_rating"},
+            {"data": "meta_profile_not_filled_fields"},
+            {"data": "meta_bad_rating_fields"}
         ],
         "columnDefs": [
             {
-                "targets": ["colProduct"],
+                "targets": ["colProduct", "colProfileNotFilledFields", "colBadRatingFields"],
                 "visible": false,
             },
             {
@@ -140,7 +151,8 @@ $(document).ready(function() {
                 "width": "40px"
             },
             {
-                "targets": ["colId", "colProduct", "colRaml", "colRepo", "colDocs", "colJira"],
+                "targets": ["colId", "colProduct", "colRaml", "colRepo", "colDocs", "colJira",
+                            "colProfileCompleteness", "colRating"],
                 "searchable": false
             },
             {
@@ -165,6 +177,34 @@ $(document).ready(function() {
                 "render": function(data, type, row) {
                     if (data)
                         return "<a target=_blank href='" + data + "'>link</a>";
+                    return "";
+                }
+            },
+            {
+                "targets": ["colProfileCompleteness"],
+                "type": "string",
+                "render": function(data, type, row) {
+                    console.log(row);
+                    if (data == "100")
+                        return data + "%";
+                    else if (data)
+                        return "<a href='/admin/panopticum/componentversionmodel/" + row.id + "/change/' " +
+                               " target=_blank data-toggle='tooltip' data-placement='left'" +
+                               " title='empty fields: " + row.meta_profile_not_filled_fields + "'>" + data + "%</span>";
+                    return "";
+                }
+            },
+            {
+                "targets": ["colRating"],
+                "type": "string",
+                "render": function(data, type, row) {
+                    console.log(row);
+                    if (data == "100")
+                        return data + "%";
+                    else if (data)
+                        return "<a href='/admin/panopticum/componentversionmodel/" + row.id + "/change/' " +
+                               " target=_blank data-toggle='tooltip' data-placement='left'" +
+                               " title='bad rating: " + row.meta_bad_rating_fields + "'>" + data + "%</span>";
                     return "";
                 }
             },
