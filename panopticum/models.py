@@ -299,7 +299,8 @@ class ComponentModel(models.Model):
 class ComponentVersionModel(models.Model):
     component = models.ForeignKey(ComponentModel, on_delete=models.PROTECT, related_name='component_version')
 
-    version = models.CharField(max_length=64, help_text="note: component version instance will be cloned if you change version!")
+    version = models.CharField(max_length=64, verbose_name="Version or build",
+                               help_text="note: component version instance will be cloned if you change version!")
     comments = models.TextField(blank=True, null=True)
 
     # dependencies
@@ -308,7 +309,8 @@ class ComponentVersionModel(models.Model):
 
     # deployment capabilities
 
-    locations = models.ManyToManyField('DeploymentLocationClassModel', related_name='component_versions', blank=True)
+    locations = models.ManyToManyField('DeploymentLocationClassModel', help_text='possible component deployment locations',
+                                       related_name='component_versions', blank=True)
 
     # ownership
 
@@ -323,26 +325,26 @@ class ComponentVersionModel(models.Model):
 
     # development
 
-    dev_language = models.ManyToManyField(ProgrammingLanguageModel, blank=True)
-    dev_framework = models.ManyToManyField(FrameworkModel, blank=True)
-    dev_database = models.ManyToManyField(DatabaseVendorModel, blank=True)
-    dev_orm = models.ManyToManyField(ORMModel, blank=True)
-    dev_logging = models.ManyToManyField(LoggerModel, blank=True)
+    dev_language = models.ManyToManyField(ProgrammingLanguageModel, verbose_name="Language", blank=True)
+    dev_framework = models.ManyToManyField(FrameworkModel, verbose_name="Frameworks", blank=True)
+    dev_database = models.ManyToManyField(DatabaseVendorModel, verbose_name="Supported Databases", blank=True)
+    dev_orm = models.ManyToManyField(ORMModel, verbose_name="ORM", blank=True)
+    dev_logging = models.ManyToManyField(LoggerModel, verbose_name="Logging framework", blank=True)
 
-    dev_raml = URLsField("RAML link", blank=True, null=True)
-    dev_repo = URLsField("Repository", blank=True, null=True)
-    dev_public_repo = URLsField("Repository", blank=True, null=True)
-    dev_jira_component = URLsField("JIRA component", blank=True, null=True)
-    dev_build_jenkins_job = URLsField("Jenkins job to build the component", blank=True, null=True)
-    dev_docs = URLsField("Documentation entry page", blank=True, null=True)
-    dev_public_docs = URLsField("Documentation entry page", blank=True, null=True)
-    dev_commit_link = URLsField("Commit link", blank=True, null=True)
+    dev_raml = URLsField("RAML link", help_text="Multiple links allowed", blank=True, null=True)
+    dev_repo = URLsField("Repository", help_text="Multiple links allowed", blank=True, null=True)
+    dev_public_repo = URLsField("Public Repository", help_text="Multiple links allowed", blank=True, null=True)
+    dev_jira_component = URLsField("JIRA component", help_text="Multiple links allowed", blank=True, null=True)
+    dev_build_jenkins_job = URLsField("Jenkins job to build the component", help_text="Multiple links allowed", blank=True, null=True)
+    dev_docs = URLsField("Documentation entry page", help_text="Multiple links allowed", blank=True, null=True)
+    dev_public_docs = URLsField("Public Documentation", help_text="Multiple links allowed", blank=True, null=True)
+    dev_commit_link = URLsField("Commit link", help_text="Multiple links allowed", blank=True, null=True)
 
     dev_api_is_public = NoPartialYesField("API is public")
 
     # compliance
 
-    compliance_applicable = models.BooleanField(help_text="Compliance requirements applicable?", default=True)
+    compliance_applicable = models.BooleanField(verbose_name="Compliance requirements are applicable", default=True)
 
     compliance_fips_status = NoPartialYesField("FIPS compliance")
     compliance_fips_notes = MarkupField("FIPS compliance notes")
@@ -358,7 +360,7 @@ class ComponentVersionModel(models.Model):
 
     # operational readiness information
 
-    op_applicable = models.BooleanField(help_text="Operational requirements applicable?", default=True)
+    op_applicable = models.BooleanField(verbose_name="Operational requirements are applicable", default=True)
 
     op_guide_status = NoPartialYesField("Operations guide")
     op_guide_notes = MarkupField("Operations guide notes")
@@ -377,7 +379,7 @@ class ComponentVersionModel(models.Model):
     op_scaling_guide_signoff = SigneeField(related_name='signed_scaling_guide')
 
     op_sla_guide_status = NoPartialYesField("SLA/SLO guide")
-    op_sla_guide_notes = MarkupField("SLA/SLO guide")
+    op_sla_guide_notes = MarkupField("SLA/SLO guide notes")
     op_sla_guide_signoff = SigneeField(related_name='signed_sla_guide')
 
     op_metrics_status = NoPartialYesField("Monitoring")
@@ -402,7 +404,7 @@ class ComponentVersionModel(models.Model):
 
     # maintainability
 
-    mt_applicable = models.BooleanField(help_text="Maintainability requirements applicable?", default=True)
+    mt_applicable = models.BooleanField(verbose_name="Maintainability requirements are applicable", default=True)
 
     mt_http_tracing_status = NoPartialYesField("HTTP requests tracing", help_text="HTTP request b3 propagation support")
     mt_http_tracing_notes = MarkupField("HTTP requests tracing notes")
@@ -412,7 +414,7 @@ class ComponentVersionModel(models.Model):
     mt_logging_completeness_notes = MarkupField("Logging completeness notes")
     mt_logging_completeness_signoff = SigneeField(related_name='signed_logging_completeness')
 
-    mt_logging_format_status = NoPartialYesField("Logging format")
+    mt_logging_format_status = NoPartialYesField("Logging format", help_text="Logs have proper format")
     mt_logging_format_notes = MarkupField("Logging format notes")
     mt_logging_format_signoff = SigneeField(related_name='signed_logging_format')
 
@@ -420,7 +422,7 @@ class ComponentVersionModel(models.Model):
     mt_logging_storage_notes = MarkupField("Logging storage notes")
     mt_logging_storage_signoff = SigneeField(related_name='signed_logging_storage')
 
-    mt_logging_sanitization_status = NoPartialYesField("Logging sanitization")
+    mt_logging_sanitization_status = NoPartialYesField("Logs sanitization", help_text="Logs do not have sensitive information")
     mt_logging_sanitization_notes = MarkupField("Logging sanitization notes")
     mt_logging_sanitization_signoff = SigneeField(related_name='signed_logggin_sanitization')
 
@@ -430,33 +432,33 @@ class ComponentVersionModel(models.Model):
 
     # quality assurance
 
-    qa_applicable = models.BooleanField(help_text="Tests requirements applicable?", default=True)
+    qa_applicable = models.BooleanField(verbose_name="Tests requirements are applicable", default=True)
 
-    qa_manual_tests_quality = LowMedHighField("Manual tests")
+    qa_manual_tests_quality = LowMedHighField("Manual tests", help_text="Completeness, coverage, quality")
     qa_manual_tests_notes = MarkupField("Manual tests notes")
     qa_manual_tests_signoff = SigneeField(related_name='signed_manual_tests')
 
-    qa_unit_tests_quality = LowMedHighField("Unit tests")
+    qa_unit_tests_quality = LowMedHighField("Unit tests", help_text="Completeness, coverage, quality")
     qa_unit_tests_notes = MarkupField("Unit tests notes")
     qa_unit_tests_signoff = SigneeField(related_name='signed_unit_tests')
 
-    qa_e2e_tests_quality = LowMedHighField("E2E tests")
+    qa_e2e_tests_quality = LowMedHighField("E2E tests", help_text="Completeness, coverage, quality")
     qa_e2e_tests_notes = MarkupField("E2E tests notes")
     qa_e2e_tests_signoff = SigneeField(related_name='signed_e2e_tests')
 
-    qa_perf_tests_quality = LowMedHighField("Performance tests")
+    qa_perf_tests_quality = LowMedHighField("Performance tests", help_text="Completeness, coverage, quality")
     qa_perf_tests_notes = MarkupField("Perf tests notes")
     qa_perf_tests_signoff = SigneeField(related_name='signed_perf_tests')
 
-    qa_longhaul_tests_quality = LowMedHighField("Long-haul tests")
+    qa_longhaul_tests_quality = LowMedHighField("Long-haul tests", help_text="Completeness, coverage, quality")
     qa_longhaul_tests_notes = MarkupField("Long-hault tests notes")
     qa_longhaul_tests_signoff = SigneeField(related_name='signed_longhaul_tests')
 
-    qa_security_tests_quality = LowMedHighField("Security tests")
+    qa_security_tests_quality = LowMedHighField("Security tests", help_text="Completeness, coverage, quality")
     qa_security_tests_notes = MarkupField("Security tests notes")
     qa_security_tests_signoff = SigneeField(related_name='signed_security_tests')
 
-    qa_api_tests_quality = LowMedHighField("API tests")
+    qa_api_tests_quality = LowMedHighField("API tests", help_text="Completeness, coverage, quality")
     qa_api_tests_notes = MarkupField("API tests notes")
     qa_api_tests_signoff = SigneeField(related_name='signed_api_tests')
 
