@@ -35,12 +35,12 @@ class ComponentVersionAdmin(admin.ModelAdmin):
                                      ('dev_repo', 'dev_public_repo'),
                                      ('dev_docs', 'dev_public_docs'),
                                      ('dev_build_jenkins_job', 'dev_api_is_public'))}),
-        ('Compliance', {'classes': ('collapse',),
+        ('Compliance', {'classes': ('collapse', 'show_hide_applicable'),
                           'fields': ('compliance_applicable',
                                      ('compliance_fips_status', 'compliance_fips_notes'),
                                      ('compliance_gdpr_status', 'compliance_gdpr_notes'),
                                      ('compliance_api_status', 'compliance_api_notes'))}),
-        ('Operations capabilities', {'classes': ('collapse',),
+        ('Operations capabilities', {'classes': ('collapse', 'show_hide_applicable'),
                           'fields': ('op_applicable',
                                      ('op_guide_status', 'op_guide_notes'),
                                      ('op_failover_status', 'op_failover_notes'),
@@ -52,14 +52,14 @@ class ComponentVersionAdmin(admin.ModelAdmin):
                                      ('op_zero_downtime_status', 'op_zero_downtime_notes'),
                                      ('op_backup_status', 'op_backup_notes'),
                                       'op_safe_restart')}),
-        ('Maintenance capabilities', {'classes': ('collapse',),
+        ('Maintenance capabilities', {'classes': ('collapse', 'show_hide_applicable'),
                           'fields': ('mt_applicable',
                                      ('mt_http_tracing_status', 'mt_http_tracing_notes'),
                                      ('mt_logging_sufficiency_status', 'mt_logging_sufficiency_notes'),
                                      ('mt_logging_format_status', 'mt_logging_format_notes'),
                                      ('mt_logging_storage_status', 'mt_logging_storage_notes'),
                                      ('mt_anonymisation_status', 'mt_anonymisation_notes'))}),
-        ('Quality Assurance', {'classes': ('collapse',),
+        ('Quality Assurance', {'classes': ('collapse', 'show_hide_applicable'),
                           'fields': ('qa_applicable',
                                      ('qa_manual_tests_quality', 'qa_manual_tests_notes'),
                                      ('qa_unit_tests_quality', 'qa_unit_tests_notes'),
@@ -94,6 +94,7 @@ class ComponentVersionAdmin(admin.ModelAdmin):
         super().save_model(request, obj, form, change)
 
     class Media:
+        js = ('/static/js/admin.js',)
         css = {
                   'all': ('/static/css/admin.css',)
               }
