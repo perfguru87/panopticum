@@ -148,6 +148,7 @@ class URLsField(models.CharField):
         kwargs['verbose_name'] = _title
         kwargs['max_length'] = 2048
         kwargs['default'] = ""
+        kwargs['blank'] = True
         super().__init__(*args, **kwargs)
 
 
@@ -332,14 +333,14 @@ class ComponentVersionModel(models.Model):
     dev_orm = models.ManyToManyField(ORMModel, verbose_name="ORM", blank=True)
     dev_logging = models.ManyToManyField(LoggerModel, verbose_name="Logging framework", blank=True)
 
-    dev_raml = URLsField("RAML link", help_text="Multiple links allowed", blank=True, null=True)
-    dev_repo = URLsField("Repository", help_text="Multiple links allowed", blank=True, null=True)
-    dev_public_repo = URLsField("Public Repository", help_text="Multiple links allowed", blank=True, null=True)
-    dev_jira_component = URLsField("JIRA component", help_text="Multiple links allowed", blank=True, null=True)
-    dev_build_jenkins_job = URLsField("Jenkins job to build the component", help_text="Multiple links allowed", blank=True, null=True)
-    dev_docs = URLsField("Documentation entry page", help_text="Multiple links allowed", blank=True, null=True)
-    dev_public_docs = URLsField("Public Documentation", help_text="Multiple links allowed", blank=True, null=True)
-    dev_commit_link = URLsField("Commit link", help_text="Multiple links allowed", blank=True, null=True)
+    dev_raml = URLsField("RAML link", help_text="Multiple links allowed")
+    dev_repo = URLsField("Repository", help_text="Multiple links allowed")
+    dev_public_repo = URLsField("Public Repository", help_text="Multiple links allowed")
+    dev_jira_component = URLsField("JIRA component", help_text="Multiple links allowed")
+    dev_build_jenkins_job = URLsField("Jenkins job to build the component", help_text="Multiple links allowed")
+    dev_docs = URLsField("Documentation entry page", help_text="Multiple links allowed")
+    dev_public_docs = URLsField("Public Documentation", help_text="Multiple links allowed")
+    dev_commit_link = URLsField("Commit link", help_text="Multiple links allowed")
 
     dev_api_is_public = NoPartialYesField("API is public")
 
@@ -679,9 +680,9 @@ class ProductModel(models.Model):
 
 class DatacenterModel(models.Model):
     name = models.CharField(max_length=64, help_text="Datacenter name")
-    info = URLsField("Info link", blank=True, null=True)
-    grafana = URLsField("Grafana link", blank=True, null=True)
-    metrics = URLsField("Metrics link", blank=True, null=True)
+    info = URLsField("Info link")
+    grafana = URLsField("Grafana link")
+    metrics = URLsField("Metrics link")
     components_deployments = models.ManyToManyField(ComponentDeploymentModel)
 
     class Meta:
