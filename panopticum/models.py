@@ -531,7 +531,8 @@ class ComponentVersionModel(models.Model):
                                        ('qa_manual_tests_quality', 'qa_unit_tests_quality',
                                         'qa_e2e_tests_quality', 'qa_perf_tests_quality',
                                         'qa_longhaul_tests_quality', 'qa_security_tests_quality',
-                                        'qa_api_tests_quality'))
+                                        'qa_api_tests_quality', 'qa_anonymisation_tests_quality',
+                                        'qa_upgrade_tests_quality'))
 
     def _get_profile_must_fields(self):
         ret = ['owner_maintainer', 'owner_responsible_qa', 'owner_product_manager', 'owner_program_manager',
@@ -554,7 +555,7 @@ class ComponentVersionModel(models.Model):
         if self.qa_applicable:
             ret += ['qa_manual_tests_quality', 'qa_unit_tests_quality', 'qa_e2e_tests_quality',
                     'qa_perf_tests_quality', 'qa_longhaul_tests_quality', 'qa_security_tests_quality',
-                    'qa_api_tests_quality']
+                    'qa_api_tests_quality', 'qa_anonymisation_tests_quality', 'qa_anonymisation_tests_quality']
 
         return ret
 
