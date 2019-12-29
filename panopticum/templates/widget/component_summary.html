@@ -27,12 +27,13 @@
             <div>
               <h4>Links</h4>
               <table class='col-3-center'>
-                <tr><td>RAML</td><td>:</td><td><a href='#'>link</a></td></tr>
-                <tr><td>Repository</td><td>:</td><td><a href='#'>link</a></td></tr>
-                <tr><td>JIRA</td><td>:</td><td>-</td></tr>
-                <tr><td>Public Docs</td><td>:</td><td>-</td></tr>
-                <tr><td>Internal Docs</td><td>:</td><td>-</td></tr>
-                <tr><td>Build job</td><td>:</td><td><a href='#'>link</a></td></tr>
+                <tr><td>RAML</td><td>:</td><td class='replace_urls'>[[ component.latest_version.dev_raml ]]</td></tr>
+                <tr><td>Repository</td><td>:</td><td class='replace_urls'>[[ component.latest_version.dev_repo ]]</a></td></tr>
+                <tr><td>JIRA</td><td>:</td><td class='replace_urls'>[[ component.latest_version.dev_jira_component ]]</td></tr>
+                <tr><td>Public Docs</td><td>:</td><td class='replace_urls'>[[ component.latest_version.dev_public_docs ]]</td></tr>
+                <tr><td>Internal Docs</td><td>:</td><td class='replace_urls'>[[ component.latest_version.dev_docs ]]</td></tr>
+                <tr><td>Build job</td><td>:</td>
+                    <td class='replace_urls'>[[ component.latest_version.dev_build_jenkins_job ]]</td></tr>
               </table>
             </div>
           </div>

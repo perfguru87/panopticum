@@ -64,6 +64,19 @@ function init_component_page_js() {
     {% include "widget/component_rating_chart.js" %}
 }
 
+function replace_urls_in_text(text) {
+    var re = /((http|https|ftp):\/\/[\w?=&.\/-;#~%-]+(?![\w\s?&.\/;#~%"=-]*>))/g
+    return text.replace(re,"<a href='$1' target=_blank><i class='fa fa-external-link'></i></a>");
+}
+
+function update_component_page_elements() {
+    $(".replace_urls").each(function(index, el) {
+        var val = $(el).html();
+        val = replace_urls_in_text(val);
+        $(el).html(val);
+    });
+}
+
 function vue_component_init() {
     console.log("vue_component_init()");
 
@@ -93,17 +106,22 @@ function vue_component_init() {
            axios
                .get(url)
                .then(response => {
-                   this.component = response.data
+                   this.component = response.data;
+                   this.$nextTick(function () {
+                       update_component_page_elements();
+                   });
                })
                .catch(error => {
-                   console.log(error)
+                   console.log(error);
                    this.errored = true
                })
-               .finally(() => this.loading = false);
+               .finally(res => {
+                   this.loading = false;
+               });
         },
         mounted: function() {
            init_component_page_js();
-        }
+        },
     });
 }
 $(document).ready(function() {
