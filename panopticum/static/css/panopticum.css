@@ -310,10 +310,11 @@ i.yes { color: green; }
 i.no { color: #bf9e9e; }
 i.unknown { color: #aaa; }
 
-td.pa-stars { white-space: nowrap; }
-td.pa-stars i { width: 8px; }
-td.pa-stars i.fa-star { color: green; }
-td.pa-stars i.fa-star-o { color: #aaa; }
+td.pa-quality { white-space: nowrap; }
+td.pa-quality i { width: 8px; }
+td.pa-quality i.fa-star { color: green; }
+td.pa-quality i.fa-star-o { color: #aaa; }
+td.pa-quality i.unknown { font-size: 12px; color: crimson; }
 
 span.yes, span.no, span.na, span.unknown {
     display: block;

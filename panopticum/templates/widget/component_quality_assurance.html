@@ -38,89 +38,62 @@
                 <tr>
                   <th>Test type</th>
                   <th>Rating</th>
-                  <th>Links</th>
-                  <th>Details</th>
+                  <th>Info</th>
                 </tr>
               </thead>
               <tbody>
                 <tr>
+                  <td>Manual tests</td>
+                  <td class='pa-quality'>[[ component.latest_version.qa_manual_tests_quality ]]</td>
+                  <td class='pa-replace-urls'>[[ component.latest_version.qa_manual_tests_notes ]]</td>
+                </tr>
+
+                <tr>
                   <td>Unit tests</td>
-                  <td class='pa-stars'>
-                    <i class='fa fa-star'></i>
-                    <i class='fa fa-star'></i>
-                    <i class='fa fa-star'></i>
-                  </td>
-                  <td>-</td><td>Go-unit CI; 80% code coverage</td>
+                  <td class='pa-quality'>[[ component.latest_version.qa_unit_tests_quality ]]</td>
+                  <td class='pa-replace-urls'>[[ component.latest_version.qa_unit_tests_notes ]]</td>
                 </tr>
 
                 <tr>
                   <td>End-to-end</td>
-                  <td class='pa-stars'>
-                    <i class='fa fa-star'></i>
-                    <i class='fa fa-star'></i>
-                    <i class='fa fa-star'></i>
-                  </td>
-                  <td><a href='#'>link</a></td><td>Gerkin CI; Old on spboard</td>
+                  <td class='pa-quality'>[[ component.latest_version.qa_e2e_tests_quality ]]</td>
+                  <td class='pa-replace-urls'>[[ component.latest_version.qa_e2e_tests_notes ]]</td>
                 </tr>
 
                 <tr>
                   <td>Performance</td>
-                  <td class='pa-stars'>
-                    <i class='fa fa-star'></i>
-                    <i class='fa fa-star'></i>
-                    <i class='fa fa-star'></i>
-                  </td>
-                  <td><a href='#'>link</a></td><td>k6i, good coverage, 1M volume</td>
+                  <td class='pa-quality'>[[ component.latest_version.qa_perf_tests_quality ]]</td>
+                  <td class='pa-replace-urls'>[[ component.latest_version.qa_perf_tests_notes ]]</td>
                 </tr>
 
                 <tr>
                   <td>Long haul</td>
-                  <td class='pa-stars'>
-                    <i class='fa fa-star'></i>
-                    <i class='fa fa-star'></i>
-                    <i class='fa fa-star-o'></i>
-                  </td>
-                  <td>-</td><td>200K agents</td>
+                  <td class='pa-quality'>[[ component.latest_version.qa_longhaul_tests_quality ]]</td>
+                  <td class='pa-replace-urls'>[[ component.latest_version.qa_longhaul_tests_notes ]]</td>
                 </tr>
 
                 <tr>
                   <td>Security tests</td>
-                  <td class='pa-stars'>
-                    <i class='fa fa-star'></i>
-                    <i class='fa fa-star-o'></i>
-                    <i class='fa fa-star-o'></i>
-                  </td>
-                  <td>-</td><td>Automated fuzzing</td>
+                  <td class='pa-quality'>[[ component.latest_version.qa_security_tests_quality ]]</td>
+                  <td class='pa-replace-urls'>[[ component.latest_version.qa_security_tests_notes ]]</td>
                 </tr>
 
                 <tr>
                   <td>API tests</td>
-                  <td class='pa-stars'>
-                    <i class='fa fa-star'></i>
-                    <i class='fa fa-star'></i>
-                    <i class='fa fa-star-o'></i>
-                  </td>
-                  <td>-</td><td>ART CI</td>
+                  <td class='pa-quality'>[[ component.latest_version.qa_api_tests_quality ]]</td>
+                  <td class='pa-replace-urls'>[[ component.latest_version.qa_api_tests_notes ]]</td>
                 </tr>
 
                 <tr>
                   <td>Anonymisation</td>
-                  <td class='pa-stars'>
-                    <i class='fa fa-star-o'></i>
-                    <i class='fa fa-star-o'></i>
-                    <i class='fa fa-star-o'></i>
-                  </td>
-                  <td>-</td><td>JIRA-123</td>
+                  <td class='pa-quality'>[[ component.latest_version.qa_anonymisation_tests_quality ]]</td>
+                  <td class='pa-replace-urls'>[[ component.latest_version.qa_anonymisation_tests_notes ]]</td>
                 </tr>
 
                 <tr>
                   <td>Upgrade</td>
-                  <td class='pa-stars'>
-                    <i class='fa fa-star-o'></i>
-                    <i class='fa fa-star-o'></i>
-                    <i class='fa fa-star-o'></i>
-                  </td>
-                  <td>-</td><td>Manual before release</td>
+                  <td class='pa-quality'>[[ component.latest_version.qa_upgrade_tests_quality ]]</td>
+                  <td class='pa-replace-urls'>[[ component.latest_version.qa_upgrade_tests_notes ]]</td>
                 </tr>
 
               </tbody>

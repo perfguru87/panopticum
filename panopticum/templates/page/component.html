@@ -70,10 +70,24 @@ function replace_urls_in_text(text) {
 }
 
 function update_component_page_elements() {
-    $(".replace_urls").each(function(index, el) {
-        var val = $(el).html();
-        val = replace_urls_in_text(val);
+    $(".pa-replace-urls").each(function(index, el) {
+        var val = replace_urls_in_text($(el).html());
         $(el).html(val);
+    });
+
+    $(".pa-quality").each(function(index, el) {
+        var val = $(el).html();
+        if (val == "unknown") {
+            $(el).html("<i class='unknown fa fa-question-circle'></i>");
+        } else if (val == "none") {
+            $(el).html("<i class='fa fa-star-o'></i><i class='fa fa-star-o'></i><i class='fa fa-star-o'></i>");
+        } else if (val == "low") {
+            $(el).html("<i class='fa fa-star'></i><i class='fa fa-star-o'></i><i class='fa fa-star-o'></i>");
+        } else if (val == "med") {
+            $(el).html("<i class='fa fa-star'></i><i class='fa fa-star'></i><i class='fa fa-star-o'></i>");
+        } else if (val == "high") {
+            $(el).html("<i class='fa fa-star'></i><i class='fa fa-star'></i><i class='fa fa-star'></i>");
+        }
     });
 }
 
