@@ -68,7 +68,9 @@ class ComponentVersionAdmin(admin.ModelAdmin):
                                      ('qa_perf_tests_quality', 'qa_perf_tests_notes'),
                                      ('qa_security_tests_quality', 'qa_security_tests_notes'),
                                      ('qa_longhaul_tests_quality', 'qa_longhaul_tests_notes'),
-                                     ('qa_api_tests_quality', 'qa_api_tests_notes'))}),
+                                     ('qa_api_tests_quality', 'qa_api_tests_notes'),
+                                     ('qa_anonymisation_tests_quality', 'qa_anonymisation_tests_notes'),
+                                     ('qa_upgrade_tests_quality', 'qa_upgrade_tests_notes'))}),
     )
 
     def formfield_for_manytomany(self, db_field, request, **kwargs):

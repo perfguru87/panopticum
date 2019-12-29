@@ -464,6 +464,14 @@ class ComponentVersionModel(models.Model):
     qa_api_tests_notes = MarkupField("API tests notes")
     qa_api_tests_signoff = SigneeField(related_name='signed_api_tests')
 
+    qa_anonymisation_tests_quality = LowMedHighField("DB anonymisation tests")
+    qa_anonymisation_tests_notes = MarkupField("DB anonymisation tests notes")
+    qa_anonymisation_tests_signoff = SigneeField(related_name='signed_anonymisation_tests')
+
+    qa_upgrade_tests_quality = LowMedHighField("Upgrade tests", help_text="Functional, performance, real volume")
+    qa_upgrade_tests_notes = MarkupField("Upgrade tests notes")
+    qa_upgrade_tests_signoff = SigneeField(related_name='signed_upgrade_tests')
+
     # meta
 
     meta_update_by = models.ForeignKey(PersonModel, on_delete=models.PROTECT, blank=True, null=True, related_name='updater_of')
