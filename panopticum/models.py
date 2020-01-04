@@ -586,7 +586,7 @@ class ComponentVersionModel(models.Model):
         max_rating = 0
         bad_rating = []
 
-        for f in (self._update_mt_rating, self._update_op_rating, self._update_qa_rating):
+        for f in (self._update_mt_rating, self._update_op_rating, self._update_qa_rating, self._update_compliance_rating):
             r, mr, br = f()
             rating += r
             max_rating += mr
