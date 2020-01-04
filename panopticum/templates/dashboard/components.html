@@ -176,7 +176,7 @@ $(document).ready(function() {
                 "type": "string",
                 "render": function(data, type, row) {
                     if (data)
-                        return "<a target=_blank href='" + data + "'>link</a>";
+                        return replace_urls_in_text(data);
                     return "";
                 }
             },
