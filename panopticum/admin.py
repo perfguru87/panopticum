@@ -6,19 +6,22 @@ import datetime
 # Register your models here.
 from panopticum.models import *
 
+formfield_overrides = {models.ForeignKey: {'widget': Select(attrs={'width': '300px', 'style': 'width:300px'})},
+                       models.ManyToManyField: {'widget': SelectMultiple(attrs={'size': '7', 'width': '300px', 'style': 'width:300px'})},
+                       models.IntegerField: {'widget': NumberInput(attrs={'width': '300px', 'style': 'width:300px'})},
+                       models.CharField: {'widget': TextInput(attrs={'width': '300px', 'style': 'width:300px'})},
+                       models.URLField: {'widget': TextInput(attrs={'width': '300px', 'style': 'width:300px'})},
+                       models.TextField: {'widget': Textarea(attrs={'rows': 2, 'cols': 60})},
+                       }
+
 
 class ComponentDependencyAdmin(admin.TabularInline):
+    formfield_overrides = formfield_overrides
     model = ComponentVersionModel.depends_on.through
 
 
 class ComponentVersionAdmin(admin.ModelAdmin):
-    formfield_overrides = {models.ForeignKey: {'widget': Select(attrs={'width': '300px', 'style': 'width:300px'})},
-                           models.ManyToManyField: {'widget': SelectMultiple(attrs={'size': '7', 'width': '300px', 'style': 'width:300px'})},
-                           models.IntegerField: {'widget': NumberInput(attrs={'width': '300px', 'style': 'width:300px'})},
-                           models.CharField: {'widget': TextInput(attrs={'width': '300px', 'style': 'width:300px'})},
-                           models.URLField: {'widget': TextInput(attrs={'width': '300px', 'style': 'width:300px'})},
-                           models.TextField: {'widget': Textarea(attrs={'rows': 2, 'cols': 60})},
-                           }
+    formfield_overrides = formfield_overrides
 
     inlines = (ComponentDependencyAdmin,)
 

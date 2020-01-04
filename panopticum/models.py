@@ -602,6 +602,7 @@ class ComponentDependencyModel(models.Model):
     type = models.CharField(max_length=16, choices=DEPENDENCY_TYPE, default=DEPENDENCY_TYPE[0][0])
     component = models.ForeignKey(ComponentModel, on_delete=models.PROTECT)
     version = models.ForeignKey(ComponentVersionModel, on_delete=models.PROTECT)
+    notes = SmartTextField("Dependency notes")
 
 
 ##################################################################################################

@@ -73,9 +73,18 @@ class ComponentSerializerSimple(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class ComponentDependencySerializerSimple(serializers.ModelSerializer):
+    component = ComponentSerializerSimple(read_only=True)
+
+    class Meta:
+        model = ComponentDependencyModel
+        fields = '__all__'
+
+
 class ComponentVersionSerializerSimple(serializers.ModelSerializer):
     id = serializers.IntegerField(read_only=True)
 
+    depends_on = ComponentDependencySerializerSimple(source='componentdependencymodel_set', many=True, read_only=True)
     locations = DeploymentLocationClassSerializer(read_only=True, many=True)
 
     owner_maintainer = PersonSerializer(read_only=True)
