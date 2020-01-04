@@ -11,7 +11,7 @@
           <div class="x_content" style='opacity: 0.5;'>
 
             <h3>Deployment Types</h3>
-            <table class='status-table table-auto-width'>
+            <table class='status-table table-auto-width' v-cloak>
               <thead>
                 <tr>
                   <th>Product</th>
@@ -22,10 +22,9 @@
               </thead>
 
               <tbody>
-                <tr><td>My Cloud Product</td><td>Per-datacenter</td><td>8080</td><td>-</td></tr>
-                <tr><td>My Cloud Product</td><td>Per-endpoint</td><td>-</td><td>-</td></tr>
-                <tr><td>My On-prem Product</td><td>Centralized deployment</td><td>-</td><td>-</td></tr>
-                <tr><td>My On-prem Product</td><td>Per-endpoint</td><td>-</td><td>-</td></tr>
+                <tr v-for='item in component.latest_version.locations'>
+                  <td>-</td><td>[[ item.name ]]</td><td>-</td><td>-</td>
+                </tr>
               </tbody>
             </table>
 

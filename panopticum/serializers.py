@@ -54,6 +54,12 @@ class SoftwareVendorSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class DeploymentLocationClassSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DeploymentLocationClassModel
+        fields = '__all__'
+
+
 class ComponentSerializerSimple(serializers.ModelSerializer):
     runtime_type = ComponentRuntimeTypeSerializer(read_only=True)
     data_privacy_class = ComponentDataPrivacyClassSerializer(read_only=True)
@@ -69,6 +75,8 @@ class ComponentSerializerSimple(serializers.ModelSerializer):
 
 class ComponentVersionSerializerSimple(serializers.ModelSerializer):
     id = serializers.IntegerField(read_only=True)
+
+    locations = DeploymentLocationClassSerializer(read_only=True, many=True)
 
     owner_maintainer = PersonSerializer(read_only=True)
     owner_responsible_qa = PersonSerializer(read_only=True)
