@@ -15,7 +15,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='componentversionmodel',
             name='qa_anonymisation_tests_notes',
-            field=panopticum.models.MarkupField(blank=True, default='', verbose_name=''),
+            field=panopticum.models.SmartTextField(blank=True, default='', verbose_name=''),
         ),
         migrations.AddField(
             model_name='componentversionmodel',
@@ -30,7 +30,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='componentversionmodel',
             name='qa_upgrade_tests_notes',
-            field=panopticum.models.MarkupField(blank=True, default='', verbose_name=''),
+            field=panopticum.models.SmartTextField(blank=True, default='', verbose_name=''),
         ),
         migrations.AddField(
             model_name='componentversionmodel',
@@ -50,12 +50,12 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='componentversionmodel',
             name='dev_build_jenkins_job',
-            field=panopticum.models.URLsField(blank=True, default='', help_text='Multiple links allowed', max_length=2048, verbose_name=''),
+            field=panopticum.models.SmartTextField(blank=True, default='', help_text='Multiple links allowed', max_length=2048, verbose_name=''),
         ),
         migrations.AlterField(
             model_name='componentversionmodel',
             name='dev_commit_link',
-            field=panopticum.models.URLsField(blank=True, default='', help_text='Multiple links allowed', max_length=2048, verbose_name=''),
+            field=panopticum.models.SmartTextField(blank=True, default='', help_text='Multiple links allowed', max_length=2048, verbose_name=''),
         ),
         migrations.AlterField(
             model_name='componentversionmodel',
@@ -65,7 +65,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='componentversionmodel',
             name='dev_docs',
-            field=panopticum.models.URLsField(blank=True, default='', help_text='Multiple links allowed', max_length=2048, verbose_name=''),
+            field=panopticum.models.SmartTextField(blank=True, default='', help_text='Multiple links allowed', max_length=2048, verbose_name=''),
         ),
         migrations.AlterField(
             model_name='componentversionmodel',
@@ -75,7 +75,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='componentversionmodel',
             name='dev_jira_component',
-            field=panopticum.models.URLsField(blank=True, default='', help_text='Multiple links allowed', max_length=2048, verbose_name=''),
+            field=panopticum.models.SmartTextField(blank=True, default='', help_text='Multiple links allowed', max_length=2048, verbose_name=''),
         ),
         migrations.AlterField(
             model_name='componentversionmodel',
@@ -95,22 +95,22 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='componentversionmodel',
             name='dev_public_docs',
-            field=panopticum.models.URLsField(blank=True, default='', help_text='Multiple links allowed', max_length=2048, verbose_name=''),
+            field=panopticum.models.SmartTextField(blank=True, default='', help_text='Multiple links allowed', max_length=2048, verbose_name=''),
         ),
         migrations.AlterField(
             model_name='componentversionmodel',
             name='dev_public_repo',
-            field=panopticum.models.URLsField(blank=True, default='', help_text='Multiple links allowed', max_length=2048, verbose_name=''),
+            field=panopticum.models.SmartTextField(blank=True, default='', help_text='Multiple links allowed', max_length=2048, verbose_name=''),
         ),
         migrations.AlterField(
             model_name='componentversionmodel',
             name='dev_raml',
-            field=panopticum.models.URLsField(blank=True, default='', help_text='Multiple links allowed', max_length=2048, verbose_name=''),
+            field=panopticum.models.SmartTextField(blank=True, default='', help_text='Multiple links allowed', max_length=2048, verbose_name=''),
         ),
         migrations.AlterField(
             model_name='componentversionmodel',
             name='dev_repo',
-            field=panopticum.models.URLsField(blank=True, default='', help_text='Multiple links allowed', max_length=2048, verbose_name=''),
+            field=panopticum.models.SmartTextField(blank=True, default='', help_text='Multiple links allowed', max_length=2048, verbose_name=''),
         ),
         migrations.AlterField(
             model_name='componentversionmodel',
@@ -190,16 +190,16 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='datacentermodel',
             name='grafana',
-            field=panopticum.models.URLsField(blank=True, default='', max_length=2048, verbose_name=''),
+            field=panopticum.models.SmartTextField(blank=True, default='', max_length=2048, verbose_name=''),
         ),
         migrations.AlterField(
             model_name='datacentermodel',
             name='info',
-            field=panopticum.models.URLsField(blank=True, default='', max_length=2048, verbose_name=''),
+            field=panopticum.models.SmartTextField(blank=True, default='', max_length=2048, verbose_name=''),
         ),
         migrations.AlterField(
             model_name='datacentermodel',
             name='metrics',
-            field=panopticum.models.URLsField(blank=True, default='', max_length=2048, verbose_name=''),
+            field=panopticum.models.SmartTextField(blank=True, default='', max_length=2048, verbose_name=''),
         ),
     ]

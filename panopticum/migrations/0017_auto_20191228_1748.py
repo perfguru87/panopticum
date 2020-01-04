@@ -40,7 +40,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='componentversionmodel',
             name='mt_db_anonymisation_notes',
-            field=panopticum.models.MarkupField(blank=True, default='', verbose_name=''),
+            field=panopticum.models.SmartTextField(blank=True, default='', verbose_name=''),
         ),
         migrations.AddField(
             model_name='componentversionmodel',
@@ -55,7 +55,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='componentversionmodel',
             name='mt_logging_completeness_notes',
-            field=panopticum.models.MarkupField(blank=True, default='', verbose_name=''),
+            field=panopticum.models.SmartTextField(blank=True, default='', verbose_name=''),
         ),
         migrations.AddField(
             model_name='componentversionmodel',
@@ -65,7 +65,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='componentversionmodel',
             name='mt_logging_sanitization_notes',
-            field=panopticum.models.MarkupField(blank=True, default='', verbose_name=''),
+            field=panopticum.models.SmartTextField(blank=True, default='', verbose_name=''),
         ),
         migrations.AddField(
             model_name='componentversionmodel',
@@ -80,7 +80,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='componentversionmodel',
             name='compliance_api_notes',
-            field=panopticum.models.MarkupField(blank=True, default='', verbose_name=''),
+            field=panopticum.models.SmartTextField(blank=True, default='', verbose_name=''),
         ),
         migrations.AlterField(
             model_name='componentversionmodel',
@@ -90,7 +90,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='componentversionmodel',
             name='compliance_fips_notes',
-            field=panopticum.models.MarkupField(blank=True, default='', verbose_name=''),
+            field=panopticum.models.SmartTextField(blank=True, default='', verbose_name=''),
         ),
         migrations.AlterField(
             model_name='componentversionmodel',
@@ -100,7 +100,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='componentversionmodel',
             name='compliance_gdpr_notes',
-            field=panopticum.models.MarkupField(blank=True, default='', verbose_name=''),
+            field=panopticum.models.SmartTextField(blank=True, default='', verbose_name=''),
         ),
         migrations.AlterField(
             model_name='componentversionmodel',
@@ -115,47 +115,47 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='componentversionmodel',
             name='dev_build_jenkins_job',
-            field=panopticum.models.URLsField(blank=True, default='', max_length=2048, null=True, verbose_name=''),
+            field=panopticum.models.SmartTextField(blank=True, default='', max_length=2048, null=True, verbose_name=''),
         ),
         migrations.AlterField(
             model_name='componentversionmodel',
             name='dev_commit_link',
-            field=panopticum.models.URLsField(blank=True, default='', max_length=2048, null=True, verbose_name=''),
+            field=panopticum.models.SmartTextField(blank=True, default='', max_length=2048, null=True, verbose_name=''),
         ),
         migrations.AlterField(
             model_name='componentversionmodel',
             name='dev_docs',
-            field=panopticum.models.URLsField(blank=True, default='', max_length=2048, null=True, verbose_name=''),
+            field=panopticum.models.SmartTextField(blank=True, default='', max_length=2048, null=True, verbose_name=''),
         ),
         migrations.AlterField(
             model_name='componentversionmodel',
             name='dev_jira_component',
-            field=panopticum.models.URLsField(blank=True, default='', max_length=2048, null=True, verbose_name=''),
+            field=panopticum.models.SmartTextField(blank=True, default='', max_length=2048, null=True, verbose_name=''),
         ),
         migrations.AlterField(
             model_name='componentversionmodel',
             name='dev_public_docs',
-            field=panopticum.models.URLsField(blank=True, default='', max_length=2048, null=True, verbose_name=''),
+            field=panopticum.models.SmartTextField(blank=True, default='', max_length=2048, null=True, verbose_name=''),
         ),
         migrations.AlterField(
             model_name='componentversionmodel',
             name='dev_public_repo',
-            field=panopticum.models.URLsField(blank=True, default='', max_length=2048, null=True, verbose_name=''),
+            field=panopticum.models.SmartTextField(blank=True, default='', max_length=2048, null=True, verbose_name=''),
         ),
         migrations.AlterField(
             model_name='componentversionmodel',
             name='dev_raml',
-            field=panopticum.models.URLsField(blank=True, default='', max_length=2048, null=True, verbose_name=''),
+            field=panopticum.models.SmartTextField(blank=True, default='', max_length=2048, null=True, verbose_name=''),
         ),
         migrations.AlterField(
             model_name='componentversionmodel',
             name='dev_repo',
-            field=panopticum.models.URLsField(blank=True, default='', max_length=2048, null=True, verbose_name=''),
+            field=panopticum.models.SmartTextField(blank=True, default='', max_length=2048, null=True, verbose_name=''),
         ),
         migrations.AlterField(
             model_name='componentversionmodel',
             name='mt_http_tracing_notes',
-            field=panopticum.models.MarkupField(blank=True, default='', verbose_name=''),
+            field=panopticum.models.SmartTextField(blank=True, default='', verbose_name=''),
         ),
         migrations.AlterField(
             model_name='componentversionmodel',
@@ -165,7 +165,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='componentversionmodel',
             name='mt_logging_format_notes',
-            field=panopticum.models.MarkupField(blank=True, default='', verbose_name=''),
+            field=panopticum.models.SmartTextField(blank=True, default='', verbose_name=''),
         ),
         migrations.AlterField(
             model_name='componentversionmodel',
@@ -175,7 +175,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='componentversionmodel',
             name='mt_logging_storage_notes',
-            field=panopticum.models.MarkupField(blank=True, default='', verbose_name=''),
+            field=panopticum.models.SmartTextField(blank=True, default='', verbose_name=''),
         ),
         migrations.AlterField(
             model_name='componentversionmodel',
@@ -185,7 +185,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='componentversionmodel',
             name='op_alerts_notes',
-            field=panopticum.models.MarkupField(blank=True, default='', verbose_name=''),
+            field=panopticum.models.SmartTextField(blank=True, default='', verbose_name=''),
         ),
         migrations.AlterField(
             model_name='componentversionmodel',
@@ -195,7 +195,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='componentversionmodel',
             name='op_backup_notes',
-            field=panopticum.models.MarkupField(blank=True, default='', verbose_name=''),
+            field=panopticum.models.SmartTextField(blank=True, default='', verbose_name=''),
         ),
         migrations.AlterField(
             model_name='componentversionmodel',
@@ -205,7 +205,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='componentversionmodel',
             name='op_failover_notes',
-            field=panopticum.models.MarkupField(blank=True, default='', verbose_name=''),
+            field=panopticum.models.SmartTextField(blank=True, default='', verbose_name=''),
         ),
         migrations.AlterField(
             model_name='componentversionmodel',
@@ -215,7 +215,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='componentversionmodel',
             name='op_guide_notes',
-            field=panopticum.models.MarkupField(blank=True, default='', verbose_name=''),
+            field=panopticum.models.SmartTextField(blank=True, default='', verbose_name=''),
         ),
         migrations.AlterField(
             model_name='componentversionmodel',
@@ -225,7 +225,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='componentversionmodel',
             name='op_horizontal_scalability_notes',
-            field=panopticum.models.MarkupField(blank=True, default='', verbose_name=''),
+            field=panopticum.models.SmartTextField(blank=True, default='', verbose_name=''),
         ),
         migrations.AlterField(
             model_name='componentversionmodel',
@@ -235,7 +235,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='componentversionmodel',
             name='op_metrics_notes',
-            field=panopticum.models.MarkupField(blank=True, default='', verbose_name=''),
+            field=panopticum.models.SmartTextField(blank=True, default='', verbose_name=''),
         ),
         migrations.AlterField(
             model_name='componentversionmodel',
@@ -245,7 +245,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='componentversionmodel',
             name='op_scaling_guide_notes',
-            field=panopticum.models.MarkupField(blank=True, default='', verbose_name=''),
+            field=panopticum.models.SmartTextField(blank=True, default='', verbose_name=''),
         ),
         migrations.AlterField(
             model_name='componentversionmodel',
@@ -255,7 +255,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='componentversionmodel',
             name='op_sla_guide_notes',
-            field=panopticum.models.MarkupField(blank=True, default='', verbose_name=''),
+            field=panopticum.models.SmartTextField(blank=True, default='', verbose_name=''),
         ),
         migrations.AlterField(
             model_name='componentversionmodel',
@@ -265,7 +265,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='componentversionmodel',
             name='op_zero_downtime_notes',
-            field=panopticum.models.MarkupField(blank=True, default='', verbose_name=''),
+            field=panopticum.models.SmartTextField(blank=True, default='', verbose_name=''),
         ),
         migrations.AlterField(
             model_name='componentversionmodel',
@@ -275,7 +275,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='componentversionmodel',
             name='qa_api_tests_notes',
-            field=panopticum.models.MarkupField(blank=True, default='', verbose_name=''),
+            field=panopticum.models.SmartTextField(blank=True, default='', verbose_name=''),
         ),
         migrations.AlterField(
             model_name='componentversionmodel',
@@ -285,7 +285,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='componentversionmodel',
             name='qa_e2e_tests_notes',
-            field=panopticum.models.MarkupField(blank=True, default='', verbose_name=''),
+            field=panopticum.models.SmartTextField(blank=True, default='', verbose_name=''),
         ),
         migrations.AlterField(
             model_name='componentversionmodel',
@@ -295,7 +295,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='componentversionmodel',
             name='qa_longhaul_tests_notes',
-            field=panopticum.models.MarkupField(blank=True, default='', verbose_name=''),
+            field=panopticum.models.SmartTextField(blank=True, default='', verbose_name=''),
         ),
         migrations.AlterField(
             model_name='componentversionmodel',
@@ -305,7 +305,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='componentversionmodel',
             name='qa_manual_tests_notes',
-            field=panopticum.models.MarkupField(blank=True, default='', verbose_name=''),
+            field=panopticum.models.SmartTextField(blank=True, default='', verbose_name=''),
         ),
         migrations.AlterField(
             model_name='componentversionmodel',
@@ -315,7 +315,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='componentversionmodel',
             name='qa_perf_tests_notes',
-            field=panopticum.models.MarkupField(blank=True, default='', verbose_name=''),
+            field=panopticum.models.SmartTextField(blank=True, default='', verbose_name=''),
         ),
         migrations.AlterField(
             model_name='componentversionmodel',
@@ -325,7 +325,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='componentversionmodel',
             name='qa_security_tests_notes',
-            field=panopticum.models.MarkupField(blank=True, default='', verbose_name=''),
+            field=panopticum.models.SmartTextField(blank=True, default='', verbose_name=''),
         ),
         migrations.AlterField(
             model_name='componentversionmodel',
@@ -335,7 +335,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='componentversionmodel',
             name='qa_unit_tests_notes',
-            field=panopticum.models.MarkupField(blank=True, default='', verbose_name=''),
+            field=panopticum.models.SmartTextField(blank=True, default='', verbose_name=''),
         ),
         migrations.AlterField(
             model_name='componentversionmodel',
@@ -345,16 +345,16 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='datacentermodel',
             name='grafana',
-            field=panopticum.models.URLsField(blank=True, default='', max_length=2048, null=True, verbose_name=''),
+            field=panopticum.models.SmartTextField(blank=True, default='', max_length=2048, null=True, verbose_name=''),
         ),
         migrations.AlterField(
             model_name='datacentermodel',
             name='info',
-            field=panopticum.models.URLsField(blank=True, default='', max_length=2048, null=True, verbose_name=''),
+            field=panopticum.models.SmartTextField(blank=True, default='', max_length=2048, null=True, verbose_name=''),
         ),
         migrations.AlterField(
             model_name='datacentermodel',
             name='metrics',
-            field=panopticum.models.URLsField(blank=True, default='', max_length=2048, null=True, verbose_name=''),
+            field=panopticum.models.SmartTextField(blank=True, default='', max_length=2048, null=True, verbose_name=''),
         ),
     ]
