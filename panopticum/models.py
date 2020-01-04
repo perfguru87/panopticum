@@ -121,6 +121,7 @@ DEPENDENCY_TYPE = (
     ('async_rw', "Async R/W"),
     ('async_ro', "Async R/O"),
     ('async_wo', "Async W/O"),
+    ('includes', "Includes")
 )
 
 
