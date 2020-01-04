@@ -64,11 +64,92 @@
 {% block extra_js %}
   {{ block.super }}
 <script>
-function init_component_page_js() {
-    {% include "widget/component_profile_completion.js" %}
-    {% include "widget/component_activity.js" %}
-    {% include "widget/component_rating_chart.js" %}
-    {% include "widget/component_ratings.js" %}
+function init_activity_chart() {
+    if ($('#activity-chart').length) {
+
+        var ctx = document.getElementById("activity-chart");
+        var chart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul"],
+                datasets: [{
+                    label: 'Bugs in JIRA',
+                    backgroundColor: "#26B99A",
+                    data: [51, 30, 40, 28, 92, 50, 45]
+                }, {
+                    label: 'Commits in Git',
+                    backgroundColor: "#03586A",
+                    data: [41, 56, 25, 48, 72, 34, 12]
+                }]
+            },
+
+            options: {
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            stepSize: 20,
+                            beginAtZero: true
+                        }
+                    }]
+                }
+            }
+        });
+
+    }
+}
+
+function init_rating_chart() {
+    $('.chart').easyPieChart({
+        easing: 'easeOutElastic',
+        delay: 3000,
+        barColor: '#26B99A',
+        trackColor: '#fff',
+        scaleColor: false,
+        lineWidth: 5,
+        trackWidth: 3,
+        lineCap: 'butt',
+        onStep: function(from, to, percent) {
+            $(this.el).find('.percent').text(Math.round(percent));
+        }
+    });
+}
+
+function init_profile_completeness_gauge(component) {
+    if (typeof(Gauge) === 'undefined') {
+        return;
+    }
+
+    var chart_gauge_settings = {
+        lines: 12,
+        angle: 0,
+        lineWidth: 0.3,
+        pointer: {
+            length: 0.75,
+            strokeWidth: 0.042,
+            color: '#1D212A'
+        },
+        limitMax: 'false',
+        colorStart: '#1ABC9C',
+        colorStop: '#1ABC9C',
+        strokeColor: '#e0e0e0',
+        generateGradient: true
+    };
+
+    $('#profile-completeness-gauge-text').each(function(index, el) {
+       $(el).attr('data-original-title', 'fields to be filled: ' + component.latest_version.meta_profile_not_filled_fields);
+    });
+
+    if ($('#profile-completeness-gauge').length) {
+        var profile_completeness_gauge_elem = document.getElementById('profile-completeness-gauge');
+        var profile_completeness_gauge = new Gauge(profile_completeness_gauge_elem).setOptions(chart_gauge_settings);
+    }
+
+    if ($('#profile-completeness-gauge-text').length) {
+        profile_completeness_gauge.maxValue = 100;
+        profile_completeness_gauge.animationSpeed = 10;
+        profile_completeness_gauge.set(component.latest_version.meta_profile_completeness);
+        profile_completeness_gauge.setTextField(document.getElementById("profile-completeness-gauge-text"));
+    }
 }
 
 function replace_urls_in_text(text) {
@@ -76,7 +157,7 @@ function replace_urls_in_text(text) {
     return text.replace(re,"<a href='$1' target=_blank><i class='fa fa-external-link'></i></a>");
 }
 
-function update_component_page_elements() {
+function update_component_page_elements(component) {
     $(".pa-replace-urls").each(function(index, el) {
         var val = replace_urls_in_text($(el).html());
         $(el).html(val);
@@ -112,6 +193,7 @@ function update_component_page_elements() {
 
     $(".pa-component-stars").each(function(index, el) {
         var val = parseInt($(el).html());
+        console.log($(el), val);
         var new_val = "";
         var on = "<i class='fa fa-star'></i>";
         var off = "<i class='fa fa-star-o'></i>";
@@ -121,6 +203,7 @@ function update_component_page_elements() {
         new_val += (val >= 60) ? on : off;
         new_val += (val >= 80) ? on : off;
         new_val += (val >= 95) ? on : off;
+        console.log(new_val);
 
         $(el).html(new_val);
     });
@@ -135,6 +218,12 @@ function update_component_page_elements() {
         else
            $(el).addClass("pa-component-rating-low");
     });
+
+    $('[data-toggle="tooltip"]').tooltip();
+
+    init_profile_completeness_gauge(component);
+    init_rating_chart();
+    init_activity_chart();
 }
 
 function vue_component_init() {
@@ -173,7 +262,7 @@ function vue_component_init() {
                .then(response => {
                    this.component = response.data;
                    this.$nextTick(function () {
-                       update_component_page_elements();
+                       update_component_page_elements(this.component);
                    });
                })
                .catch(error => {
@@ -183,9 +272,6 @@ function vue_component_init() {
                .finally(res => {
                    this.loading = false;
                });
-        },
-        mounted: function() {
-           init_component_page_js();
         },
     });
 }
