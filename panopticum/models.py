@@ -436,39 +436,39 @@ class ComponentVersionModel(models.Model):
 
     qa_applicable = models.BooleanField(verbose_name="Tests requirements are applicable", default=True)
 
-    qa_manual_tests_quality = LowMedHighField("Manual tests", help_text="Completeness, coverage, quality")
+    qa_manual_tests_status = LowMedHighField("Manual tests", help_text="Completeness, coverage, quality")
     qa_manual_tests_notes = MarkupField("Manual tests notes")
     qa_manual_tests_signoff = SigneeField(related_name='signed_manual_tests')
 
-    qa_unit_tests_quality = LowMedHighField("Unit tests", help_text="Completeness, coverage, quality")
+    qa_unit_tests_status = LowMedHighField("Unit tests", help_text="Completeness, coverage, quality")
     qa_unit_tests_notes = MarkupField("Unit tests notes")
     qa_unit_tests_signoff = SigneeField(related_name='signed_unit_tests')
 
-    qa_e2e_tests_quality = LowMedHighField("E2E tests", help_text="Completeness, coverage, quality")
+    qa_e2e_tests_status = LowMedHighField("E2E tests", help_text="Completeness, coverage, quality")
     qa_e2e_tests_notes = MarkupField("E2E tests notes")
     qa_e2e_tests_signoff = SigneeField(related_name='signed_e2e_tests')
 
-    qa_perf_tests_quality = LowMedHighField("Performance tests", help_text="Completeness, coverage, quality")
+    qa_perf_tests_status = LowMedHighField("Performance tests", help_text="Completeness, coverage, quality")
     qa_perf_tests_notes = MarkupField("Perf tests notes")
     qa_perf_tests_signoff = SigneeField(related_name='signed_perf_tests')
 
-    qa_longhaul_tests_quality = LowMedHighField("Long-haul tests", help_text="Completeness, coverage, quality")
+    qa_longhaul_tests_status = LowMedHighField("Long-haul tests", help_text="Completeness, coverage, quality")
     qa_longhaul_tests_notes = MarkupField("Long-hault tests notes")
     qa_longhaul_tests_signoff = SigneeField(related_name='signed_longhaul_tests')
 
-    qa_security_tests_quality = LowMedHighField("Security tests", help_text="Completeness, coverage, quality")
+    qa_security_tests_status = LowMedHighField("Security tests", help_text="Completeness, coverage, quality")
     qa_security_tests_notes = MarkupField("Security tests notes")
     qa_security_tests_signoff = SigneeField(related_name='signed_security_tests')
 
-    qa_api_tests_quality = LowMedHighField("API tests", help_text="Completeness, coverage, quality")
+    qa_api_tests_status = LowMedHighField("API tests", help_text="Completeness, coverage, quality")
     qa_api_tests_notes = MarkupField("API tests notes")
     qa_api_tests_signoff = SigneeField(related_name='signed_api_tests')
 
-    qa_anonymisation_tests_quality = LowMedHighField("DB anonymisation tests")
+    qa_anonymisation_tests_status = LowMedHighField("DB anonymisation tests")
     qa_anonymisation_tests_notes = MarkupField("DB anonymisation tests notes")
     qa_anonymisation_tests_signoff = SigneeField(related_name='signed_anonymisation_tests')
 
-    qa_upgrade_tests_quality = LowMedHighField("Upgrade tests", help_text="Functional, performance, real volume")
+    qa_upgrade_tests_status = LowMedHighField("Upgrade tests", help_text="Functional, performance, real volume")
     qa_upgrade_tests_notes = MarkupField("Upgrade tests notes")
     qa_upgrade_tests_signoff = SigneeField(related_name='signed_upgrade_tests')
 
@@ -507,54 +507,58 @@ class ComponentVersionModel(models.Model):
         self.__dict__[target] = int(100 * rating / max_rating)
         return rating, max_rating, bad_rating
 
+    @staticmethod
+    def get_compliance_fields():
+        return ('compliance_fips_status', 'compliance_gdpr_status', 'compliance_api_status')
+
+    @staticmethod
+    def get_operations_fields():
+        return ('op_guide_status', 'op_failover_status', 'op_horizontal_scalability_status', 'op_scaling_guide_status',
+                'op_sla_guide_status', 'op_metrics_status', 'op_alerts_status', 'op_zero_downtime_status', 'op_backup_status')
+
+    @staticmethod
+    def get_maintenance_fields():
+        return ('mt_http_tracing_status', 'mt_logging_completeness_status', 'mt_logging_format_status',
+                'mt_logging_storage_status', 'mt_logging_sanitization_status', 'mt_db_anonymisation_status')
+
+    @staticmethod
+    def get_quality_assurance_fields():
+        return ('qa_manual_tests_status', 'qa_unit_tests_status', 'qa_e2e_tests_status', 'qa_perf_tests_status',
+                'qa_longhaul_tests_status', 'qa_security_tests_status', 'qa_api_tests_status',
+                'qa_anonymisation_tests_status', 'qa_upgrade_tests_status')
+
     def _update_compliance_rating(self):
         return self._update_any_rating('meta_compliance_rating', 'compliance_applicable', NO_PARTIAL_YES_RATING,
-                                       ('compliance_fips_status', 'compliance_gdpr_status',
-                                        'compliance_api_status'))
+                                       ComponentVersionModel.get_compliance_fields())
 
     def _update_mt_rating(self):
         return self._update_any_rating('meta_mt_rating', 'mt_applicable', NO_PARTIAL_YES_RATING,
-                                       ('mt_http_tracing_status', 'mt_logging_completeness_status',
-                                        'mt_logging_format_status', 'mt_logging_storage_status',
-                                        'mt_logging_sanitization_status', 'mt_db_anonymisation_status'))
+                                       ComponentVersionModel.get_maintenance_fields())
 
     def _update_op_rating(self):
         return self._update_any_rating('meta_op_rating', 'op_applicable', NO_PARTIAL_YES_RATING,
-                                       ('op_guide_status', 'op_failover_status',
-                                        'op_horizontal_scalability_status', 'op_scaling_guide_status',
-                                        'op_sla_guide_status', 'op_metrics_status',
-                                        'op_alerts_status', 'op_zero_downtime_status',
-                                        'op_backup_status'))
+                                       ComponentVersionModel.get_operations_fields())
 
     def _update_qa_rating(self):
         return self._update_any_rating('meta_qa_rating', 'qa_applicable', LOW_MED_HIGH_RATING,
-                                       ('qa_manual_tests_quality', 'qa_unit_tests_quality',
-                                        'qa_e2e_tests_quality', 'qa_perf_tests_quality',
-                                        'qa_longhaul_tests_quality', 'qa_security_tests_quality',
-                                        'qa_api_tests_quality'))
+                                       ComponentVersionModel.get_quality_assurance_fields())
 
     def _get_profile_must_fields(self):
         ret = ['owner_maintainer', 'owner_responsible_qa', 'owner_product_manager', 'owner_program_manager',
                 'owner_escalation_list', 'owner_expert', 'owner_architect',
-                'dev_language', 'dev_raml', 'dev_repo', 'dev_jira_component', 'dev_docs', 'dev_api_is_public',
-                'compliance_fips_status', 'compliance_gdpr_status', 'compliance_api_status']
+                'dev_language', 'dev_raml', 'dev_repo', 'dev_jira_component', 'dev_docs', 'dev_api_is_public']
 
         if self.compliance_applicable:
-            ret += ['compliance_fips_status', 'compliance_gdpr_status', 'compliance_api_status']
+            ret += list(ComponentVersionModel.get_compliance_fields())
 
         if self.op_applicable:
-            ret += ['op_guide_status', 'op_failover_status', 'op_horizontal_scalability_status',
-                    'op_scaling_guide_status', 'op_sla_guide_status', 'op_metrics_status', 'op_alerts_status',
-                    'op_zero_downtime_status', 'op_backup_status', 'op_safe_restart']
+            ret += list(ComponentVersionModel.get_operations_fields()) + ['op_safe_restart']
 
         if self.mt_applicable:
-            ret += ['mt_http_tracing_status', 'mt_logging_completeness_status', 'mt_logging_format_status',
-                    'mt_logging_storage_status', 'mt_logging_sanitization_status', 'mt_db_anonymisation_status']
+            ret += list(ComponentVersionModel.get_maintenance_fields())
 
         if self.qa_applicable:
-            ret += ['qa_manual_tests_quality', 'qa_unit_tests_quality', 'qa_e2e_tests_quality',
-                    'qa_perf_tests_quality', 'qa_longhaul_tests_quality', 'qa_security_tests_quality',
-                    'qa_api_tests_quality']
+            ret += list(ComponentVersionModel.get_quality_assurance_fields())
 
         return ret
 

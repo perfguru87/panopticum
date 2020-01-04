@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from django.forms.models import model_to_dict
 
 from .models import *
 
@@ -81,6 +82,11 @@ class ComponentVersionSerializerSimple(serializers.ModelSerializer):
     dev_languages = serializers.SerializerMethodField()
     dev_frameworks = serializers.SerializerMethodField()
 
+    compliance = serializers.SerializerMethodField()
+    operations = serializers.SerializerMethodField()
+    maintenance = serializers.SerializerMethodField()
+    quality_assurance = serializers.SerializerMethodField()
+
     def get_dev_languages(self, component):
         objs = component.dev_language.get_queryset()
         return ", ".join([o.name for o in objs])
@@ -89,9 +95,35 @@ class ComponentVersionSerializerSimple(serializers.ModelSerializer):
         objs = component.dev_framework.get_queryset()
         return ", ".join([o.name for o in objs])
 
+    def _serialize_fields(self, component, applicable, fields):
+        ret = []
+        for f in fields:
+            signoff = getattr(component, f.replace('_status', '_signoff'))
+            ret.append({'title': component._meta.get_field(f).verbose_name,
+                        'field': f,
+                        'status': getattr(component, f) if applicable else "n/a",
+                        'notes': getattr(component, f.replace('_status', '_notes')) if applicable else "",
+                        'signoff': signoff.email if signoff and applicable else ""})
+        return ret
+
+    def get_compliance(self, component):
+        return self._serialize_fields(component, component.compliance_applicable, ComponentVersionModel.get_compliance_fields())
+
+    def get_operations(self, component):
+        return self._serialize_fields(component, component.op_applicable, ComponentVersionModel.get_operations_fields())
+
+    def get_maintenance(self, component):
+        return self._serialize_fields(component, component.mt_applicable, ComponentVersionModel.get_maintenance_fields())
+
+    def get_quality_assurance(self, component):
+        return self._serialize_fields(component, component.qa_applicable, ComponentVersionModel.get_quality_assurance_fields())
+
     class Meta:
         model = ComponentVersionModel
-        fields = '__all__'
+        exclude = ComponentVersionModel.get_compliance_fields() + \
+                  ComponentVersionModel.get_maintenance_fields() + \
+                  ComponentVersionModel.get_operations_fields() + \
+                  ComponentVersionModel.get_quality_assurance_fields()
 
 
 class ComponentSerializer(ComponentSerializerSimple):
