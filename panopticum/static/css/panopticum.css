@@ -26,6 +26,10 @@ hr {
   border-top: 1px solid rgba(0, 0, 0, 0.1);
 }
 
+.x_title h2 { overflow: visible; }
+.x_content h3 { overflow: visible; font-size: 16px; padding: 10px 0px 5px 0px; margin: 10px 0px 0px 0px; }
+.x_content h3:first-child { margin-top: 0px; padding-top: 0px; }
+
 /* Panopticum side-by-side table */
 
 .panopticum-side-by-side-table { margin: -5px; }
@@ -245,32 +249,31 @@ div.owners-list td.owner img {
     display: table-cell;
 }
 
-/* Datacenter table */
-table.dc-table {
-    width: 100%;
-}
-table.dc-table tbody tr:first-child td {
-    padding-top: 5px;
-}
-table.dc-table th, table.dc-table td {
+/* Status table */
+
+table.status-table tbody tr:nth-child(even) td { background-color: #f0f0f0; }
+table.status-table tbody tr td:first-child { width: 150px; text-align: left; }
+table.status-table tbody tr td:nth-child(2) { width: 10%; text-align: center; }
+table.status-table tbody tr td:last-child { text-align: left; padding-left: 5px; }
+table.status-table { width: 100%; }
+table.status-table tbody tr:first-child td { padding-top: 5px; }
+table.status-table th, table.status-table td {
     padding: 1px 2px;
     border-left: 1px solid #aaa;
     text-align: center;
 }
-table.dc-table th {
+table.status-table th {
     font-weight: bold;
     border-bottom: 1px solid #aaa;
     background-color: #ddd;
 } 
-table.dc-table th:first-child, table.dc-table td:first-child {
-    border-left: 0px;
-}
-table.dc-table tr:nth-child(even) td {
-    background-color: #f0f0f0;
-}
-table.dc-table tr:nth-child(odd) td {
-    background-color: #fff;
-}
+table.status-table th:first-child, table.status-table td:first-child { border-left: 0px; }
+table.status-table tr:nth-child(even) td { background-color: #f0f0f0; }
+table.status-table tr:nth-child(odd) td { background-color: #fff; }
+
+table.status-table-na tbody tr td { color: #999 !important; }
+
+table.table-auto-width td, table.table-auto-width th { width: auto !important; }
 
 table.first-td-left th:first-child,
 table.first-td-left td:first-child {
@@ -280,10 +283,6 @@ table.first-td-left td:first-child {
 table.last-td-left th:last-child,
 table.last-td-left td:last-child {
     text-align: left;
-}
-
-table.tests-table tbody tr:nth-child(even) td {
-    background-color: #f0f0f0;
 }
 
 /* Menu toggle */
@@ -310,12 +309,13 @@ i.yes { color: green; }
 i.no { color: #bf9e9e; }
 i.unknown { color: #aaa; }
 
-td.pa-stars { white-space: nowrap; }
-td.pa-stars i { width: 8px; }
-td.pa-stars i.fa-star { color: green; }
-td.pa-stars i.fa-star-o { color: #aaa; }
+td.pa-quality, td.pa-status { white-space: nowrap; text-align: center;}
+td.pa-quality i, td.pa-status i { width: 10px; }
+td.pa-quality i.fa-star, td.pa-status i.fa-star { color: green; }
+td.pa-quality i.fa-star-o, td.pa-status i.fa-star-o { color: #aaa; }
+td.pa-quality i.unknown, td.pa-status i.unknown { font-size: 12px; color: crimson; }
 
-span.yes, span.no, span.na, span.unknown {
+span.yes, span.no, span.na, span.unknown, span.some {
     display: block;
     width: 35px;
     line-height: 16px;
@@ -323,8 +323,45 @@ span.yes, span.no, span.na, span.unknown {
     border-radius: 3px;
     text-align: center;
     font-weight: bold;
+    margin: 0px 3px 0px 3px;
 }
-span.yes { color: white;  background-color: green; }
-span.no { color: #f64f4f; background-color: white; border: 1px solid #f64f4f; }
+span.yes, .pa-component-rating-high { color: white!important;  background-color: green; border: 1px solid green; }
+span.some, .pa-component-rating-med { color: white!important;  background-color: gray; font-size: 10px; line-height: 16px; border: 1px solid gray;}
+span.no, .pa-component-rating-low { color: #f64f4f!important; background-color: white; border: 1px solid #f64f4f; }
 span.na { background-color: #eee; color: #777; border: 1px solid #ccc; }
 span.unknown { background-color: #eee; color: #444; border: 1px solid #ccc; }
+
+span.pa-component-rating, span.pa-component-rating-large  {
+    display: block;
+    width: 40px;
+    text-align: center;
+    margin-left: 5px;
+    float: right;
+    border-radius: 5px;
+    line-height: 18px;
+    font-size: 13px;
+    font-weight: bold;
+}
+span.pa-component-rating-large {
+    width: 60px;
+    border-radius: 5px;
+    line-height: 24px;
+    font-size: 16px;
+    border-width: 3px;
+}
+
+span.pa-component-stars {
+    display: block;
+    margin-left: 5px;
+    float: right;
+    line-height: 19px;
+    color: green;
+}
+span.pa-component-stars i {
+    font-size: 10px;
+    line-height: 18px;
+    vertical-align: top;
+}
+
+/* vue.js */
+[v-cloak] { display:none!important; }

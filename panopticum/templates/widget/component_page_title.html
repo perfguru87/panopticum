@@ -1,10 +1,12 @@
          <div class="title_left">
-           <h3 style='margin-bottom: 0px;'>[[ component.name ]] <small>[[ component.latest_version.version ]]</small></h3>
+           <h3 style='margin-bottom: 3px;'>
+             <span v-cloak>[[ component.name ]]
+               <small v-cloak>[[ component.latest_version.version ]]</small>
+             </span>
+             &nbsp;
+           </h3>
            <p class='component-links'>
-             <span>A Product X v1.0</span>
-             <span>Web service</span>
-             <span>Platform</span>
-             <br><br>Raw denim you probably haven't heard of them jean shorts Austin.
-             Nesciunt tofu stumptown aliqua, retro synth master cleanse</span>
+             <span v-cloak>[[ component.runtime_type.name ]]</span>
+             <span v-cloak>[[ component.category.name ]]</span>&nbsp;
            </p>
          </div>

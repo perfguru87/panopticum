@@ -5,8 +5,8 @@ function init_rating_chart() {
         barColor: '#26B99A',
         trackColor: '#fff',
         scaleColor: false,
-        lineWidth: 20,
-        trackWidth: 16,
+        lineWidth: 5,
+        trackWidth: 3,
         lineCap: 'butt',
         onStep: function(from, to, percent) {
             $(this.el).find('.percent').text(Math.round(percent));

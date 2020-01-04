@@ -24,26 +24,33 @@
       <div class="clearfix"></div>
 
       <div class="row">
-        <div class="col-md-4 col-sm-4 col-xs-12">
-          {% include "widget/component_summary.html" %}
-        </div>
-        <div class="col-md-8 col-sm-8 col-xs-12">
-          <div class='row row-eq-height-sm'>
-            <div class="col-md-6 col-sm-6 col-xs-12">
-              {% include "widget/component_owners.html" %}
+        <div class="col-md-4 col-sm-12 col-xs-12">
+          <div class="row">
+            <div class="col-xs-12">
+              {% include "widget/component_summary.html" %}
             </div>
-            <div class="col-md-6 col-sm-6 col-xs-12">
-              {% include "widget/component_quality_assurance.html" %}
+            <div class="col-xs-12">
+              {% include "widget/component_activity.html" %}
+            </div>
+            <div class="col-xs-12">
+              {% include "widget/component_dependency.html" %}
             </div>
           </div>
         </div>
-        <div class="col-md-8 col-sm-8 col-xs-12">
-          <div class='row row-eq-height-sm'>
-            <div class="col-md-6 col-sm-6 col-xs-12">
-             {% include "widget/component_maintenance.html" %}
+        <div class="col-md-4 col-sm-12 col-xs-12">
+          <div class="row">
+            <div class="col-xs-12">
+              {% include "widget/component_owners.html" %}
             </div>
-            <div class="col-md-6 col-sm-6 col-xs-12">
-              {% include "widget/component_operations.html" %}
+            <div class="col-xs-12">
+              {% include "widget/component_deployments.html" %}
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 col-sm-12 col-xs-12">
+          <div class="row">
+            <div class="col-xs-12">
+              {% include "widget/component_ratings.html" %}
             </div>
           </div>
         </div>
@@ -59,9 +66,9 @@
 <script>
 function init_component_page_js() {
     {% include "widget/component_profile_completion.js" %}
-    {% include "widget/component_summary.js" %}
-    {% include "widget/component_quality_assurance.js" %}
+    {% include "widget/component_activity.js" %}
     {% include "widget/component_rating_chart.js" %}
+    {% include "widget/component_ratings.js" %}
 }
 
 function replace_urls_in_text(text) {
@@ -70,10 +77,63 @@ function replace_urls_in_text(text) {
 }
 
 function update_component_page_elements() {
-    $(".replace_urls").each(function(index, el) {
-        var val = $(el).html();
-        val = replace_urls_in_text(val);
+    $(".pa-replace-urls").each(function(index, el) {
+        var val = replace_urls_in_text($(el).html());
         $(el).html(val);
+    });
+
+    $(".pa-quality").each(function(index, el) {
+        var val = $(el).html();
+        if (val == "unknown") {
+            $(el).html("<i class='unknown fa fa-question-circle'></i>");
+        } else if (val == "none") {
+            $(el).html("<i class='fa fa-star-o'></i><i class='fa fa-star-o'></i><i class='fa fa-star-o'></i>");
+        } else if (val == "low") {
+            $(el).html("<i class='fa fa-star'></i><i class='fa fa-star-o'></i><i class='fa fa-star-o'></i>");
+        } else if (val == "med") {
+            $(el).html("<i class='fa fa-star'></i><i class='fa fa-star'></i><i class='fa fa-star-o'></i>");
+        } else if (val == "high") {
+            $(el).html("<i class='fa fa-star'></i><i class='fa fa-star'></i><i class='fa fa-star'></i>");
+        }
+    });
+
+    $(".pa-status").each(function(index, el) {
+        var val = $(el).html();
+        if (val == "unknown") {
+            $(el).html("<i class='unknown fa fa-question-circle'></i>");
+        } else if (val == "no") {
+            $(el).html("<span class='no'>NO</span>");
+        } else if (val == "partial") {
+            $(el).html("<span class='some'>Some</span>");
+        } else if (val == "yes") {
+            $(el).html("<span class='yes'>YES</span>");
+        }
+    });
+
+    $(".pa-component-stars").each(function(index, el) {
+        var val = parseInt($(el).html());
+        var new_val = "";
+        var on = "<i class='fa fa-star'></i>";
+        var off = "<i class='fa fa-star-o'></i>";
+
+        new_val += (val >= 20) ? on : off;
+        new_val += (val >= 40) ? on : off;
+        new_val += (val >= 60) ? on : off;
+        new_val += (val >= 80) ? on : off;
+        new_val += (val >= 95) ? on : off;
+
+        $(el).html(new_val);
+    });
+
+    $(".pa-component-rating").each(function(index, el) {
+        var val = parseInt($(el).html());
+        $(el).removeClass("pa-component-rating-low pa-component-rating-med pa-component-rating-high");
+        if (val >= 80)
+           $(el).addClass("pa-component-rating-high");
+        else if (val >= 50)
+           $(el).addClass("pa-component-rating-med");
+        else
+           $(el).addClass("pa-component-rating-low");
     });
 }
 
@@ -87,7 +147,12 @@ function vue_component_init() {
         delimiters: ['[[', ']]'],
         data: {
             component: {
+                'category': {},
+                'runtime_type': {},
                 'latest_version':{
+                    'operations': {},
+                    'quality_assurance': {},
+                    'maintenance': {},
                     'owner_maintainer': {},
                     'owner_responsible_qa': {},
                     'owner_product_manager': {},

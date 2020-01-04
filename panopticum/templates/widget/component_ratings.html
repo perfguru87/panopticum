@@ -1,0 +1,125 @@
+        <div class="x_panel tile">
+          <div class="x_title">
+            <h2>Ratings</h2>
+
+            <ul class="nav navbar-right panel_toolbox">
+              <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
+              <li><a class="close-link"><i class="fa fa-close"></i></a></li>
+            </ul>
+            <div class="clearfix"></div>
+          </div>
+          <div class="x_content" style='margin-top: 0px;'>
+
+<!--
+   <canvas id="ratings-chart" height="150" width="500" style="width: 500px; height: 150px; padding-top: 0px;"></canvas>
+//-->
+
+            <h3 v-cloak>Quality Assurance
+              <span class='pa-component-rating' v-cloak v-if='component.latest_version.qa_applicable'>
+                [[ component.latest_version.meta_qa_rating ]]%
+              </span>
+              <span class='pa-component-stars' v-cloak v-if='component.latest_version.qa_applicable'>
+                [[ component.latest_version.meta_qa_rating ]]
+              </span>
+            </h2>
+
+            <table class='status-table' v-bind:class="[ component.latest_version.qa_applicable ? '' : 'status-table-na']" v-cloak>
+              <thead>
+                <tr>
+                  <th>Test type</th>
+                  <th>Rating</th>
+                  <th>Notes</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for='item in component.latest_version.quality_assurance' v-cloak>
+                  <td>[[ item.title ]]</td>
+                  <td class='pa-quality'>[[ item.status ]]</td>
+                  <td class='pa-replace-urls'>[[ item.notes ]]</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <h3 v-cloak>Cloud Requirements
+              <span class='pa-component-rating' v-cloak v-if='component.latest_version.op_applicable'>
+                [[ component.latest_version.meta_op_rating ]]%
+              </span>
+              <span class='pa-component-stars' v-cloak v-if='component.latest_version.op_applicable'>
+                [[ component.latest_version.meta_op_rating ]]
+              </span>
+            </h2>
+
+            <table class='status-table' v-bind:class="[ component.latest_version.op_applicable ? '' : 'status-table-na']" v-cloak>
+              <thead>
+                <tr>
+                  <th>Requirement</th>
+                  <th>Status</th>
+                  <th>Notes</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for='item in component.latest_version.operations' v-cloak>
+                  <td>[[ item.title ]]</td>
+                  <td class='pa-status'>[[ item.status ]]</td>
+                  <td class='pa-replace-urls'>[[ item.notes ]]</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <h3 v-cloak>Maintenance
+              <span class='pa-component-rating' v-cloak v-if='component.latest_version.mt_applicable'>
+                [[ component.latest_version.meta_mt_rating ]]%
+              </span>
+              <span class='pa-component-stars' v-cloak v-if='component.latest_version.mt_applicable'>
+                [[ component.latest_version.meta_mt_rating ]]
+              </span>
+            </h2>
+
+            <table class='status-table' v-bind:class="[ component.latest_version.mt_applicable ? '' : 'status-table-na']" v-cloak>
+              <thead>
+                <tr>
+                  <th>Requirement</th>
+                  <th>Status</th>
+                  <th>Notes</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for='item in component.latest_version.maintenance' v-cloak>
+                  <td>[[ item.title ]]</td>
+                  <td class='pa-status'>[[ item.status ]]</td>
+                  <td class='pa-replace-urls'>[[ item.notes ]]</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <h3 v-cloak>Compliance
+              <span class='pa-component-rating' v-cloak v-if='component.latest_version.compliance_applicable'>
+                [[ component.latest_version.meta_compliance_rating ]]%
+              </span>
+              <span class='pa-component-stars' v-cloak v-if='component.latest_version.compliance_applicable'>
+                [[ component.latest_version.meta_mt_rating ]]
+              </span>
+            </h2>
+
+            <table class='status-table'
+                v-bind:class="[ component.latest_version.compliance_applicable ? '' : 'status-table-na']" v-cloak>
+              <thead>
+                <tr>
+                  <th>Compliance</th>
+                  <th>Status</th>
+                  <th>Notes</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for='item in component.latest_version.compliance' v-cloak>
+                  <td>[[ item.title ]]</td>
+                  <td class='pa-status'>[[ item.status ]]</td>
+                  <td class='pa-replace-urls'>[[ item.notes ]]</td>
+                </tr>
+              </tbody>
+            </table>
+
+
+
+          </div>
+        </div>

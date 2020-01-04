@@ -21,6 +21,7 @@ function init_activity_chart() {
                 scales: {
                     yAxes: [{
                         ticks: {
+                            stepSize: 20,
                             beginAtZero: true
                         }
                     }]

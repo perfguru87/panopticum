@@ -1,6 +1,6 @@
     <div class="x_panel tile">
       <div class="x_title">
-        <h2>Component Details</h2>
+        <h2>Summary</h2>
         <ul class="nav navbar-right panel_toolbox">
           <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
           <li><a class="close-link"><i class="fa fa-close"></i></a></li>
@@ -9,17 +9,23 @@
       </div>
       <div class='x_content'>
 
+        <div class='row' v-cloak v-if='component.description'>
+          <div class='col-sm-12' style='padding: 0px 5px 15px 5px;'>
+              <h3 style='margin-bottom: 10px;'>Component Description</h3>
+              [[ component.description ]]
+          </div>
+        </div>
         <div class='row panopticum-side-by-side-table row-eq-height-xl row-eq-height-lg row-neq-height-md row-neq-height-sm row-eq-height-xs'>
           <div class='col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-6'>
             <div>
               <h4>Development</h4>
               <table class='col-3-center'>
-                <tr><td>Vendor</td><td>:</td><td>[[ component.vendor.name ]]</td></tr>
-                <tr><td>Language</td><td>:</td><td>[[ component.latest_version.dev_languages ]]</td></tr>
-                <tr><td>Frameworks</td><td>:</td><td>[[ component.latest_version.dev_frameworks ]]</td></tr>
-                <tr><td>Life status</td><td>:</td><td>[[ component.life_status ]]</td></tr>
-                <tr><td>API is public</td><td>:</td><td>[[ component.latest_version.dev_api_is_public ]]</td></tr>
-                <tr><td>Data access</td><td>:</td><td>[[ component.data_privacy_class.name ]]</td></tr>
+                <tr><td>Vendor</td><td>:</td><td><div v-cloak>[[ component.vendor.name ]]</div></td></tr>
+                <tr><td>Language</td><td>:</td><td><div v-cloak>[[ component.latest_version.dev_languages ]]</div></td></tr>
+                <tr><td>Frameworks</td><td>:</td><td><div v-cloak>[[ component.latest_version.dev_frameworks ]]</div></td></tr>
+                <tr><td>Life status</td><td>:</td><td><div v-cloak>[[ component.life_status ]]</div></td></tr>
+                <tr><td>API is public</td><td>:</td><td><div v-cloak>[[ component.latest_version.dev_api_is_public ]]</div></td></tr>
+                <tr><td>Data access</td><td>:</td><td><div v-cloak>[[ component.data_privacy_class.name ]]</div></td></tr>
               </table> 
             </div>
           </div>
@@ -27,95 +33,18 @@
             <div>
               <h4>Links</h4>
               <table class='col-3-center'>
-                <tr><td>RAML</td><td>:</td><td class='replace_urls'>[[ component.latest_version.dev_raml ]]</td></tr>
-                <tr><td>Repository</td><td>:</td><td class='replace_urls'>[[ component.latest_version.dev_repo ]]</a></td></tr>
-                <tr><td>JIRA</td><td>:</td><td class='replace_urls'>[[ component.latest_version.dev_jira_component ]]</td></tr>
-                <tr><td>Public Docs</td><td>:</td><td class='replace_urls'>[[ component.latest_version.dev_public_docs ]]</td></tr>
-                <tr><td>Internal Docs</td><td>:</td><td class='replace_urls'>[[ component.latest_version.dev_docs ]]</td></tr>
-                <tr><td>Build job</td><td>:</td>
-                    <td class='replace_urls'>[[ component.latest_version.dev_build_jenkins_job ]]</td></tr>
-              </table>
-            </div>
-          </div>
-        </div>
-
-        <canvas id="activity-chart" height="120" width="300" style="width: 300px; height: 110px; padding-top: 10px;"></canvas>
-        <br>
-
-        <div class='row panopticum-side-by-side-table row-eq-height-xl row-eq-height-lg row-neq-height-md row-neq-height-sm row-eq-height-xs'>
-          <div class='col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-6'>
-            <div>
-              <h4>Cloud Products</h4>
-              <table class='col-3-center'>
-                <tr><td>Location</td><td>:</td><td>Per-datacenter</td></tr>
-                <tr><td>Environment</td><td>:</td></td><td>Kubernetes</td></tr>
-                <tr><td>Service name</td><td>:</td><td>accsrv</td></tr>
-                <tr><td>Binary name</td><td>:</td><td>accsrv</td></tr>
-              </table>
-            </div>
-          </div>
-          <div class='col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-6'>
-            <div>
-              <h4>On-prem Products</h4>
-              <table class='col-3-center'>
-                <tr><td>Location</td><td>:</td><td>Server</td></tr>
-                <tr><td>OS</td><td>:</td></td><td>Windows</td></tr>
-                <tr><td>Type</td><td>:</td></td><td>service</td></tr>
-                <tr><td>Name</td><td>:</td></td><td>service.exe</td></tr>
-              </table>
-            </div>
-          </div>
-        </div>
-
-        <br>
-
-        <div class='row panopticum-side-by-side-table row-eq-height-xl row-eq-height-lg row-neq-height-md row-neq-height-sm row-eq-height-xs'>
-          <div class='col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-6'>
-            <div>
-              <h4>Dependency</h4>
-              <table class='component-details'>
-                <tr><td><i style='font-size: 9px;' class='fa fa-database'></i></td><td>Percona cluster (RW)</td></tr>
-                <tr><td><i style='font-size: 9px;' class='fa fa-dot-circle-o'></i></td><td>Auth gateway (REST)</td></tr>
-                <tr><td><i style='font-size: 9px;' class='fa fa-envelope-o'></i></td><td>Stats server (MQ "myqueue" rcv)</td></tr>
-              </table>
-            </div>
-          </div>
-          <div class='col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-6'>
-            <div>
-              <h4>Compliance</h4>
-              <table class='col-3-center'>
-                <tr><td>API guideline</td><td>:</td><td><span class='yes'>YES</span></td></tr>
-                <tr><td>GDPR</td><td>:</td><td><span class='no'>NO</span></td></tr>
-                <tr><td>FIPS</td><td>:</td><td><span class='na'>N/A</span></td></tr>
-              </table>
-            </div>
-          </div>
-        </div>
-
-        <br>
-
-        <div class='row panopticum-side-by-side-table row-eq-height-xl row-eq-height-lg row-neq-height-md row-neq-height-sm row-eq-height-xs'>
-          <div class='col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-6'>
-            <div>
-              <h4>RDBMS persistency</h4>
-              <table class='col-3-center'>
-                <tr><td>Supported DBs</td><td>:</td><td>-</td></tr>
-                <tr><td>ORM</td><td>:</td><td>-</td></tr>
-                <tr><td>DB conn pool</td><td>:</td><td>-</td></tr>
-                <tr><td>Volume model</td><td>:</td><td>-</td></tr>
-                <tr><td>Data retention</td><td>:</td><td>-</td></tr>
-              </table>
-            </div>
-          </div>
-          <div class='col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-6'>
-            <div>
-              <h4>NoSQL persistency</h4>
-              <table class='col-3-center'>
-                <tr><td>Supported DBs</td><td>:</td><td>-</td></tr>
-                <tr><td>ORM</td><td>:</td><td>-</td></tr>
-                <tr><td>DB conn pool</td><td>:</td><td>-</td></tr>
-                <tr><td>Volume model</td><td>:</td><td>-</td></tr>
-                <tr><td>Data retention</td><td>:</td><td>-</td></tr>
+                <tr><td>RAML</td><td>:</td><td><div class='pa-replace-urls' v-cloak>
+                                               [[ component.latest_version.dev_raml ]]</div></td></tr>
+                <tr><td>Repository</td><td>:</td><td><div class='pa-replace-urls' v-cloak>
+                                               [[ component.latest_version.dev_repo ]]</div></td></tr>
+                <tr><td>JIRA</td><td>:</td><td><div class='pa-replace-urls' v-cloak>
+                                               [[ component.latest_version.dev_jira_component ]]</div></td></tr>
+                <tr><td>Public Docs</td><td>:</td><td><div class='pa-replace-urls' v-cloak>
+                                               [[ component.latest_version.dev_public_docs ]]</div></td></tr>
+                <tr><td>Internal Docs</td><td>:</td><td><div class='pa-replace-urls' v-cloak>
+                                               [[ component.latest_version.dev_docs ]]</div></td></tr>
+                <tr><td>Build job</td><td>:</td><td><div class='pa-replace-urls' v-cloak>
+                                               [[ component.latest_version.dev_build_jenkins_job ]]</div></td></tr>
               </table>
             </div>
           </div>
