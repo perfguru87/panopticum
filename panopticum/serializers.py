@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from django.contrib.auth import get_user_model
 from django.forms.models import model_to_dict
 
 from .models import *
@@ -183,3 +184,9 @@ class ComponentSerializer(ComponentSerializerSimple):
 
 class ComponentVersionSerializer(ComponentVersionSerializerSimple):
     component = ComponentSerializerSimple(read_only=True)
+
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = get_user_model()
+        exclude = ('password', )

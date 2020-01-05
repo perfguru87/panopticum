@@ -1,6 +1,7 @@
 Django==2.1.*
 djangorestframework-datatables
 django-datatable-view
+django-auth-ldap
 ldapdomaindump
 django-extensions
 pygraphviz

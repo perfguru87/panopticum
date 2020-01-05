@@ -100,7 +100,8 @@ DATABASES = {
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
-
+# uncomment if you need ldap auth
+#AUTHENTICATION_BACKENDS = ["django_auth_ldap.backend.LDAPBackend"]
 
 # JIRA
 
@@ -177,6 +178,7 @@ PAGE_FOOTER = "Copyright © 2019"
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
 STATIC_URL = '/static/'
+
 
 curr_dir = os.path.abspath(os.path.dirname(__file__))
 if os.path.exists(os.path.join(curr_dir, "settings_local.py")):

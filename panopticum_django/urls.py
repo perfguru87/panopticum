@@ -39,6 +39,7 @@ urlpatterns = [
     url('^dashboard/links.html', views.dashboard_components, name='Links'),
     re_path(r'^api/jira/([A-Z]*-\d+)', views.JiraIssueView.as_view(), name='jira'),
     url(r'^api/jira_url/', views.JiraUrlView.as_view(), name='jira_url'),
+    path('api/login/', views.LoginView.as_view()),
     url('^api/', include(router.urls)),
     url('', views.dashboard_components, name='Components')
 ]
