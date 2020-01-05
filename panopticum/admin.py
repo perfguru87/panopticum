@@ -17,7 +17,7 @@ formfield_overrides = {models.ForeignKey: {'widget': Select(attrs={'width': '300
 
 class ComponentDependencyAdmin(admin.TabularInline):
     formfield_overrides = formfield_overrides
-    model = ComponentVersionModel.depends_on.through
+    model = ComponentVersion.depends_on.through
 
 
 class ComponentVersionAdmin(admin.ModelAdmin):
@@ -80,19 +80,19 @@ class ComponentVersionAdmin(admin.ModelAdmin):
         # standard django method
         if db_field.name in ("owner_product_manager", "owner_program_manager", "owner_expert",
                              "owner_escalation_list", "owner_architect"):
-            kwargs["queryset"] = PersonModel.objects.filter(hidden=False)
+            kwargs["queryset"] = Person.objects.filter(hidden=False)
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         # standard django method
         if db_field.name in ("owner_maintainer", "owner_responsible_qa"):
-            kwargs["queryset"] = PersonModel.objects.filter(hidden=False)
+            kwargs["queryset"] = Person.objects.filter(hidden=False)
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     def save_model(self, request, obj, form, change):
         # standard django method
         if obj.pk:
-            orig_obj = ComponentVersionModel.objects.get(id=obj.id)
+            orig_obj = ComponentVersion.objects.get(id=obj.id)
             if orig_obj.version != obj.version:
                 obj.id = None
         obj.meta_update_date = datetime.datetime.now()
@@ -106,24 +106,24 @@ class ComponentVersionAdmin(admin.ModelAdmin):
               }
 
 
-admin.site.register(CountryModel)
-admin.site.register(OrganizationModel)
-admin.site.register(OrgDepartmentModel)
-admin.site.register(PersonRoleModel)
-admin.site.register(PersonModel)
+admin.site.register(Country)
+admin.site.register(Organization)
+admin.site.register(Department)
+admin.site.register(PersonRole)
+admin.site.register(Person)
 
-admin.site.register(SoftwareVendorModel)
-admin.site.register(DatabaseVendorModel)
-admin.site.register(ProductFamilyModel)
-admin.site.register(ProductModel)
-admin.site.register(ProgrammingLanguageModel)
-admin.site.register(FrameworkModel)
-admin.site.register(ORMModel)
-admin.site.register(LoggerModel)
-admin.site.register(ComponentRuntimeTypeModel)
-admin.site.register(ComponentDataPrivacyClassModel)
-admin.site.register(ComponentCategoryModel)
-admin.site.register(ComponentSubcategoryModel)
-admin.site.register(ComponentModel)
-admin.site.register(ComponentVersionModel, ComponentVersionAdmin)
-admin.site.register(DeploymentLocationClassModel)
+admin.site.register(SoftwareVendor)
+admin.site.register(DatabaseVendor)
+admin.site.register(ProductFamily)
+admin.site.register(Product)
+admin.site.register(ProgrammingLanguage)
+admin.site.register(Framework)
+admin.site.register(ORM)
+admin.site.register(Logger)
+admin.site.register(ComponentRuntimeType)
+admin.site.register(ComponentDataPrivacyClass)
+admin.site.register(ComponentCategory)
+admin.site.register(ComponentSubcategory)
+admin.site.register(Component)
+admin.site.register(ComponentVersion, ComponentVersionAdmin)
+admin.site.register(DeploymentLocationClass)

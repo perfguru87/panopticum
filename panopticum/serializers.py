@@ -1,36 +1,35 @@
 from rest_framework import serializers
-from django.forms.models import model_to_dict
 
 from .models import *
 
 
 class ComponentDataPrivacyClassSerializer(serializers.ModelSerializer):
     class Meta:
-        model = ComponentDataPrivacyClassModel
+        model = ComponentDataPrivacyClass
         fields = '__all__'
 
 
 class ComponentRuntimeTypeSerializer(serializers.ModelSerializer):
     class Meta:
-        model = ComponentRuntimeTypeModel
+        model = ComponentRuntimeType
         fields = '__all__'
 
 
 class ComponentCategorySerializer(serializers.ModelSerializer):
     class Meta:
-        model = ComponentCategoryModel
+        model = ComponentCategory
         fields = '__all__'
 
 
 class ComponentSubcategorySerializer(serializers.ModelSerializer):
     class Meta:
-        model = ComponentSubcategoryModel
+        model = ComponentSubcategory
         fields = '__all__'
 
 
 class ProductFamilySerializer(serializers.ModelSerializer):
     class Meta:
-        model = ProductFamilyModel
+        model = ProductFamily
         fields = '__all__'
 
 
@@ -38,25 +37,25 @@ class ProductSerializer(serializers.ModelSerializer):
     family = ProductFamilySerializer(read_only=True)
 
     class Meta:
-        model = ProductModel
+        model = Product
         fields = '__all__'
 
 
 class PersonSerializer(serializers.ModelSerializer):
     class Meta:
-        model = PersonModel
+        model = Person
         fields = '__all__'
 
 
 class SoftwareVendorSerializer(serializers.ModelSerializer):
     class Meta:
-        model = SoftwareVendorModel
+        model = SoftwareVendor
         fields = '__all__'
 
 
 class DeploymentLocationClassSerializer(serializers.ModelSerializer):
     class Meta:
-        model = DeploymentLocationClassModel
+        model = DeploymentLocationClass
         fields = '__all__'
 
 
@@ -69,7 +68,7 @@ class ComponentSerializerSimple(serializers.ModelSerializer):
     vendor = SoftwareVendorSerializer(read_only=True)
 
     class Meta:
-        model = ComponentModel
+        model = Component
         fields = '__all__'
 
 
@@ -77,7 +76,7 @@ class ComponentDependencySerializerSimple(serializers.ModelSerializer):
     component = ComponentSerializerSimple(read_only=True)
 
     class Meta:
-        model = ComponentDependencyModel
+        model = ComponentDependency
         fields = '__all__'
 
 
@@ -124,33 +123,34 @@ class ComponentVersionSerializerSimple(serializers.ModelSerializer):
         return ret
 
     def get_compliance(self, component):
-        return self._serialize_fields(component, component.compliance_applicable, ComponentVersionModel.get_compliance_fields())
+        return self._serialize_fields(component, component.compliance_applicable, ComponentVersion.get_compliance_fields())
 
     def get_operations(self, component):
-        return self._serialize_fields(component, component.op_applicable, ComponentVersionModel.get_operations_fields())
+        return self._serialize_fields(component, component.op_applicable, ComponentVersion.get_operations_fields())
 
     def get_maintenance(self, component):
-        return self._serialize_fields(component, component.mt_applicable, ComponentVersionModel.get_maintenance_fields())
+        return self._serialize_fields(component, component.mt_applicable, ComponentVersion.get_maintenance_fields())
 
     def get_quality_assurance(self, component):
-        return self._serialize_fields(component, component.qa_applicable, ComponentVersionModel.get_quality_assurance_fields())
+        return self._serialize_fields(component, component.qa_applicable, ComponentVersion.get_quality_assurance_fields())
 
     class Meta:
-        model = ComponentVersionModel
-        exclude = ComponentVersionModel.get_compliance_fields() + \
-                  ComponentVersionModel.get_maintenance_fields() + \
-                  ComponentVersionModel.get_operations_fields() + \
-                  ComponentVersionModel.get_quality_assurance_fields()
+        model = ComponentVersion
+        exclude = ComponentVersion.get_compliance_fields() + \
+                  ComponentVersion.get_maintenance_fields() + \
+                  ComponentVersion.get_operations_fields() + \
+                  ComponentVersion.get_quality_assurance_fields()
 
 
 class ComponentSerializer(ComponentSerializerSimple):
     latest_version = serializers.SerializerMethodField()
 
-    def get_latest_version(self, component):
-         objs = ComponentVersionModel.objects.filter(component=component.id).order_by('-meta_update_date')
-         if len(objs):
-              return ComponentVersionSerializerSimple(objs[0]).data
-         return None
+    @staticmethod
+    def get_latest_version(component):
+        objs = ComponentVersion.objects.filter(component=component.id).order_by('-meta_update_date')
+        if len(objs):
+            return ComponentVersionSerializerSimple(objs[0]).data
+        return None
 
 
 class ComponentVersionSerializer(ComponentVersionSerializerSimple):

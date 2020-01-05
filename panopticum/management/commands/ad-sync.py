@@ -75,39 +75,39 @@ class DomainUsersParser:
                 obj = None
                 if employee_number:
                     try:
-                        obj = PersonModel.objects.get(employee_number=employee_number)
-                    except PersonModel.DoesNotExist as e:
+                        obj = Person.objects.get(employee_number=employee_number)
+                    except Person.DoesNotExist as e:
                         pass
 
                 if obj is None and guid:
                     try:
-                        obj = PersonModel.objects.get(active_directory_guid=guid)
-                    except PersonModel.DoesNotExist as e:
+                        obj = Person.objects.get(active_directory_guid=guid)
+                    except Person.DoesNotExist as e:
                         pass
 
                 if obj is None and email:
                     try:
-                        obj = PersonModel.objects.get(email=email)
-                    except PersonModel.DoesNotExist as e:
+                        obj = Person.objects.get(email=email)
+                    except Person.DoesNotExist as e:
                         pass
                     except MultipleObjectsReturned as e:
                         print("warning: multiple users with email: %s" % email)
 
                 if obj is None and name:
                     try:
-                        obj = PersonModel.objects.get(name=name)
-                    except PersonModel.DoesNotExist as e:
+                        obj = Person.objects.get(name=name)
+                    except Person.DoesNotExist as e:
                         pass
 
                 if obj is None:
-                    obj = PersonModel(name=name, email=email, active_directory_guid=guid, employee_number=employee_number)
+                    obj = Person(name=name, email=email, active_directory_guid=guid, employee_number=employee_number)
                     created += 1
                 else:
                     updated += 1
 
-                obj.country = self._alloc_obj_by_name(CountryModel, a, 'co')
-                obj.organization = self._alloc_obj_by_name(OrganizationModel, a, 'company')
-                obj.org_department = self._alloc_obj_by_name(OrgDepartmentModel, a, 'department')
+                obj.country = self._alloc_obj_by_name(Country, a, 'co')
+                obj.organization = self._alloc_obj_by_name(Organization, a, 'company')
+                obj.org_department = self._alloc_obj_by_name(Department, a, 'department')
 
                 obj.email = email
                 obj.employee_number = employee_number

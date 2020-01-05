@@ -8,32 +8,32 @@ from .serializers import *
 
 
 class ProductViewSet(viewsets.ModelViewSet):
-    queryset = ProductModel.objects.all().order_by('order')
+    queryset = Product.objects.all().order_by('order')
     serializer_class = ProductSerializer
 
 
 class ComponentViewSet(viewsets.ModelViewSet):
-    queryset = ComponentModel.objects.all()
+    queryset = Component.objects.all()
     serializer_class = ComponentSerializer
 
 
 class ComponentVersionViewSet(viewsets.ModelViewSet):
-    queryset = ComponentVersionModel.objects.all()
+    queryset = ComponentVersion.objects.all()
     serializer_class = ComponentVersionSerializer
 
 
 class ComponentRuntimeTypeViewSet(viewsets.ModelViewSet):
-    queryset = ComponentRuntimeTypeModel.objects.all()
+    queryset = ComponentRuntimeType.objects.all()
     serializer_class = ComponentRuntimeTypeSerializer
 
 
 class ComponentDataPrivacyClassViewSet(viewsets.ModelViewSet):
-    queryset = ComponentDataPrivacyClassModel.objects.all()
+    queryset = ComponentDataPrivacyClass.objects.all()
     serializer_class = ComponentDataPrivacyClassSerializer
 
 
 class ComponentCategoryViewSet(viewsets.ModelViewSet):
-    queryset = ComponentCategoryModel.objects.all()
+    queryset = ComponentCategory.objects.all()
     serializer_class = ComponentCategorySerializer
 
 
