@@ -89,12 +89,26 @@ class ComponentVersionAdmin(admin.ModelAdmin):
             kwargs["queryset"] = PersonModel.objects.filter(hidden=False)
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
+    def _clone(self, obj):
+        old_depends_on = ComponentDependencyModel.objects.filter(version=obj.id).order_by('id')
+
+        # create new element
+        obj.id = None
+        obj.save()
+
+        # clone 'ManyToMany & through' relations
+        ComponentDependencyModel.objects.bulk_create([ComponentDependencyModel(type=o.type, component=o.component, version=obj, notes=o.notes)
+                                                      for o in old_depends_on])
+
+        return obj
+
     def save_model(self, request, obj, form, change):
         # standard django method
         if obj.pk:
             orig_obj = ComponentVersionModel.objects.get(id=obj.id)
             if orig_obj.version != obj.version:
-                obj.id = None
+                obj = self._clone(obj)
+
         obj.meta_update_date = datetime.datetime.now()
         obj.meta_deleted = False
         super().save_model(request, obj, form, change)
