@@ -669,7 +669,7 @@ class ProductFamilyModel(models.Model):
         return "#%d %s" % (self.id, self.name)
 
 
-class ProductModel(models.Model):
+class ProductVersionModel(models.Model):
     name = models.CharField(max_length=64, help_text="Product")
     family = models.ForeignKey(ProductFamilyModel, on_delete=models.PROTECT)
     order = models.IntegerField(help_text="sorting order")

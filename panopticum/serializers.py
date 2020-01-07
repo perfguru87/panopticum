@@ -34,11 +34,11 @@ class ProductFamilySerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class ProductSerializer(serializers.ModelSerializer):
+class ProductVersionSerializer(serializers.ModelSerializer):
     family = ProductFamilySerializer(read_only=True)
 
     class Meta:
-        model = ProductModel
+        model = ProductVersionModel
         fields = '__all__'
 
 
@@ -65,7 +65,7 @@ class ComponentSerializerSimple(serializers.ModelSerializer):
     data_privacy_class = ComponentDataPrivacyClassSerializer(read_only=True)
     category = ComponentCategorySerializer(read_only=True)
     subcategory = ComponentSubcategorySerializer(read_only=True)
-    product = ProductSerializer(read_only=True, many=True)
+    product = ProductVersionSerializer(read_only=True, many=True)
     vendor = SoftwareVendorSerializer(read_only=True)
 
     class Meta:
