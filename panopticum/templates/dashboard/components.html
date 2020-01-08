@@ -155,7 +155,7 @@ function create_table() {
             {
                 "targets": ["colId", "colComponent"],
                 "render": function(data, type, row) {
-                    return "<a target=_blank href='/component/" + data + "'>" + data + "</a>";
+                    return "<a target=_blank href='/component/" + row.component.id + "'>" + data + "</a>";
                 }
             },
 
