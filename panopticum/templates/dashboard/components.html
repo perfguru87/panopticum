@@ -133,7 +133,10 @@ function create_table() {
                 "targets": "colLocationClass",
                 "width": "50px",
                 "render": function(data, type, row) {
-                    return $("#location_class").children("option:selected").text();
+                    filtered_class = $("#location_class").children("option:selected").text();
+                    if (filtered_class)
+                        return filtered_class;
+                    return meta_searchstr_unwrap(data).replace(/, /g, "<br>");
                 }
             },
             {

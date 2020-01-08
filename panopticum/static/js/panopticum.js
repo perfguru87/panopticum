@@ -9,6 +9,10 @@ function meta_searchstr_wrap(s) {
     return s;
 }
 
+function meta_searchstr_unwrap(s) {
+    return s.replace(/{/g, "").replace(/}/g, "");
+}
+
 class Refcounter {
     constructor(callback) {
         this.counter = 0;
