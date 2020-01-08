@@ -105,7 +105,6 @@ class ComponentVersionSerializerSimple(serializers.ModelSerializer):
     id = serializers.IntegerField(read_only=True)
 
     depends_on = ComponentDependencySerializerSimple(source='componentdependencymodel_set', many=True, read_only=True)
-    locations = DeploymentLocationClassSerializer(read_only=True, many=True)
 
     owner_maintainer = PersonSerializer(read_only=True)
     owner_responsible_qa = PersonSerializer(read_only=True)
@@ -125,6 +124,9 @@ class ComponentVersionSerializerSimple(serializers.ModelSerializer):
     quality_assurance = serializers.SerializerMethodField()
 
     deployments = serializers.SerializerMethodField()
+
+    meta_locations = DeploymentLocationClassSerializer(read_only=True, many=True)
+    meta_product_versions = ProductVersionSerializer(read_only=True, many=True)
 
     def get_dev_languages(self, component):
         objs = component.dev_language.get_queryset()

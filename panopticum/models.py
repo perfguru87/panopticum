@@ -300,11 +300,6 @@ class ComponentVersionModel(models.Model):
 
     depends_on = models.ManyToManyField(ComponentModel, related_name='dependee', through='ComponentDependencyModel')
 
-    # deployment capabilities
-
-    locations = models.ManyToManyField('DeploymentLocationClassModel', help_text='possible component deployment locations',
-                                       related_name='component_versions', blank=True)
-
     # ownership
 
     owner_maintainer = models.ForeignKey(PersonModel, related_name='maintainer_of', on_delete=models.PROTECT, blank=True, null=True)
@@ -478,6 +473,11 @@ class ComponentVersionModel(models.Model):
     meta_profile_not_filled_fields = models.TextField(default="")
     meta_bad_rating_fields = models.TextField(default="")
 
+    meta_locations = models.ManyToManyField('DeploymentLocationClassModel', help_text='cached component deployment locations',
+                                            related_name='component_versions', blank=True)
+    meta_product_versions = models.ManyToManyField('ProductVersionModel', help_text='cached product versions',
+                                                   related_name='component_versions', blank=True)
+
     def _update_any_rating(self, target, condition, dictionary, fields):
         rating = 0
         max_rating = 0
@@ -586,10 +586,25 @@ class ComponentVersionModel(models.Model):
         self.meta_rating = int(100 * rating / max_rating)
         self.meta_bad_rating_fields = ", ".join(bad_rating)
 
+    def _update_meta_locations_and_product_versions(self):
+        locations = {}
+        product_versions = {}
+
+        for d in ComponentDeploymentModel.objects.filter(component_version=self):
+            locations[d.location_class.id] = d.location_class
+            product_versions[d.product_version.id] = d.product_version
+
+        self.meta_locations.set(locations.values())
+        self.meta_product_versions.set(product_versions.values())
+
     def save(self, *args, **kwargs):
         self._update_profile_completeness()
         self._update_rating()
+
         self.meta_update_date = datetime.datetime.now()
+        super().save(*args, **kwargs)
+
+        self._update_meta_locations_and_product_versions()
         super().save(*args, **kwargs)
 
     class Meta:
@@ -682,7 +697,7 @@ class ComponentDeploymentModel(models.Model):
         ordering = ['name']
 
     def __str__(self):
-        return "%s - %s %s%s" % (self.product_version.name, self.component_version.component.name, self.component_version.version,
+        return "%s - %s %s%s" % (self.product_version.shortname, self.component_version.component.name, self.component_version.version,
                                  (" (%s)" % self.name) if self.name else "")
 
 
