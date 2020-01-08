@@ -25,7 +25,7 @@
 
               <tbody>
                 <tr v-for='d in component.latest_version.deployments'>
-                  <td v-tooltip:right="[[ d.product_version.fullname ]]">[[ d.product_version.shortname]]</td>
+                  <td v-tooltip:right="[[ d.product_version.name ]]">[[ d.product_version.shortname]]</td>
                   <td>[[ d.location_class.name ]]</td>
                   <td>[[ d.environment.name ]]</td>
                   <td>[[ d.service_name ]] [[ d.binary_name ]]</td>

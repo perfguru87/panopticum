@@ -478,6 +478,9 @@ class ComponentVersionModel(models.Model):
     meta_product_versions = models.ManyToManyField('ProductVersionModel', help_text='cached product versions',
                                                    related_name='component_versions', blank=True)
 
+    meta_searchstr_locations = models.TextField(blank=True)
+    meta_searchstr_product_versions = models.TextField(blank=True)
+
     def _update_any_rating(self, target, condition, dictionary, fields):
         rating = 0
         max_rating = 0
@@ -597,6 +600,11 @@ class ComponentVersionModel(models.Model):
         self.meta_locations.set(locations.values())
         self.meta_product_versions.set(product_versions.values())
 
+    def update_meta_searchstr(self):
+        self.meta_searchstr_locations = ",".join(["{%s}" % l.name for l in self.meta_locations.all()])
+        self.meta_searchstr_product_versions = ",".join(["{%s}" % p.name for p in self.meta_product_versions.all()])
+        super().save()
+
     def save(self, *args, **kwargs):
         self._update_profile_completeness()
         self._update_rating()
@@ -606,6 +614,8 @@ class ComponentVersionModel(models.Model):
 
         self._update_meta_locations_and_product_versions()
         super().save(*args, **kwargs)
+
+        self.update_meta_searchstr()
 
     class Meta:
         ordering = ['-version']
@@ -670,7 +680,7 @@ class ProductFamilyModel(models.Model):
 
 class ProductVersionModel(models.Model):
     shortname = models.CharField(max_length=64, help_text="Product version short name")
-    fullname = models.CharField(max_length=64, help_text="Product version full name")
+    name = models.CharField(max_length=64, help_text="Product version full name")
     family = models.ForeignKey(ProductFamilyModel, on_delete=models.PROTECT)
     order = models.IntegerField(help_text="sorting order")
 
@@ -678,7 +688,7 @@ class ProductVersionModel(models.Model):
         ordering = ['order']
 
     def __str__(self):
-        return "%s" % (self.fullname)
+        return "%s" % (self.name)
 
 
 class ComponentDeploymentModel(models.Model):

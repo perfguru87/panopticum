@@ -18,20 +18,14 @@ class ComponentViewSet(viewsets.ModelViewSet):
     serializer_class = ComponentSerializer
 
 
+class DeploymentLocationClassViewSet(viewsets.ModelViewSet):
+    queryset = DeploymentLocationClassModel.objects.all()
+    serializer_class = DeploymentLocationClassSerializer
+
+
 class ComponentVersionViewSet(viewsets.ModelViewSet):
     queryset = ComponentVersionModel.objects.all()
     serializer_class = ComponentVersionSerializer
-
-    def list(self, request):
-        query_set = ComponentVersionModel.objects.all()
-        serializer = self.get_serializer(query_set, many=True)
-        return Response(serializer.data)
-
-    @action(methods=['get'], detail=True, url_path='distinct')
-    def distinct(self, request, *args, **kwargs):
-        query_set = ComponentVersionModel.objects.values('component').distinct()
-        serializer = self.get_serializer(query_set, many=True)
-        return Response(serializer.data)
 
 
 class ComponentRuntimeTypeViewSet(viewsets.ModelViewSet):

@@ -17,12 +17,8 @@
 </div>
 <div class="row">
     <div class="col-sm-3">
-         <label for="product">Product / Branch</label>
-         <select class="form-control" id="product"></select>
-    </div>
-    <div class="col-sm-2">
-         <label for="component_location_class">Location Class</label>
-         <select class="form-control" id="component_location_class"></select>
+         <label for="product_version">Product / Branch</label>
+         <select class="form-control update-table" id="product_version"></select>
     </div>
 </div>
 <div class="row">
@@ -35,14 +31,14 @@
             <thead>
                 <tr>
                     <th class='colId'>ID</th>
-                    <th class='colProduct'>Product</th>
+                    <th class='colProductVersion'>Product</th>
+                    <th class='colLocationClass'>Location</th>
                     <th class='colCategory'>Category</th>
                     <th class='colRuntimeType'>Runtime Type</th>
                     <th class='colDataPrivacyClass'>Data Privacy Class</th>
                     <th class='colComponent searchable'>Component</th>
                     <th class='colVersion searchable'>Version</th>
                     <th class='colMaintainer searchable'>Maintainer</th>
-                    <th class='colResponsibleQa searchable'>Responsible QA</th>
                     <th class='colRaml'>RAML</th>
                     <th class='colRepo'>Repo</th>
                     <th class='colDocs'>Docs</th>
@@ -62,72 +58,62 @@
   {{ block.super }}
 <script>
 
-function populate_options(id, url) {
+function populate_options(refc, id, url, first_is_empty) {
     let dropdown = $(id);
 
+    refc.inc();
+
     dropdown.empty();
-    dropdown.append('<option selected="true"></option>');
+    if (first_is_empty)
+        dropdown.append('<option selected="true"></option>');
     dropdown.prop('selectedIndex', 0);
 
     $.getJSON(url, function (data) {
         $.each(data.results, function (key, entry) {
             dropdown.append($('<option></option>').attr('value', entry.id).text(entry.name));
         })
+        refc.dec();
     });
 
     // FIXME: add on-change action to put it into the URL
     // FIXME: set URL-passed parameter as default
 }
 
-$(document).ready(function() {
-    populate_options("#product", "/api/product/?format=json");
-    populate_options("#component_location_class", "/api/component_location_class/?format=json");
+function load_table(table) {
+    var product_version = meta_searchstr_wrap($("#product_version").children("option:selected").text());
+    var location_class = meta_searchstr_wrap($("#location_class").children("option:selected").text());
+    var category = $("#component_category").children("option:selected").text();
+    var runtime_type = $("#component_runtime_type").children("option:selected").text();
+    var data_privacy_class = $("#component_data_privacy_class").children("option:selected").text();
+    var filter = $("#components_filter").children("input").text();
+    table.columns(1 /*"colProductVersion"*/).search(product_version).
+          columns(2 /*"colLocationClass"*/).search(location_class).
+          columns(3 /*"colCategory"*/).search(category).
+          columns(4 /*"colRuntimeType"*/).search(runtime_type).
+          columns(5 /*"colDataPrivacyClass"*/).search(data_privacy_class).
+          columns(6, 7, 8 /*"colComponent", "colVersion", "colMaintainer"*/).search(filter).draw();
+}
 
-    // Setup - add a text input to each footer cell
-
-    $('#components thead tr').clone(true).appendTo('#components thead');
-    $('#components thead tr:eq(1) th').each( function (i) {
-        var title = $(this).text();
-
-        if (title == "Category") {
-            $(this).html("<select id='component_category'></select>");
-            populate_options("#component_category", "/api/component_category/?format=json");
-        } else if (title == "Runtime Type") {
-            $(this).html("<select id='component_runtime_type'></select>");
-            populate_options("#component_runtime_type", "/api/component_runtime_type/?format=json");
-        } else if (title == "Data Privacy Class") {
-            $(this).html("<select id='component_data_privacy_class'></select>");
-            populate_options("#component_data_privacy_class", "/api/component_data_privacy_class/?format=json");
-        } else if ($(this).hasClass('searchable')) {
-            $(this).html('<input type="text" placeholder="" />');
-            $('input', this ).on('keyup change', function () {
-                if ( table.column(i).search() !== this.value ) {
-                    table.column(i).search(this.value).draw();
-                }
-            });
-        } else {
-            $(this).html('');
-        }
-    });
-
+function create_table() {
     var table = $('#components').DataTable({
         "orderCellsTop": true,
         "fixedHeader": true,
         "serverSide": true,
+        "deferLoading": false, // do not load data after table creation
         "ajax": "/api/component_version/?format=datatables",
         "initComplete": function(settings, json) {
             $('[data-toggle="tooltip"]').tooltip();
         },
         "columns": [
             {"data": "id", "searchable": false},
-            {"data": "component.name"},
+            {"data": "meta_searchstr_product_versions"},
+            {"data": "meta_searchstr_locations"},
             {"data": "component.category.name"},
             {"data": "component.runtime_type.name"},
             {"data": "component.data_privacy_class.name"},
             {"data": "component.name"},
             {"data": "version"},
             {"data": "owner_maintainer.email"},
-            {"data": "owner_responsible_qa.email"},
             {"data": "dev_raml"},
             {"data": "dev_repo"},
             {"data": "dev_documentation"},
@@ -139,8 +125,16 @@ $(document).ready(function() {
         ],
         "columnDefs": [
             {
-                "targets": ["colProduct", "colProfileNotFilledFields", "colBadRatingFields"],
+                "targets": ["colProductVersion", "colProfileNotFilledFields", "colBadRatingFields"],
+                "type": "string",
                 "visible": false,
+            },
+            {
+                "targets": "colLocationClass",
+                "width": "50px",
+                "render": function(data, type, row) {
+                    return $("#location_class").children("option:selected").text();
+                }
             },
             {
                 "targets": "colCategory",
@@ -151,7 +145,7 @@ $(document).ready(function() {
                 "width": "40px"
             },
             {
-                "targets": ["colId", "colProduct", "colRaml", "colRepo", "colDocs", "colJira",
+                "targets": ["colId", "colRaml", "colRepo", "colDocs", "colJira",
                             "colProfileCompleteness", "colRating"],
                 "searchable": false
             },
@@ -163,7 +157,7 @@ $(document).ready(function() {
             },
 
             {
-                "targets": ["colMaintainer", "colResponsibleQa"],
+                "targets": ["colMaintainer"],
                 "type": "string",
                 "render": function(data, type, row) {
                     if (data)
@@ -211,15 +205,46 @@ $(document).ready(function() {
         ]
     });
 
-    $('#components select').on('change', function() {
-        var category = $("#component_category").children("option:selected").text();
-        var runtime_type = $("#component_runtime_type").children("option:selected").text();
-        var data_privacy_class = $("#component_data_privacy_class").children("option:selected").text();
-        var filter = $("#components_filter").children("input").text();
-        table.columns(2 /*"colCategory*/).search(category).
-              columns(3 /*"colRuntimeType"*/).search(runtime_type).
-              columns(4 /*"colDataPrivacyClass"*/).search(data_privacy_class).
-              columns(5, 6, 7, 8 /*"colComponent", "colVersion", "colMaintainer", "colResponsibleQa"*/).search(filter).draw();
+    $('.update-table').on('change', function() {
+        load_table(table);
+    });
+
+    load_table(table);
+}
+
+$(document).ready(function() {
+    var refc = new Refcounter(create_table);
+
+    populate_options(refc, "#product_version", "/api/product_version/?format=json", false);
+
+    // Setup - add a text input to each footer cell
+
+    $('#components thead tr').clone(true).appendTo('#components thead');
+    $('#components thead tr:eq(1) th').each( function (i) {
+        var title = $(this).text();
+
+        if (title == "Location") {
+            $(this).html("<select class='update-table' id='location_class'></select>");
+            populate_options(refc, "#location_class", "/api/location_class/?format=json", true);
+        } else if (title == "Category") {
+            $(this).html("<select class='update-table' id='component_category'></select>");
+            populate_options(refc, "#component_category", "/api/component_category/?format=json", true);
+        } else if (title == "Runtime Type") {
+            $(this).html("<select class='update-table' id='component_runtime_type'></select>");
+            populate_options(refc, "#component_runtime_type", "/api/component_runtime_type/?format=json", true);
+        } else if (title == "Data Privacy Class") {
+            $(this).html("<select class='update-table' id='component_data_privacy_class'></select>");
+            populate_options(refc, "#component_data_privacy_class", "/api/component_data_privacy_class/?format=json", true);
+        } else if ($(this).hasClass('searchable')) {
+            $(this).html('<input type="text" placeholder="" />');
+            $('input', this ).on('keyup change', function () {
+                if ( table.column(i).search() !== this.value ) {
+                    table.column(i).search(this.value).draw();
+                }
+            });
+        } else {
+            $(this).html('');
+        }
     });
 
     $('.colVersion input').width('50px');

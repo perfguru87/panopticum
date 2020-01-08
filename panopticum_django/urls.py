@@ -22,9 +22,10 @@ from rest_framework import routers
 from panopticum import views
 
 router = routers.DefaultRouter()
-router.register(r'product', views.ProductVersionViewSet)
+router.register(r'product_version', views.ProductVersionViewSet)
 router.register(r'component', views.ComponentViewSet)
 router.register(r'component_version', views.ComponentVersionViewSet)
+router.register(r'location_class', views.DeploymentLocationClassViewSet)
 router.register(r'component_category', views.ComponentCategoryViewSet)
 router.register(r'component_runtime_type', views.ComponentRuntimeTypeViewSet)
 router.register(r'component_data_privacy_class', views.ComponentDataPrivacyClassViewSet)
