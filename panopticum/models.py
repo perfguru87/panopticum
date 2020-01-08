@@ -589,7 +589,7 @@ class ComponentVersionModel(models.Model):
         self.meta_rating = int(100 * rating / max_rating)
         self.meta_bad_rating_fields = ", ".join(bad_rating)
 
-    def _update_meta_locations_and_product_versions(self):
+    def update_meta_locations_and_product_versions(self):
         locations = {}
         product_versions = {}
 
@@ -600,7 +600,6 @@ class ComponentVersionModel(models.Model):
         self.meta_locations.set(locations.values())
         self.meta_product_versions.set(product_versions.values())
 
-    def update_meta_searchstr(self):
         self.meta_searchstr_locations = ", ".join(["{%s}" % l.name for l in self.meta_locations.all()])
         self.meta_searchstr_product_versions = ", ".join(["{%s}" % p.name for p in self.meta_product_versions.all()])
         super().save()
@@ -612,10 +611,7 @@ class ComponentVersionModel(models.Model):
         self.meta_update_date = datetime.datetime.now()
         super().save(*args, **kwargs)
 
-        self._update_meta_locations_and_product_versions()
-        super().save(*args, **kwargs)
-
-        self.update_meta_searchstr()
+        self.update_meta_locations_and_product_versions()
 
     class Meta:
         ordering = ['-version']
@@ -690,7 +686,7 @@ class ProductVersionModel(models.Model):
 
         super().save()
         for d in ComponentDeploymentModel.objects.filter(product_version=self):
-            d.component_version.update_meta_searchstr()
+            d.component_version.update_meta_locations_and_product_versions()
 
     def save(self, *args, **kwargs):
         self._update_components_meta_searchstr()
@@ -714,6 +710,10 @@ class ComponentDeploymentModel(models.Model):
     binary_name = models.CharField(max_length=64, help_text="accsrv.exe", blank=True)
     open_ports = models.ManyToManyField(TCPPortModel, blank=True)
     notes = SmartTextField("Deployment notes")
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        self.component_version.update_meta_locations_and_product_versions()
 
     class Meta:
         ordering = ['name']
