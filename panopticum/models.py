@@ -684,6 +684,18 @@ class ProductVersionModel(models.Model):
     family = models.ForeignKey(ProductFamilyModel, on_delete=models.PROTECT)
     order = models.IntegerField(help_text="sorting order")
 
+    def _update_components_meta_searchstr(self):
+        if not self.id:
+            return
+
+        super().save()
+        for d in ComponentDeploymentModel.objects.filter(product_version=self):
+            d.component_version.update_meta_searchstr()
+
+    def save(self, *args, **kwargs):
+        self._update_components_meta_searchstr()
+        super().save(*args, **kwargs)
+
     class Meta:
         ordering = ['order']
 
