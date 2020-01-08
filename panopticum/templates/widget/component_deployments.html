@@ -1,6 +1,6 @@
         <div class="x_panel">
           <div class="x_title">
-            <h2>Deployments (TODO)</h2>
+            <h2>Deployments</h2>
             <ul class="nav navbar-right panel_toolbox">
               <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
               <li><a class="close-link"><i class="fa fa-close"></i></a></li>
@@ -8,7 +8,7 @@
             <div class="clearfix"></div>
           </div>
 
-          <div class="x_content" style='opacity: 0.5;'>
+          <div class="x_content">
 
             <h3>Deployment Types</h3>
             <table class='status-table table-auto-width' v-cloak>
@@ -16,19 +16,27 @@
                 <tr>
                   <th>Product</th>
                   <th>Location</th>
+                  <th>Env</th>
+                  <th>Service</th>
                   <th>Ports</th>
                   <th>Notes</th>
                 </tr>
               </thead>
 
               <tbody>
-                <tr v-for='item in component.latest_version.locations'>
-                  <td>-</td><td>[[ item.name ]]</td><td>-</td><td>-</td>
+                <tr v-for='d in component.latest_version.deployments'>
+                  <td v-tooltip:right="[[ d.product_version.fullname ]]">[[ d.product_version.shortname]]</td>
+                  <td>[[ d.location_class.name ]]</td>
+                  <td>[[ d.environment.name ]]</td>
+                  <td>[[ d.service_name ]] [[ d.binary_name ]]</td>
+                  <td>[[ d.open_ports ]]</td>
+                  <td class='pa-replace-urls'>[[ d.notes ]]</td>
                 </tr>
               </tbody>
             </table>
 
-            <h3>Cloud deployments</h3>
+            <div style='opacity: 0.5; padding-top: 15px;'>
+            <h3>Cloud deployments (TODO)</h3>
             <table class='status-table table-auto-width'>
               <thead>
                 <tr class='auto-width'>
@@ -53,5 +61,7 @@
                 <tr><td>XG2</td><td>No</td><td><a href="#">-</a></td><td>-</td><td>-</td><td>-</td></tr>
               </tbody>
             </table>
+            </div>
+
           </div>
         </div>
