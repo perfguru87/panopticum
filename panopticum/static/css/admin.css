@@ -1,1 +1,10 @@
 .fieldBox select { width: 300px; min-width: 300px; }
+.no-upper h2 { text-transform: unset; }
+
+.select-50px select[multiple] {
+    min-height: 50px;
+}
+
+.select-200px select[multiple] {
+    min-height: 200px;
+}

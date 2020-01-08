@@ -643,22 +643,6 @@ class TCPPortModel(models.Model):
         return "#%d %s" % (self.id, self.name)
 
 
-class ComponentDeploymentModel(models.Model):
-    name = models.CharField(max_length=64, help_text="Component deployment type: Cloud Account Server")
-    location_class = models.ManyToManyField(DeploymentLocationClassModel)
-    environment = models.ForeignKey(DeploymentEnvironmentModel, on_delete=models.PROTECT)
-    component_version = models.ForeignKey(ComponentVersionModel, on_delete=models.PROTECT)
-    service_name = models.CharField(max_length=64, help_text="accsrv, taskmngr", blank=True)
-    binary_name = models.CharField(max_length=64, help_text="accsrv.exe", blank=True)
-    open_ports = models.ManyToManyField(TCPPortModel)
-
-    class Meta:
-        ordering = ['name']
-
-    def __str__(self):
-        return "#%d %s" % (self.id, self.name)
-
-
 class ProductFamilyModel(models.Model):
     name = models.CharField(max_length=64, help_text="Product family")
 
@@ -670,16 +654,36 @@ class ProductFamilyModel(models.Model):
 
 
 class ProductVersionModel(models.Model):
-    name = models.CharField(max_length=64, help_text="Product")
+    shortname = models.CharField(max_length=64, help_text="Product version short name")
+    fullname = models.CharField(max_length=64, help_text="Product version full name")
     family = models.ForeignKey(ProductFamilyModel, on_delete=models.PROTECT)
     order = models.IntegerField(help_text="sorting order")
-    components_deployments = models.ManyToManyField(ComponentDeploymentModel)
 
     class Meta:
         ordering = ['order']
 
     def __str__(self):
-        return "#%d %s" % (self.id, self.name)
+        return "%s" % (self.fullname)
+
+
+class ComponentDeploymentModel(models.Model):
+    name = models.CharField(max_length=64, help_text="Component deployment name: Cloud Account Server",
+                            verbose_name="Deployment name", blank=True)
+    location_class = models.ForeignKey(DeploymentLocationClassModel, on_delete=models.PROTECT)
+    product_version = models.ForeignKey(ProductVersionModel, on_delete=models.PROTECT)
+    environment = models.ForeignKey(DeploymentEnvironmentModel, on_delete=models.PROTECT)
+    component_version = models.ForeignKey(ComponentVersionModel, on_delete=models.PROTECT)
+    service_name = models.CharField(max_length=64, help_text="accsrv, taskmngr", blank=True)
+    binary_name = models.CharField(max_length=64, help_text="accsrv.exe", blank=True)
+    open_ports = models.ManyToManyField(TCPPortModel, blank=True)
+    notes = SmartTextField("Deployment notes")
+
+    class Meta:
+        ordering = ['name']
+
+    def __str__(self):
+        return "%s - %s %s%s" % (self.product_version.name, self.component_version.component.name, self.component_version.version,
+                                 (" (%s)" % self.name) if self.name else "")
 
 
 class DatacenterModel(models.Model):

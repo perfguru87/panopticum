@@ -6,28 +6,47 @@ import datetime
 # Register your models here.
 from panopticum.models import *
 
-formfield_overrides = {models.ForeignKey: {'widget': Select(attrs={'width': '300px', 'style': 'width:300px'})},
-                       models.ManyToManyField: {'widget': SelectMultiple(attrs={'size': '7', 'width': '300px', 'style': 'width:300px'})},
-                       models.IntegerField: {'widget': NumberInput(attrs={'width': '300px', 'style': 'width:300px'})},
-                       models.CharField: {'widget': TextInput(attrs={'width': '300px', 'style': 'width:300px'})},
-                       models.URLField: {'widget': TextInput(attrs={'width': '300px', 'style': 'width:300px'})},
-                       models.TextField: {'widget': Textarea(attrs={'rows': 2, 'cols': 60})},
-                       }
+formfields_large = {models.ForeignKey: {'widget': Select(attrs={'width': '300px', 'style': 'width:300px'})},
+                    models.ManyToManyField: {'widget': SelectMultiple(attrs={'size': '7', 'width': '300px', 'style': 'width:300px'})},
+                    models.IntegerField: {'widget': NumberInput(attrs={'width': '300px', 'style': 'width:300px'})},
+                    models.CharField: {'widget': TextInput(attrs={'width': '300px', 'style': 'width:300px'})},
+                    models.URLField: {'widget': TextInput(attrs={'width': '300px', 'style': 'width:300px'})},
+                    models.TextField: {'widget': Textarea(attrs={'rows': 2, 'cols': 60})},
+                    }
+
+formfields_small = {models.ForeignKey: {'widget': Select(attrs={'width': '200px', 'style': 'width:200px'})},
+                    models.ManyToManyField: {'widget': SelectMultiple(attrs={'size': '3', 'width': '150px', 'style': 'width:150px'})},
+                    models.IntegerField: {'widget': NumberInput(attrs={'width': '150px', 'style': 'width:150px'})},
+                    models.CharField: {'widget': TextInput(attrs={'width': '150px', 'style': 'width:150px'})},
+                    models.URLField: {'widget': TextInput(attrs={'width': '180px', 'style': 'width:180px'})},
+                    models.TextField: {'widget': Textarea(attrs={'rows': 2, 'cols': 30})},
+                    }
 
 
 class ComponentDependencyAdmin(admin.TabularInline):
-    formfield_overrides = formfield_overrides
+    formfield_overrides = formfields_large
     model = ComponentVersionModel.depends_on.through
+    classes = ('collapse', 'no-upper')
+    verbose_name = "Component Dependency"
+    verbose_name_plural = "Component Dependencies"
+
+
+class ComponentDeploymentAdmin(admin.TabularInline):
+    formfield_overrides = formfields_small
+    model = ComponentDeploymentModel
+    classes = ('collapse', 'no-upper', 'select-50px')
+    verbose_name = "Component Deployment"
+    verbose_name_plural = "Component Deployments"
 
 
 class ComponentVersionAdmin(admin.ModelAdmin):
-    formfield_overrides = formfield_overrides
+    formfield_overrides = formfields_large
 
-    inlines = (ComponentDependencyAdmin,)
+    inlines = (ComponentDependencyAdmin, ComponentDeploymentAdmin)
 
     fieldsets = (
         (None, {'fields': ('component', 'version', 'comments', 'locations')}),
-        ('Ownership', {'classes': ('collapse',),
+        ('Ownership', {'classes': ('collapse', 'select-200px'),
                        'fields': (
                                   ('owner_maintainer', 'owner_responsible_qa'),
                                   ('owner_product_manager', 'owner_program_manager'),
@@ -141,3 +160,5 @@ admin.site.register(ComponentSubcategoryModel)
 admin.site.register(ComponentModel)
 admin.site.register(ComponentVersionModel, ComponentVersionAdmin)
 admin.site.register(DeploymentLocationClassModel)
+admin.site.register(DeploymentEnvironmentModel)
+admin.site.register(TCPPortModel)

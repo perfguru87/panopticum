@@ -4,6 +4,7 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
+    atomic = False
 
     dependencies = [
         ('panopticum', '0024_remove_componentmodel_is_library'),

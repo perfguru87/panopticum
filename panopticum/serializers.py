@@ -60,6 +60,26 @@ class DeploymentLocationClassSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class DeploymentEnvironmentModelSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DeploymentEnvironmentModel
+        fields = '__all__'
+
+
+class ComponentDeploymentSerializer(serializers.ModelSerializer):
+    product_version = ProductVersionSerializer(read_only=True)
+    environment = DeploymentEnvironmentModelSerializer(read_only=True)
+    location_class = DeploymentLocationClassSerializer(read_only=True)
+    open_ports = serializers.SerializerMethodField()
+
+    def get_open_ports(self, deployment):
+        return ", ".join([str(p.port) for p in deployment.open_ports.all()])
+
+    class Meta:
+        model = ComponentDeploymentModel
+        fields = '__all__'
+
+
 class ComponentSerializerSimple(serializers.ModelSerializer):
     runtime_type = ComponentRuntimeTypeSerializer(read_only=True)
     data_privacy_class = ComponentDataPrivacyClassSerializer(read_only=True)
@@ -104,6 +124,8 @@ class ComponentVersionSerializerSimple(serializers.ModelSerializer):
     maintenance = serializers.SerializerMethodField()
     quality_assurance = serializers.SerializerMethodField()
 
+    deployments = serializers.SerializerMethodField()
+
     def get_dev_languages(self, component):
         objs = component.dev_language.get_queryset()
         return ", ".join([o.name for o in objs])
@@ -134,6 +156,10 @@ class ComponentVersionSerializerSimple(serializers.ModelSerializer):
 
     def get_quality_assurance(self, component):
         return self._serialize_fields(component, component.qa_applicable, ComponentVersionModel.get_quality_assurance_fields())
+
+    def get_deployments(self, component):
+        return ComponentDeploymentSerializer(ComponentDeploymentModel.objects.filter(component_version=component),
+                                             read_only=True, many=True).data
 
     class Meta:
         model = ComponentVersionModel
