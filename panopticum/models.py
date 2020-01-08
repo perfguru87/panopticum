@@ -601,8 +601,8 @@ class ComponentVersionModel(models.Model):
         self.meta_product_versions.set(product_versions.values())
 
     def update_meta_searchstr(self):
-        self.meta_searchstr_locations = ",".join(["{%s}" % l.name for l in self.meta_locations.all()])
-        self.meta_searchstr_product_versions = ",".join(["{%s}" % p.name for p in self.meta_product_versions.all()])
+        self.meta_searchstr_locations = ", ".join(["{%s}" % l.name for l in self.meta_locations.all()])
+        self.meta_searchstr_product_versions = ", ".join(["{%s}" % p.name for p in self.meta_product_versions.all()])
         super().save()
 
     def save(self, *args, **kwargs):
