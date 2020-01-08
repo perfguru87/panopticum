@@ -178,9 +178,10 @@ class ComponentDataPrivacyClassModel(models.Model):
 class ComponentCategoryModel(models.Model):
     name = models.CharField(max_length=64, help_text="Platform, Search engine, ...")
     description = models.TextField(blank=True, null=True)
+    order = models.IntegerField(help_text="sorting order")
 
     class Meta:
-        ordering = ['name']
+        ordering = ['order']
 
     def __str__(self):
         return "#%d %s" % (self.id, self.name)
@@ -262,9 +263,10 @@ class LoggerModel(models.Model):
 
 class ComponentRuntimeTypeModel(models.Model):
     name = models.CharField(max_length=64, help_text="Library, Framework, Driver, OS Service, OS Process, Web Service, Database, MQ")
+    order = models.IntegerField(help_text="sorting order")
 
     class Meta:
-        ordering = ['name']
+        ordering = ['order']
 
     def __str__(self):
         return "#%d %s" % (self.id, self.name)
