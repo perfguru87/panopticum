@@ -1,5 +1,6 @@
 Django==2.1.*
 djangorestframework-datatables
+django-cors-headers
 django-datatable-view
 django-auth-ldap
 ldapdomaindump
