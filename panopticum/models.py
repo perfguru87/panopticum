@@ -17,7 +17,7 @@ class CountryModel(models.Model):
         ordering = ['name']
 
     def __str__(self):
-        return "#%d %s" % (self.id, self.name)
+        return "%s - #%d" % (self.name, self.id)
 
 
 class OrgDepartmentModel(models.Model):
@@ -27,7 +27,7 @@ class OrgDepartmentModel(models.Model):
         ordering = ['name']
 
     def __str__(self):
-        return "#%d %s" % (self.id, self.name)
+        return "%s - #%d" % (self.name, self.id)
 
 
 class OrganizationModel(models.Model):
@@ -37,7 +37,7 @@ class OrganizationModel(models.Model):
         ordering = ['name']
 
     def __str__(self):
-        return "#%d %s" % (self.id, self.name)
+        return "%s - #%d" % (self.name, self.id)
 
 
 class PersonRoleModel(models.Model):
@@ -47,7 +47,7 @@ class PersonRoleModel(models.Model):
         ordering = ['name']
 
     def __str__(self):
-        return "#%d %s" % (self.id, self.name)
+        return "%s - #%d" % (self.name, self.id)
 
 
 class PersonModel(models.Model):
@@ -172,7 +172,7 @@ class ComponentDataPrivacyClassModel(models.Model):
         ordering = ['order']
 
     def __str__(self):
-        return "#%d %s" % (self.id, self.name)
+        return "%s (order %d)" % (self.name, self.order)
 
 
 class ComponentCategoryModel(models.Model):
@@ -184,7 +184,7 @@ class ComponentCategoryModel(models.Model):
         ordering = ['order']
 
     def __str__(self):
-        return "#%d %s" % (self.id, self.name)
+        return "%s (order %d)" % (self.name, self.order)
 
 
 class ComponentSubcategoryModel(models.Model):
@@ -196,7 +196,7 @@ class ComponentSubcategoryModel(models.Model):
         ordering = ['name']
 
     def __str__(self):
-        return "#%d %s" % (self.id, self.name)
+        return "%s" % self.name
 
 
 class SoftwareVendorModel(models.Model):
@@ -206,7 +206,7 @@ class SoftwareVendorModel(models.Model):
         ordering = ['name']
 
     def __str__(self):
-        return "#%d %s" % (self.id, self.name)
+        return "%s" % self.name
 
 
 class DatabaseVendorModel(models.Model):
@@ -216,7 +216,7 @@ class DatabaseVendorModel(models.Model):
         ordering = ['name']
 
     def __str__(self):
-        return "#%d %s" % (self.id, self.name)
+        return "%s" % self.name
 
 
 class ProgrammingLanguageModel(models.Model):
@@ -226,7 +226,7 @@ class ProgrammingLanguageModel(models.Model):
         ordering = ['name']
 
     def __str__(self):
-        return "#%d %s" % (self.id, self.name)
+        return "%s" % self.name
 
 
 class FrameworkModel(models.Model):
@@ -237,7 +237,7 @@ class FrameworkModel(models.Model):
         ordering = ['name']
 
     def __str__(self):
-        return "#%d %s" % (self.id, self.name)
+        return "%s" % self.name
 
 
 class ORMModel(models.Model):
@@ -248,7 +248,7 @@ class ORMModel(models.Model):
         ordering = ['name']
 
     def __str__(self):
-        return "#%d %s" % (self.id, self.name)
+        return "%s" % self.name
 
 
 class LoggerModel(models.Model):
@@ -258,7 +258,7 @@ class LoggerModel(models.Model):
         ordering = ['name']
 
     def __str__(self):
-        return "#%d %s" % (self.id, self.name)
+        return "%s" % self.name
 
 
 class ComponentRuntimeTypeModel(models.Model):
@@ -269,7 +269,7 @@ class ComponentRuntimeTypeModel(models.Model):
         ordering = ['order']
 
     def __str__(self):
-        return "#%d %s" % (self.id, self.name)
+        return "%s" % self.name
 
 
 class ComponentModel(models.Model):
@@ -288,7 +288,7 @@ class ComponentModel(models.Model):
         ordering = ['name']
 
     def __str__(self):
-        return "#%d %s" % (self.id, self.name)
+        return "%s" % self.name
 
 
 class ComponentVersionModel(models.Model):
@@ -619,7 +619,7 @@ class ComponentVersionModel(models.Model):
         ordering = ['-version']
 
     def __str__(self):
-        return "#%d %s - %s" % (self.id, self.component.name, self.version)
+        return "%s - %s" % (self.component.name, self.version)
 
 
 class ComponentDependencyModel(models.Model):
@@ -642,7 +642,7 @@ class DeploymentLocationClassModel(models.Model):
         ordering = ['order']
 
     def __str__(self):
-        return "#%d %s" % (self.id, self.name)
+        return "%s" % self.name
 
 
 class DeploymentEnvironmentModel(models.Model):
@@ -660,10 +660,10 @@ class TCPPortModel(models.Model):
     port = models.IntegerField(help_text="TCP/IP port: 80, 21, ...")
 
     class Meta:
-        ordering = ['name']
+        ordering = ['port']
 
     def __str__(self):
-        return "#%d %s" % (self.id, self.name)
+        return "%d %s" % (self.port, self.name)
 
 
 class ProductFamilyModel(models.Model):
@@ -673,7 +673,7 @@ class ProductFamilyModel(models.Model):
         ordering = ['name']
 
     def __str__(self):
-        return "#%d %s" % (self.id, self.name)
+        return "%s" % self.name
 
 
 class ProductVersionModel(models.Model):
@@ -736,4 +736,4 @@ class DatacenterModel(models.Model):
         ordering = ['name']
 
     def __str__(self):
-        return "#%d %s" % (self.id, self.name)
+        return "%s" % self.name
