@@ -8,7 +8,7 @@ from rest_framework.response import Response
 from rest_framework.decorators import action
 from rest_framework import views
 from rest_framework.views import APIView
-from rest_framework.authtoken.models import Token
+import rest_framework.authtoken.models
 import django.contrib.auth
 import django.contrib.auth.models
 
@@ -56,6 +56,13 @@ class UserDetail(viewsets.ModelViewSet):
     queryset = get_user_model().objects.all()
     serializer_class = UserSerializer
     permission_classes = (permissions.IsAuthenticated,)
+    filterset_fields = ['username', 'email']
+
+
+class Token(viewsets.ModelViewSet):
+    queryset = rest_framework.authtoken.models.Token.objects.all()
+    serializer_class = TokenSerializer
+    permission_classes = (permissions.IsAuthenticated,)
 
 
 class LoginView(APIView):
@@ -78,8 +85,10 @@ class LoginView(APIView):
                                                 password=request.data['password'])
         if user:
             django.contrib.auth.login(request, user)
-            return Response({"username": user.username,
-                             "token": Token.objects.get_or_create(user=request.user)[0].key})
+            return Response({
+                "username": user.username,
+                "token": rest_framework.authtoken.models.Token.objects.get_or_create(user=request.user)[0].key
+            })
         else:
             return Response({"error": "not valid credentials"}, 403)
 

@@ -1,3 +1,4 @@
+import rest_framework.authtoken.models
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from django.forms.models import model_to_dict
@@ -190,3 +191,11 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = get_user_model()
         exclude = ('password', )
+
+
+class TokenSerializer(serializers.ModelSerializer):
+    user = UserSerializer(read_only=True)
+
+    class Meta:
+        model = rest_framework.authtoken.models.Token()
+        fields = '__all__'
