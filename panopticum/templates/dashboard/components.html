@@ -33,10 +33,10 @@
                     <th class='colId'>ID</th>
                     <th class='colProductVersion'>Product</th>
                     <th class='colLocationClass'>Location</th>
+                    <th class='colComponent searchable'>Component</th>
                     <th class='colCategory'>Category</th>
                     <th class='colRuntimeType'>Runtime Type</th>
                     <th class='colDataPrivacyClass'>Data Privacy Class</th>
-                    <th class='colComponent searchable'>Component</th>
                     <th class='colVersion searchable'>Version</th>
                     <th class='colMaintainer searchable'>Maintainer</th>
                     <th class='colRaml'>RAML</th>
@@ -88,10 +88,10 @@ function load_table(table) {
     var filter = $("#components_filter").children("input").text();
     table.columns(1 /*"colProductVersion"*/).search(product_version).
           columns(2 /*"colLocationClass"*/).search(location_class).
-          columns(3 /*"colCategory"*/).search(category).
-          columns(4 /*"colRuntimeType"*/).search(runtime_type).
-          columns(5 /*"colDataPrivacyClass"*/).search(data_privacy_class).
-          columns(6, 7, 8 /*"colComponent", "colVersion", "colMaintainer"*/).search(filter).draw();
+          columns(4 /*"colCategory"*/).search(category).
+          columns(5 /*"colRuntimeType"*/).search(runtime_type).
+          columns(6 /*"colDataPrivacyClass"*/).search(data_privacy_class).
+          columns(3, 7, 8 /*"colComponent", "colVersion", "colMaintainer"*/).search(filter).draw();
 }
 
 function create_table() {
@@ -108,10 +108,10 @@ function create_table() {
             {"data": "id", "searchable": false},
             {"data": "meta_searchstr_product_versions"},
             {"data": "meta_searchstr_locations"},
+            {"data": "component.name"},
             {"data": "component.category.name"},
             {"data": "component.runtime_type.name"},
             {"data": "component.data_privacy_class.name"},
-            {"data": "component.name"},
             {"data": "version"},
             {"data": "owner_maintainer.email"},
             {"data": "dev_raml"},
