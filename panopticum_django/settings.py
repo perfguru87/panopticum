@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_datatables',
     'django_extensions',
+    'admin_reorder',
     'panopticum'
 ]
 
@@ -65,6 +66,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'admin_reorder.middleware.ModelAdminReorder',
 ]
 
 ROOT_URLCONF = 'panopticum_django.urls'
@@ -117,6 +119,34 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
+
+
+# Admin panel view
+# https://github.com/mishbahr/django-modeladmin-reorder
+
+ADMIN_REORDER = (
+    # Keep original label and models
+    'sites',
+
+    # {'app': 'auth', 'models': ('auth.User', 'auth.Group')},
+
+    {'app': 'panopticum', 'label': 'Components', 'models':
+        ('panopticum.ComponentVersionModel',)
+    },
+
+    {'app': 'panopticum', 'label': 'Products', 'models':
+        ('panopticum.ProductFamilyModel', 'panopticum.ProductVersionModel')
+    },
+
+    {'app': 'panopticum', 'label': 'Deployments', 'models':
+        ('panopticum.DeploymentLocationClassModel', 'panopticum.DeploymentEnvironmentModel', 'panopticum.TCPPortModel')
+    },
+
+    {'app': 'panopticum', 'label': 'Active Directory', 'models':
+        ('panopticum.CountryModel', 'panopticum.OrganizationModel', 'panopticum.OrgDepartmentModel',
+         'panopticum.PersonRoleModel', 'panopticum.PersonModel')
+    }
+)
 
 
 # Internationalization

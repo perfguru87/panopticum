@@ -4,3 +4,4 @@ django-datatable-view
 ldapdomaindump
 django-extensions
 pygraphviz
+django-modeladmin-reorder
