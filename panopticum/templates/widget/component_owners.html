@@ -16,10 +16,13 @@
                   <div class='block'>
                     <div class='image'><img src="/static/images/img.jpg"></div>
                     <div class='details'>
-                      <b>[[ component.latest_version.owner_maintainer.name ]]</b> - Maintainer<br>
-                      <a v-bind:href="'mailto:[[ component.latest_version.owner_maintainer.email ]]'">
-                        [[ component.latest_version.owner_maintainer.email ]]</a>,
-                        [[ component.latest_version.owner_maintainer.mobile_phone ]]
+                      <b v-if='component.latest_version.owner_maintainer'>
+                        [[ component.latest_version.owner_maintainer.name ]]</b> - Maintainer<br>
+                      <a v-if='component.latest_version.owner_maintainer'
+                         v-bind:href="'mailto:[[ component.latest_version.owner_maintainer.email ]]'">
+                        [[ component.latest_version.owner_maintainer.email ]], </a>
+                      <span v-if='component.latest_version.owner_maintainer'>
+                        [[ component.latest_version.owner_maintainer.mobile_phone ]]</span>
                     </div>
                   </div>
                 </td>
@@ -30,10 +33,13 @@
                   <div class='block'>
                     <div class='image'><img src="/static/images/img.jpg"></div>
                     <div class='details'>
-                      <b>[[ component.latest_version.owner_responsible_qa.name ]]</b> - Responsible QA<br>
-                      <a v-bind:href="'mailto:[[ component.latest_version.owner_responsible_qa.email ]]'">
-                        [[ component.latest_version.owner_responsible_qa.email ]]</a>,
-                        [[ component.latest_version.owner_responsible_qa.mobile_phone ]]
+                      <b v-if='component.latest_version.owner_responsible_qa'>
+                        [[ component.latest_version.owner_responsible_qa.name ]]</b> - Responsible QA<br>
+                      <a v-if='component.latest_version.owner_responsible_qa'
+                         v-bind:href="'mailto:[[ component.latest_version.owner_responsible_qa.email ]]'">
+                        [[ component.latest_version.owner_responsible_qa.email ]], </a>
+                      <span v-if='component.latest_version.owner_responsible_qa'>
+                        [[ component.latest_version.owner_responsible_qa.mobile_phone ]]</span>
                     </div>
                   </div>
                 </td>
