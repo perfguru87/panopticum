@@ -1,7 +1,7 @@
 FROM python:3.6-alpine
 WORKDIR /whl
-RUN apk add alpine-sdk
-RUN pip wheel gevent psycopg2 -w /whl
+RUN apk add alpine-sdk postgresql-dev graphviz-dev
+RUN pip wheel gevent psycopg2-binary pygraphviz -w /whl
 
 FROM python:3.6-alpine
 WORKDIR /usr/src/app
