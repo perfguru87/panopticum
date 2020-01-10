@@ -365,3 +365,59 @@ span.pa-component-stars i {
 
 /* vue.js */
 [v-cloak] { display:none!important; }
+
+/* jira-issue */
+.jira-issue-resolved, .jira-issue-unresolved {
+    display: inline-block;
+    padding: 0px 2px 0px 2px;
+    border-radius: 4px;
+    -webkit-border-radius: 4px;
+    background-color: #ebecf0;
+    color: #0052CC;
+    border: 1px solid #abc;
+}
+.jira-issue-resolved span, .jira-issue-unresolved span {
+    background-color: #fff;
+    border: 1px solid #aaa;
+    border-radius: 2px;
+    color: #42526e;
+    font-size: 9px;
+    line-height: 9px;
+    padding: 1px 2px;
+    color: #444;
+}
+.jira-issue-resolved {
+    text-decoration: line-through;
+    color: #555;
+}
+.jira-issue-resolved span {
+    text-decoration: none;
+    display: inline-block;
+}
+.jira-tooltip {
+    max-width: 300px;
+    background-color: #ebecf0;
+    border: 1px solid #777;
+    margin-bottom: 5px;
+}
+.jira-tooltip img {
+    width: 16px;
+    height: 16px;
+}
+.jira-tooltip .tooltip-inner {
+    text-align: left;
+    max-width: 300px;
+    background-color: #eee;
+    color: #444;
+    font-size: 11px;
+}
+.jira-tooltip .tooltip-inner h1 {
+    padding: 0px;
+    margin: 0px;
+    font-size: 12px;
+}
+.jira-tooltip .tooltip-inner span {
+    display: inline-block;
+    width: 50px;
+    color: #777;
+}

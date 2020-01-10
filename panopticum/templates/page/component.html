@@ -173,10 +173,8 @@ function init_profile_completeness_gauge(component) {
 }
 
 function update_component_page_elements(component) {
-    $(".pa-replace-urls").each(function(index, el) {
-        var val = replace_urls_in_text($(el).html());
-        $(el).html(val);
-    });
+
+    pa_replace_urls();
 
     $(".pa-quality").each(function(index, el) {
         var val = $(el).html();

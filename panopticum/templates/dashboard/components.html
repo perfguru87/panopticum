@@ -104,6 +104,9 @@ function create_table() {
         "initComplete": function(settings, json) {
             $('[data-toggle="tooltip"]').tooltip();
         },
+        "drawCallback": function(settings) {
+            pa_replace_urls();
+        },
         "columns": [
             {"data": "id", "searchable": false},
             {"data": "meta_searchstr_product_versions"},
@@ -169,12 +172,11 @@ function create_table() {
                 }
             },
             {
+                className: "pa-replace-urls",
                 "targets": ["colRaml", "colRepo", "colDocs", "colJira"],
                 "type": "string",
                 "render": function(data, type, row) {
-                    if (data)
-                        return replace_urls_in_text(data);
-                    return "";
+                    return data;
                 }
             },
             {
