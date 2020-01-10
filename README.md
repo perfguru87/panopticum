@@ -153,6 +153,18 @@ EOD
 
 NOTE: please refere to Django [documentation](https://docs.djangoproject.com/en/2.1/ref/databases/) to see which databases are supported. For example Django 2.1 supports PosgtreSQL-9.4 and higher so it will not work on default CentOS-7 which has PostgreSQL-9.2 out of the box
 
+### Configuring JIRA account
+In order to support JIRA issues detection in notes/comments and highligh them with tooltips you can configure
+
+```
+cat >> panopticum_django/settings_local.py << EOD
+JIRA_CONFIG = {
+    'URL': 'https://jira.mycompany.com/',
+    'USER': 'panopticum',
+    'PASSWORD': 'my secret password'
+}
+```
+
 ### Create DB schema (apply migrations)
 ```
 python3.6 ./manage.py migrate

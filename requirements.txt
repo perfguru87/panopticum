@@ -5,3 +5,5 @@ ldapdomaindump
 django-extensions
 pygraphviz
 django-modeladmin-reorder
+jira-python
+scalpl

@@ -14,12 +14,13 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, re_path
 from django.conf.urls import url, include
 
 from rest_framework import routers
 
 from panopticum import views
+from panopticum import jira
 
 router = routers.DefaultRouter()
 router.register(r'product_version', views.ProductVersionViewSet)
@@ -36,6 +37,8 @@ urlpatterns = [
     url('^component/', views.component, name='Component'),
     url('^dashboard/components.html', views.dashboard_components, name='Components'),
     url('^dashboard/links.html', views.dashboard_components, name='Links'),
+    re_path(r'^api/jira/([A-Z]*-\d+)', views.JiraIssueView.as_view(), name='jira'),
+    url(r'^api/jira_url/', views.JiraUrlView.as_view(), name='jira_url'),
     url('^api/', include(router.urls)),
     url('', views.dashboard_components, name='Components')
 ]
