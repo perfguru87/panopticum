@@ -1,0 +1,6 @@
+.gitignore
+Dockerfile
+env
+*.db
+data
+panopticum_django/settings_local.py

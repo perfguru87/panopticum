@@ -1,0 +1,35 @@
+version: '3'
+services:
+  db:
+    image: postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_PASSWORD: postges
+      POSTGRES_DB: panopticum
+    volumes:
+      - ./data:/var/lib/postgresql/data
+  web:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./compose/panopticum/settings_local.py:/usr/src/app/settings_local.py:ro
+    depends_on:
+      - init
+      - db
+  nginx:
+    image: nginx
+    ports:
+      - "8080:80"
+    volumes:
+      - ./panopticum/static:/etc/nginx/html:ro
+      - ./compose/nginx:/etc/nginx/conf.d:ro
+    depends_on:
+      - web
+      - db
+  init:
+    build: .
+    command: python manage.py migrate
+    depends_on:
+      - db

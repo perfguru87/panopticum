@@ -188,6 +188,16 @@ For more information please refer to [documentation](https://django-auth-ldap.re
 
 ```
 python3.6 ./manage.py runserver 0.0.0.0:8000
+```
+
+## Running at docker-compose
+
+```bash
+pip install docker-compose
+docker-compose up -d
+```
+
+Service will available at http://127.0.0.1:8080/
 
 # Tools
 
