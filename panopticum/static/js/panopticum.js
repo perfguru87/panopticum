@@ -40,12 +40,22 @@ class Refcounter {
 }
 
 /*
- * pa_replace_urls() and friends
+ * Tooltips
  */
+function pa_tooltip(el) {
+    $(el).tooltip({ 'container': 'body', 'html': true });
+}
 
-function _pa_draw_jira_issue_link(el, jira_url, jira_issue) {
+function pa_tooltip_from_list(title, str) {
+    str = str.replace(/\, /g, '<br>- ');
+    str = str.replace(/\,/g, '<br>- ');
+    if (title && str)
+        return title + '<br>- ' + str;
+    return title + str;
+}
+
+function pa_tooltip_jira_issue(jira_issue) {
     var key = jira_issue.key;
-    var resolved = jira_issue.fields.resolution;
     var summary = jira_issue.fields.summary;
     var status = jira_issue.fields.status.name;
     var created = new Date(jira_issue.fields.created);
@@ -53,30 +63,36 @@ function _pa_draw_jira_issue_link(el, jira_url, jira_issue) {
     var priority = "<img src='{0}'></img>".pa_format(jira_issue.fields.priority.iconUrl);
     var issuetype = "<img src='{0}'></img>".pa_format(jira_issue.fields.issuetype.iconUrl);
     var fixversionstr = jira_issue.fields.fixVersionsStr;
+
+    return " <h1>{0} {1} {2}</h1>".pa_format(issuetype, priority, summary) +
+           " <span>key:</span>{0}".pa_format(key) +
+           " <br><span>status:</span>{0}".pa_format(status) +
+           " <br><span>created:</span>{0}".pa_format(created.toISOString().slice(0, 10)) +
+           " <br><span>assignee:</span>{0}".pa_format(assignee) +
+           " <br><span>fixver:</span>{0}".pa_format(fixversionstr);
+}
+
+/*
+ * pa_replace_urls() and friends
+ */
+
+function _pa_draw_jira_issue_link(el, jira_url, jira_issue) {
+    var key = jira_issue.key;
+    var resolved = jira_issue.fields.resolution;
     var class_name = resolved ? "jira-issue-resolved" : "jira-issue-unresolved";
+    var fixversionstr = jira_issue.fields.fixVersionsStr;
 
     t = $(el).html();
     t = t.replace(new RegExp(key, 'g'),
                   "<a class='{0}' ".pa_format(class_name) +
                   " target=_blank" +
                   " id='jira-{0}'".pa_format(key) +
-                  " data-html='true' " +
-                  " data-container='body' " +
-                  " title=\"" +
-                  " <h1>{0} {1} {2}</h1>".pa_format(issuetype, priority, summary) +
-                  " <span>key:</span>{0}".pa_format(key) +
-                  " <br><span>status:</span>{0}".pa_format(status) +
-                  " <br><span>created:</span>{0}".pa_format(created.toISOString().slice(0, 10)) +
-                  " <br><span>assignee:</span>{0}".pa_format(assignee) +
-                  " <br><span>fixver:</span>{0}".pa_format(fixversionstr) +
-                  "\"" +
+                  " title=\"" + pa_tooltip_jira_issue(jira_issue) + "\"" +
                   " href='{0}browse/{1}'>{1} <span>{2}</span></a>".pa_format(jira_url, key, fixversionstr));
 
     $(el).html(t);
 
-    $("#jira-" + key).tooltip(
-        {'template': '<div class="jira-tooltip" role="tooltip"><div class="arrow"></div><div class="tooltip-inner"></div></div>'}
-    );
+    pa_tooltip("#jira-" + key);
 }
 
 function _pa_replace_jira_ids(el, jira_url, text) {

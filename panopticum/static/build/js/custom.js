@@ -180,14 +180,6 @@ $(document).ready(function() {
 });
 // /Panel toolbox
 
-// Tooltip
-$(document).ready(function() {
-    $('[data-toggle="tooltip"]').tooltip({
-        container: 'body'
-    });
-});
-// /Tooltip
-
 // Progressbar
 if ($(".progress .progress-bar")[0]) {
     $('.progress .progress-bar').progressbar();

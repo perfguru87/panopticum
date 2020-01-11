@@ -101,11 +101,9 @@ function create_table() {
         "serverSide": true,
         "deferLoading": false, // do not load data after table creation
         "ajax": "/api/component_version/?format=datatables",
-        "initComplete": function(settings, json) {
-            $('[data-toggle="tooltip"]').tooltip();
-        },
         "drawCallback": function(settings) {
             pa_replace_urls();
+            pa_tooltip('[data-toggle="tooltip"]');
         },
         "columns": [
             {"data": "id", "searchable": false},
@@ -189,7 +187,8 @@ function create_table() {
                     else if (data)
                         return "<a href='/admin/panopticum/componentversionmodel/" + row.id + "/change/' " +
                                " target=_blank data-toggle='tooltip' data-placement='left'" +
-                               " title='empty fields: " + row.meta_profile_not_filled_fields + "'>" + data + "%</span>";
+                               " title='" + pa_tooltip_from_list('<b>Empty fields:</b>', row.meta_profile_not_filled_fields) +
+                               "'>" + data + "%</span>";
                     return "";
                 }
             },
@@ -203,7 +202,8 @@ function create_table() {
                     else if (data)
                         return "<a href='/admin/panopticum/componentversionmodel/" + row.id + "/change/' " +
                                " target=_blank data-toggle='tooltip' data-placement='left'" +
-                               " title='bad rating: " + row.meta_bad_rating_fields + "'>" + data + "%</span>";
+                               " title='" + pa_tooltip_from_list('<b>Bad rating:</b>', row.meta_bad_rating_fields) +
+                               "'>" + data + "%</span>";
                     return "";
                 }
             },

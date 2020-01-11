@@ -152,10 +152,12 @@ function init_profile_completeness_gauge(component) {
     };
 
     $('#profile-completeness-gauge-text').each(function(index, el) {
-       if (component.latest_version.meta_profile_not_filled_fields)
-           $(el).attr('data-original-title', 'fields to be filled: ' + component.latest_version.meta_profile_not_filled_fields);
-       else
-           $(el).attr('data-original-title', 'no component version created in admin panel!');
+        if (component.latest_version.meta_profile_not_filled_fields)
+            $(el).attr('title', pa_tooltip_from_list('<b>Fields to be filled:</b>',
+                                                      component.latest_version.meta_profile_not_filled_fields));
+        else
+            $(el).attr('title', 'no component version created in admin panel!');
+        pa_tooltip(el);
     });
 
     if ($('#profile-completeness-gauge').length) {
@@ -231,8 +233,6 @@ function update_component_page_elements(component) {
         else
            $(el).addClass("pa-component-rating-low");
     });
-
-    $('[data-toggle="tooltip"]').tooltip();
 
     init_profile_completeness_gauge(component);
     init_rating_chart();
