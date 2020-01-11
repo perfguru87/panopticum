@@ -15,32 +15,32 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='componentversionmodel',
             name='qa_anonymisation_tests_notes',
-            field=panopticum.models.SmartTextField(blank=True, default='', verbose_name=''),
+            field=panopticum.fields.SmartTextField(blank=True, default='', verbose_name=''),
         ),
         migrations.AddField(
             model_name='componentversionmodel',
             name='qa_anonymisation_tests_quality',
-            field=panopticum.models.LowMedHighField(choices=[('unknown', '?'), ('n/a', 'N/A'), ('none', 'None'), ('low', 'Low'), ('med', 'Med'), ('high', 'High')], default='unknown', max_length=16, verbose_name=''),
+            field=panopticum.fields.LowMedHighField(choices=[('unknown', '?'), ('n/a', 'N/A'), ('none', 'None'), ('low', 'Low'), ('med', 'Med'), ('high', 'High')], default='unknown', max_length=16, verbose_name=''),
         ),
         migrations.AddField(
             model_name='componentversionmodel',
             name='qa_anonymisation_tests_signoff',
-            field=panopticum.models.SigneeField(blank=True, null=True, on_delete=django.db.models.deletion.PROTECT, related_name='signed_anonymisation_tests', to='panopticum.PersonModel', verbose_name=''),
+            field=panopticum.fields.SigneeField(blank=True, null=True, on_delete=django.db.models.deletion.PROTECT, related_name='signed_anonymisation_tests', to='panopticum.PersonModel', verbose_name=''),
         ),
         migrations.AddField(
             model_name='componentversionmodel',
             name='qa_upgrade_tests_notes',
-            field=panopticum.models.SmartTextField(blank=True, default='', verbose_name=''),
+            field=panopticum.fields.SmartTextField(blank=True, default='', verbose_name=''),
         ),
         migrations.AddField(
             model_name='componentversionmodel',
             name='qa_upgrade_tests_quality',
-            field=panopticum.models.LowMedHighField(choices=[('unknown', '?'), ('n/a', 'N/A'), ('none', 'None'), ('low', 'Low'), ('med', 'Med'), ('high', 'High')], default='unknown', help_text='Functional, performance, real volume', max_length=16, verbose_name=''),
+            field=panopticum.fields.LowMedHighField(choices=[('unknown', '?'), ('n/a', 'N/A'), ('none', 'None'), ('low', 'Low'), ('med', 'Med'), ('high', 'High')], default='unknown', help_text='Functional, performance, real volume', max_length=16, verbose_name=''),
         ),
         migrations.AddField(
             model_name='componentversionmodel',
             name='qa_upgrade_tests_signoff',
-            field=panopticum.models.SigneeField(blank=True, null=True, on_delete=django.db.models.deletion.PROTECT, related_name='signed_upgrade_tests', to='panopticum.PersonModel', verbose_name=''),
+            field=panopticum.fields.SigneeField(blank=True, null=True, on_delete=django.db.models.deletion.PROTECT, related_name='signed_upgrade_tests', to='panopticum.PersonModel', verbose_name=''),
         ),
         migrations.AlterField(
             model_name='componentversionmodel',
@@ -50,12 +50,12 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='componentversionmodel',
             name='dev_build_jenkins_job',
-            field=panopticum.models.SmartTextField(blank=True, default='', help_text='Multiple links allowed', max_length=2048, verbose_name=''),
+            field=panopticum.fields.SmartTextField(blank=True, default='', help_text='Multiple links allowed', max_length=2048, verbose_name=''),
         ),
         migrations.AlterField(
             model_name='componentversionmodel',
             name='dev_commit_link',
-            field=panopticum.models.SmartTextField(blank=True, default='', help_text='Multiple links allowed', max_length=2048, verbose_name=''),
+            field=panopticum.fields.SmartTextField(blank=True, default='', help_text='Multiple links allowed', max_length=2048, verbose_name=''),
         ),
         migrations.AlterField(
             model_name='componentversionmodel',
@@ -65,7 +65,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='componentversionmodel',
             name='dev_docs',
-            field=panopticum.models.SmartTextField(blank=True, default='', help_text='Multiple links allowed', max_length=2048, verbose_name=''),
+            field=panopticum.fields.SmartTextField(blank=True, default='', help_text='Multiple links allowed', max_length=2048, verbose_name=''),
         ),
         migrations.AlterField(
             model_name='componentversionmodel',
@@ -75,7 +75,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='componentversionmodel',
             name='dev_jira_component',
-            field=panopticum.models.SmartTextField(blank=True, default='', help_text='Multiple links allowed', max_length=2048, verbose_name=''),
+            field=panopticum.fields.SmartTextField(blank=True, default='', help_text='Multiple links allowed', max_length=2048, verbose_name=''),
         ),
         migrations.AlterField(
             model_name='componentversionmodel',
@@ -95,22 +95,22 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='componentversionmodel',
             name='dev_public_docs',
-            field=panopticum.models.SmartTextField(blank=True, default='', help_text='Multiple links allowed', max_length=2048, verbose_name=''),
+            field=panopticum.fields.SmartTextField(blank=True, default='', help_text='Multiple links allowed', max_length=2048, verbose_name=''),
         ),
         migrations.AlterField(
             model_name='componentversionmodel',
             name='dev_public_repo',
-            field=panopticum.models.SmartTextField(blank=True, default='', help_text='Multiple links allowed', max_length=2048, verbose_name=''),
+            field=panopticum.fields.SmartTextField(blank=True, default='', help_text='Multiple links allowed', max_length=2048, verbose_name=''),
         ),
         migrations.AlterField(
             model_name='componentversionmodel',
             name='dev_raml',
-            field=panopticum.models.SmartTextField(blank=True, default='', help_text='Multiple links allowed', max_length=2048, verbose_name=''),
+            field=panopticum.fields.SmartTextField(blank=True, default='', help_text='Multiple links allowed', max_length=2048, verbose_name=''),
         ),
         migrations.AlterField(
             model_name='componentversionmodel',
             name='dev_repo',
-            field=panopticum.models.SmartTextField(blank=True, default='', help_text='Multiple links allowed', max_length=2048, verbose_name=''),
+            field=panopticum.fields.SmartTextField(blank=True, default='', help_text='Multiple links allowed', max_length=2048, verbose_name=''),
         ),
         migrations.AlterField(
             model_name='componentversionmodel',
@@ -130,12 +130,12 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='componentversionmodel',
             name='mt_logging_format_status',
-            field=panopticum.models.NoPartialYesField(choices=[('unknown', '?'), ('n/a', 'N/A'), ('no', 'No'), ('partial', 'Partial'), ('yes', 'Yes')], default='unknown', help_text='Logs have proper format', max_length=16, verbose_name=''),
+            field=panopticum.fields.NoPartialYesField(choices=[('unknown', '?'), ('n/a', 'N/A'), ('no', 'No'), ('partial', 'Partial'), ('yes', 'Yes')], default='unknown', help_text='Logs have proper format', max_length=16, verbose_name=''),
         ),
         migrations.AlterField(
             model_name='componentversionmodel',
             name='mt_logging_sanitization_status',
-            field=panopticum.models.NoPartialYesField(choices=[('unknown', '?'), ('n/a', 'N/A'), ('no', 'No'), ('partial', 'Partial'), ('yes', 'Yes')], default='unknown', help_text='Logs do not have sensitive information', max_length=16, verbose_name=''),
+            field=panopticum.fields.NoPartialYesField(choices=[('unknown', '?'), ('n/a', 'N/A'), ('no', 'No'), ('partial', 'Partial'), ('yes', 'Yes')], default='unknown', help_text='Logs do not have sensitive information', max_length=16, verbose_name=''),
         ),
         migrations.AlterField(
             model_name='componentversionmodel',
@@ -145,7 +145,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='componentversionmodel',
             name='qa_api_tests_quality',
-            field=panopticum.models.LowMedHighField(choices=[('unknown', '?'), ('n/a', 'N/A'), ('none', 'None'), ('low', 'Low'), ('med', 'Med'), ('high', 'High')], default='unknown', help_text='Completeness, coverage, quality', max_length=16, verbose_name=''),
+            field=panopticum.fields.LowMedHighField(choices=[('unknown', '?'), ('n/a', 'N/A'), ('none', 'None'), ('low', 'Low'), ('med', 'Med'), ('high', 'High')], default='unknown', help_text='Completeness, coverage, quality', max_length=16, verbose_name=''),
         ),
         migrations.AlterField(
             model_name='componentversionmodel',
@@ -155,32 +155,32 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='componentversionmodel',
             name='qa_e2e_tests_quality',
-            field=panopticum.models.LowMedHighField(choices=[('unknown', '?'), ('n/a', 'N/A'), ('none', 'None'), ('low', 'Low'), ('med', 'Med'), ('high', 'High')], default='unknown', help_text='Completeness, coverage, quality', max_length=16, verbose_name=''),
+            field=panopticum.fields.LowMedHighField(choices=[('unknown', '?'), ('n/a', 'N/A'), ('none', 'None'), ('low', 'Low'), ('med', 'Med'), ('high', 'High')], default='unknown', help_text='Completeness, coverage, quality', max_length=16, verbose_name=''),
         ),
         migrations.AlterField(
             model_name='componentversionmodel',
             name='qa_longhaul_tests_quality',
-            field=panopticum.models.LowMedHighField(choices=[('unknown', '?'), ('n/a', 'N/A'), ('none', 'None'), ('low', 'Low'), ('med', 'Med'), ('high', 'High')], default='unknown', help_text='Completeness, coverage, quality', max_length=16, verbose_name=''),
+            field=panopticum.fields.LowMedHighField(choices=[('unknown', '?'), ('n/a', 'N/A'), ('none', 'None'), ('low', 'Low'), ('med', 'Med'), ('high', 'High')], default='unknown', help_text='Completeness, coverage, quality', max_length=16, verbose_name=''),
         ),
         migrations.AlterField(
             model_name='componentversionmodel',
             name='qa_manual_tests_quality',
-            field=panopticum.models.LowMedHighField(choices=[('unknown', '?'), ('n/a', 'N/A'), ('none', 'None'), ('low', 'Low'), ('med', 'Med'), ('high', 'High')], default='unknown', help_text='Completeness, coverage, quality', max_length=16, verbose_name=''),
+            field=panopticum.fields.LowMedHighField(choices=[('unknown', '?'), ('n/a', 'N/A'), ('none', 'None'), ('low', 'Low'), ('med', 'Med'), ('high', 'High')], default='unknown', help_text='Completeness, coverage, quality', max_length=16, verbose_name=''),
         ),
         migrations.AlterField(
             model_name='componentversionmodel',
             name='qa_perf_tests_quality',
-            field=panopticum.models.LowMedHighField(choices=[('unknown', '?'), ('n/a', 'N/A'), ('none', 'None'), ('low', 'Low'), ('med', 'Med'), ('high', 'High')], default='unknown', help_text='Completeness, coverage, quality', max_length=16, verbose_name=''),
+            field=panopticum.fields.LowMedHighField(choices=[('unknown', '?'), ('n/a', 'N/A'), ('none', 'None'), ('low', 'Low'), ('med', 'Med'), ('high', 'High')], default='unknown', help_text='Completeness, coverage, quality', max_length=16, verbose_name=''),
         ),
         migrations.AlterField(
             model_name='componentversionmodel',
             name='qa_security_tests_quality',
-            field=panopticum.models.LowMedHighField(choices=[('unknown', '?'), ('n/a', 'N/A'), ('none', 'None'), ('low', 'Low'), ('med', 'Med'), ('high', 'High')], default='unknown', help_text='Completeness, coverage, quality', max_length=16, verbose_name=''),
+            field=panopticum.fields.LowMedHighField(choices=[('unknown', '?'), ('n/a', 'N/A'), ('none', 'None'), ('low', 'Low'), ('med', 'Med'), ('high', 'High')], default='unknown', help_text='Completeness, coverage, quality', max_length=16, verbose_name=''),
         ),
         migrations.AlterField(
             model_name='componentversionmodel',
             name='qa_unit_tests_quality',
-            field=panopticum.models.LowMedHighField(choices=[('unknown', '?'), ('n/a', 'N/A'), ('none', 'None'), ('low', 'Low'), ('med', 'Med'), ('high', 'High')], default='unknown', help_text='Completeness, coverage, quality', max_length=16, verbose_name=''),
+            field=panopticum.fields.LowMedHighField(choices=[('unknown', '?'), ('n/a', 'N/A'), ('none', 'None'), ('low', 'Low'), ('med', 'Med'), ('high', 'High')], default='unknown', help_text='Completeness, coverage, quality', max_length=16, verbose_name=''),
         ),
         migrations.AlterField(
             model_name='componentversionmodel',
@@ -190,16 +190,16 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='datacentermodel',
             name='grafana',
-            field=panopticum.models.SmartTextField(blank=True, default='', max_length=2048, verbose_name=''),
+            field=panopticum.fields.SmartTextField(blank=True, default='', max_length=2048, verbose_name=''),
         ),
         migrations.AlterField(
             model_name='datacentermodel',
             name='info',
-            field=panopticum.models.SmartTextField(blank=True, default='', max_length=2048, verbose_name=''),
+            field=panopticum.fields.SmartTextField(blank=True, default='', max_length=2048, verbose_name=''),
         ),
         migrations.AlterField(
             model_name='datacentermodel',
             name='metrics',
-            field=panopticum.models.SmartTextField(blank=True, default='', max_length=2048, verbose_name=''),
+            field=panopticum.fields.SmartTextField(blank=True, default='', max_length=2048, verbose_name=''),
         ),
     ]

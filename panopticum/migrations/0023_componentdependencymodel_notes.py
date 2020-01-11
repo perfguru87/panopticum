@@ -14,6 +14,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='componentdependencymodel',
             name='notes',
-            field=panopticum.models.SmartTextField(blank=True, default='', verbose_name=''),
+            field=panopticum.fields.SmartTextField(blank=True, default='', verbose_name=''),
         ),
     ]

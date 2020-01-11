@@ -655,7 +655,7 @@ class ComponentDeploymentModel(models.Model):
     service_name = models.CharField(max_length=64, help_text="accsrv, taskmngr", blank=True)
     binary_name = models.CharField(max_length=64, help_text="accsrv.exe", blank=True)
     open_ports = models.ManyToManyField(TCPPortModel, blank=True)
-    notes = SmartTextField("Deployment notes")
+    notes = panopticum.fields.SmartTextField("Deployment notes")
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)

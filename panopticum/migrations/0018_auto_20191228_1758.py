@@ -20,6 +20,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='componentversionmodel',
             name='mt_logging_completeness_signoff',
-            field=panopticum.models.SigneeField(blank=True, null=True, on_delete=django.db.models.deletion.PROTECT, related_name='signed_logging_completeness', to='panopticum.PersonModel', verbose_name=''),
+            field=panopticum.fields.SigneeField(blank=True, null=True, on_delete=django.db.models.deletion.PROTECT, related_name='signed_logging_completeness', to='panopticum.PersonModel', verbose_name=''),
         ),
     ]
