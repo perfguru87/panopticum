@@ -25,34 +25,22 @@ Panopcicum database objects and their relations:
 # Todo
 
 HIGH PRIO
-- Reflect applied filters in URL to let direct links work
-- Component details page
-- Product/Branch and Location class filter support
-- Product must have only one component version linked when admin saves component version
-- Show 100 rows by default and increase scale by: 25, 100, 500, all
-
-MED PRIO
 - Property change audit (author and time of every property change)
-- Component data change history (who changed what, like in JIRA)
+- Component data change history widget (who changed what, like in JIRA)
 - Integration with Active Directory: user auth
 - Integration with Active Directory: people and org chart syncup
 - Roles: allow users to manage only their components (QA manages QA fields, Dev - manage dev fields, etc)
 - Export whole data to XLS
-- Component data completeness column (like 0-100%, where 100% is when all 'mandatory' fields initialized)
-- Add missed fields
 - Embed static documentation page
 - Add endpoints (URL to component mapping)
-- Custom documentation links: type, title, link
+- New field: service is highly loaded
+- Component 'dependee'
+
+MED PRIO
 - New release approval checklist
 - People - work hours
 - People - vacations
-- New field: service is highly loaded
-- Services dependencies: sync/fatal, sync, async
 - Libraries dependencies
-- Multiple links (comma separated list in admin panel) for repo/raml/docs/etc
-- Component profile completion: a tooltip to show what is completed / not completed
-- Component rating: a tooltip to show what is completed / not completed
-- Componet QA rating: to show a formula/rules about how it was calculated
 - Multiple languages/frameworks per component
 - Tooltip (hint) with possible component life state: legacy, new, mature, ...
 - Tooltip (hint) with possible component data accesss: Data, Metadata only, ...
@@ -63,14 +51,14 @@ LOW PRIO
 - Integration with git: number of commits per last weeks
 - Integration with git: number of contributors per last weeks
 - Integration with git: overall activity
-- Integration with JIRA: number of bugs per last weeks
+- Integration with JIRA: number of bugs per last weeks/months
 - Integration with JIRA: number of open bugs, tasks
-- Export components dependency graph (all, selected components)
+- Dashboard with components dependency graph (all, selected components)
 - Components diagram (all, selected components)
-- Integration with ADN (auto documentation)
+- Integration with Confluence (auto documentation)
 - Custom attributes/tags on components and search
 - Integrate with git repo: scan libraries dependencies in source code
-- Integrate with publically available product build system: propogate component version and link it with Product version
+- Integrate with build systems: propogate component version and link it with Product version
 - True Single-page-application
 - Correlation map between component rating and number of bugs in production
 - Link to language docs
