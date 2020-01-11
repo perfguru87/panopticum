@@ -4,6 +4,7 @@ from datatableview import helpers
 from django.forms.models import model_to_dict
 import datetime
 
+import panopticum.fields
 
 ##################################################################################################
 # People, Org chart
@@ -89,26 +90,7 @@ LIFE_STATUS = (
 )
 
 
-LOW_MED_HIGH = (
-    ('unknown', "?"),
-    ('n/a', "N/A"),
-    ('none', "None"),
-    ('low', "Low"),
-    ('med', "Med"),
-    ('high', "High")
-)
-
-
 LOW_MED_HIGH_RATING = {'unknown': 0, 'n/a': 3, 'none': 0, 'low': 1, 'med': 2, 'high': 3}
-
-
-NO_PARTIAL_YES = (
-    ('unknown', "?"),
-    ('n/a', "N/A"),
-    ('no', "No"),
-    ('partial', "Partial"),
-    ('yes', "Yes")
-)
 
 
 NO_PARTIAL_YES_RATING = {'unknown': 0, 'n/a': 2, 'no': 0, 'partial': 1, 'yes': 2}
@@ -123,44 +105,6 @@ DEPENDENCY_TYPE = (
     ('async_wo', "Async W/O"),
     ('includes', "Includes")
 )
-
-
-class NoPartialYesField(models.CharField):
-    def __init__(self, _title="", *args, **kwargs):
-        kwargs['verbose_name'] = _title
-        kwargs['max_length'] = 16
-        kwargs['choices'] = NO_PARTIAL_YES
-        kwargs['default'] = kwargs['choices'][0][0]
-        super().__init__(*args, **kwargs)
-
-
-class LowMedHighField(models.CharField):
-    def __init__(self, _title="", *args, **kwargs):
-        kwargs['verbose_name'] = _title
-        kwargs['max_length'] = 16
-        kwargs['choices'] = LOW_MED_HIGH
-        kwargs['default'] = kwargs['choices'][0][0]
-        super().__init__(*args, **kwargs)
-
-
-class SmartTextField(models.TextField):
-    # FIXME: store arbitrary comments and replace JIRA items and URLs by links
-    def __init__(self, _title="", *args, **kwargs):
-        # FIXME: store array of URLs (e.g. "|"-separated)
-        kwargs['verbose_name'] = _title
-        kwargs['default'] = ""
-        kwargs['blank'] = True
-        super().__init__(*args, **kwargs)
-
-
-class SigneeField(models.ForeignKey):
-    def __init__(self, _title="", *args, **kwargs):
-        kwargs['verbose_name'] = _title
-        kwargs['on_delete'] = on_delete=models.PROTECT
-        kwargs['null'] = True
-        kwargs['blank'] = True
-        kwargs['to'] = 'panopticum.PersonModel'
-        super().__init__(*args, **kwargs)
 
 
 class ComponentDataPrivacyClassModel(models.Model):
@@ -321,72 +265,72 @@ class ComponentVersionModel(models.Model):
     dev_orm = models.ManyToManyField(ORMModel, verbose_name="ORM", blank=True)
     dev_logging = models.ManyToManyField(LoggerModel, verbose_name="Logging framework", blank=True)
 
-    dev_raml = SmartTextField("RAML link", help_text="Multiple links allowed")
-    dev_repo = SmartTextField("Repository", help_text="Multiple links allowed")
-    dev_public_repo = SmartTextField("Public Repository", help_text="Multiple links allowed")
-    dev_jira_component = SmartTextField("JIRA component", help_text="Multiple links allowed")
-    dev_build_jenkins_job = SmartTextField("Jenkins job to build the component", help_text="Multiple links allowed")
-    dev_docs = SmartTextField("Documentation entry page", help_text="Multiple links allowed")
-    dev_public_docs = SmartTextField("Public Documentation", help_text="Multiple links allowed")
-    dev_commit_link = SmartTextField("Commit link", help_text="Multiple links allowed")
+    dev_raml = panopticum.fields.SmartTextField("RAML link", help_text="Multiple links allowed")
+    dev_repo = panopticum.fields.SmartTextField("Repository", help_text="Multiple links allowed")
+    dev_public_repo = panopticum.fields.SmartTextField("Public Repository", help_text="Multiple links allowed")
+    dev_jira_component = panopticum.fields.SmartTextField("JIRA component", help_text="Multiple links allowed")
+    dev_build_jenkins_job = panopticum.fields.SmartTextField("Jenkins job to build the component", help_text="Multiple links allowed")
+    dev_docs = panopticum.fields.SmartTextField("Documentation entry page", help_text="Multiple links allowed")
+    dev_public_docs = panopticum.fields.SmartTextField("Public Documentation", help_text="Multiple links allowed")
+    dev_commit_link = panopticum.fields.SmartTextField("Commit link", help_text="Multiple links allowed")
 
-    dev_api_is_public = NoPartialYesField("API is public")
+    dev_api_is_public = panopticum.fields.NoPartialYesField("API is public")
 
     # compliance
 
     compliance_applicable = models.BooleanField(verbose_name="Compliance requirements are applicable", default=True)
 
-    compliance_fips_status = NoPartialYesField("FIPS compliance")
-    compliance_fips_notes = SmartTextField("FIPS compliance notes")
-    compliance_fips_signoff = SigneeField(related_name='signed_fips')
+    compliance_fips_status = panopticum.fields.NoPartialYesField("FIPS compliance")
+    compliance_fips_notes = panopticum.fields.SmartTextField("FIPS compliance notes")
+    compliance_fips_signoff = panopticum.fields.SigneeField(related_name='signed_fips')
 
-    compliance_gdpr_status = NoPartialYesField("GDPR compliance")
-    compliance_gdpr_notes = SmartTextField("GDRP compliance notes")
-    compliance_gdpr_signoff = SigneeField(related_name='signed_gdpr')
+    compliance_gdpr_status = panopticum.fields.NoPartialYesField("GDPR compliance")
+    compliance_gdpr_notes = panopticum.fields.SmartTextField("GDRP compliance notes")
+    compliance_gdpr_signoff = panopticum.fields.SigneeField(related_name='signed_gdpr')
 
-    compliance_api_status = NoPartialYesField("API guildeine compliance")
-    compliance_api_notes = SmartTextField("API guideline compliance notes")
-    compliance_api_signoff = SigneeField(related_name='signed_api_guideline')
+    compliance_api_status = panopticum.fields.NoPartialYesField("API guildeine compliance")
+    compliance_api_notes = panopticum.fields.SmartTextField("API guideline compliance notes")
+    compliance_api_signoff = panopticum.fields.SigneeField(related_name='signed_api_guideline')
 
     # operational readiness information
 
     op_applicable = models.BooleanField(verbose_name="Operational requirements are applicable", default=True)
 
-    op_guide_status = NoPartialYesField("Operations guide")
-    op_guide_notes = SmartTextField("Operations guide notes")
-    op_guide_signoff = SigneeField(related_name='signed_op_guide')
+    op_guide_status = panopticum.fields.NoPartialYesField("Operations guide")
+    op_guide_notes = panopticum.fields.SmartTextField("Operations guide notes")
+    op_guide_signoff = panopticum.fields.SigneeField(related_name='signed_op_guide')
 
-    op_failover_status = NoPartialYesField("Failover")
-    op_failover_notes = SmartTextField("Failover notes")
-    op_failover_signoff = SigneeField(related_name='signed_failover')
+    op_failover_status = panopticum.fields.NoPartialYesField("Failover")
+    op_failover_notes = panopticum.fields.SmartTextField("Failover notes")
+    op_failover_signoff = panopticum.fields.SigneeField(related_name='signed_failover')
 
-    op_horizontal_scalability_status = NoPartialYesField("Horizontal scalability")
-    op_horizontal_scalability_notes = SmartTextField("Horizontal scalability notes")
-    op_horizontal_scalability_signoff = SigneeField(related_name='signed_horizontal_scalability')
+    op_horizontal_scalability_status = panopticum.fields.NoPartialYesField("Horizontal scalability")
+    op_horizontal_scalability_notes = panopticum.fields.SmartTextField("Horizontal scalability notes")
+    op_horizontal_scalability_signoff = panopticum.fields.SigneeField(related_name='signed_horizontal_scalability')
 
-    op_scaling_guide_status = NoPartialYesField("Scaling guide")
-    op_scaling_guide_notes = SmartTextField("Scaling guide notes")
-    op_scaling_guide_signoff = SigneeField(related_name='signed_scaling_guide')
+    op_scaling_guide_status = panopticum.fields.NoPartialYesField("Scaling guide")
+    op_scaling_guide_notes = panopticum.fields.SmartTextField("Scaling guide notes")
+    op_scaling_guide_signoff = panopticum.fields.SigneeField(related_name='signed_scaling_guide')
 
-    op_sla_guide_status = NoPartialYesField("SLA/SLO guide")
-    op_sla_guide_notes = SmartTextField("SLA/SLO guide notes")
-    op_sla_guide_signoff = SigneeField(related_name='signed_sla_guide')
+    op_sla_guide_status = panopticum.fields.NoPartialYesField("SLA/SLO guide")
+    op_sla_guide_notes = panopticum.fields.SmartTextField("SLA/SLO guide notes")
+    op_sla_guide_signoff = panopticum.fields.SigneeField(related_name='signed_sla_guide')
 
-    op_metrics_status = NoPartialYesField("Monitoring")
-    op_metrics_notes = SmartTextField("Monitoring notes")
-    op_metrics_signoff = SigneeField(related_name='signed_metrics')
+    op_metrics_status = panopticum.fields.NoPartialYesField("Monitoring")
+    op_metrics_notes = panopticum.fields.SmartTextField("Monitoring notes")
+    op_metrics_signoff = panopticum.fields.SigneeField(related_name='signed_metrics')
 
-    op_alerts_status = NoPartialYesField("Alerts guide")
-    op_alerts_notes = SmartTextField("Alerts guide notes")
-    op_alerts_signoff = SigneeField(related_name='signed_alerts')
+    op_alerts_status = panopticum.fields.NoPartialYesField("Alerts guide")
+    op_alerts_notes = panopticum.fields.SmartTextField("Alerts guide notes")
+    op_alerts_signoff = panopticum.fields.SigneeField(related_name='signed_alerts')
 
-    op_zero_downtime_status = NoPartialYesField("Zero-downtime upgrade")
-    op_zero_downtime_notes = SmartTextField("Zero-downtime upgrade notes")
-    op_zero_downtime_signoff = SigneeField(related_name='signed_zero_downtime')
+    op_zero_downtime_status = panopticum.fields.NoPartialYesField("Zero-downtime upgrade")
+    op_zero_downtime_notes = panopticum.fields.SmartTextField("Zero-downtime upgrade notes")
+    op_zero_downtime_signoff = panopticum.fields.SigneeField(related_name='signed_zero_downtime')
 
-    op_backup_status = NoPartialYesField("Backup")
-    op_backup_notes = SmartTextField("Backup notes")
-    op_backup_signoff = SigneeField(related_name='signed_backup')
+    op_backup_status = panopticum.fields.NoPartialYesField("Backup")
+    op_backup_notes = panopticum.fields.SmartTextField("Backup notes")
+    op_backup_signoff = panopticum.fields.SigneeField(related_name='signed_backup')
 
     op_safe_restart = models.BooleanField(help_text="Is it safe to restart?", blank=True, null=True)
     op_safe_delete = models.BooleanField(help_text="Is it safe to delete?", blank=True, null=True)
@@ -396,69 +340,69 @@ class ComponentVersionModel(models.Model):
 
     mt_applicable = models.BooleanField(verbose_name="Maintainability requirements are applicable", default=True)
 
-    mt_http_tracing_status = NoPartialYesField("HTTP requests tracing", help_text="HTTP request b3 propagation support")
-    mt_http_tracing_notes = SmartTextField("HTTP requests tracing notes")
-    mt_http_tracing_signoff = SigneeField(related_name='signed_http_tracing')
+    mt_http_tracing_status = panopticum.fields.NoPartialYesField("HTTP requests tracing", help_text="HTTP request b3 propagation support")
+    mt_http_tracing_notes = panopticum.fields.SmartTextField("HTTP requests tracing notes")
+    mt_http_tracing_signoff = panopticum.fields.SigneeField(related_name='signed_http_tracing')
 
-    mt_logging_completeness_status = NoPartialYesField("Logging completeness", help_text="Are logs sufficient?")
-    mt_logging_completeness_notes = SmartTextField("Logging completeness notes")
-    mt_logging_completeness_signoff = SigneeField(related_name='signed_logging_completeness')
+    mt_logging_completeness_status = panopticum.fields.NoPartialYesField("Logging completeness", help_text="Are logs sufficient?")
+    mt_logging_completeness_notes = panopticum.fields.SmartTextField("Logging completeness notes")
+    mt_logging_completeness_signoff = panopticum.fields.SigneeField(related_name='signed_logging_completeness')
 
-    mt_logging_format_status = NoPartialYesField("Logging format", help_text="Logs have proper format")
-    mt_logging_format_notes = SmartTextField("Logging format notes")
-    mt_logging_format_signoff = SigneeField(related_name='signed_logging_format')
+    mt_logging_format_status = panopticum.fields.NoPartialYesField("Logging format", help_text="Logs have proper format")
+    mt_logging_format_notes = panopticum.fields.SmartTextField("Logging format notes")
+    mt_logging_format_signoff = panopticum.fields.SigneeField(related_name='signed_logging_format')
 
-    mt_logging_storage_status = NoPartialYesField("Logging storage", help_text="Is proper logs storage used?")
-    mt_logging_storage_notes = SmartTextField("Logging storage notes")
-    mt_logging_storage_signoff = SigneeField(related_name='signed_logging_storage')
+    mt_logging_storage_status = panopticum.fields.NoPartialYesField("Logging storage", help_text="Is proper logs storage used?")
+    mt_logging_storage_notes = panopticum.fields.SmartTextField("Logging storage notes")
+    mt_logging_storage_signoff = panopticum.fields.SigneeField(related_name='signed_logging_storage')
 
-    mt_logging_sanitization_status = NoPartialYesField("Logs sanitization", help_text="Logs do not have sensitive information")
-    mt_logging_sanitization_notes = SmartTextField("Logging sanitization notes")
-    mt_logging_sanitization_signoff = SigneeField(related_name='signed_logggin_sanitization')
+    mt_logging_sanitization_status = panopticum.fields.NoPartialYesField("Logs sanitization", help_text="Logs do not have sensitive information")
+    mt_logging_sanitization_notes = panopticum.fields.SmartTextField("Logging sanitization notes")
+    mt_logging_sanitization_signoff = panopticum.fields.SigneeField(related_name='signed_logggin_sanitization')
 
-    mt_db_anonymisation_status = NoPartialYesField("DataBase anonymisation")
-    mt_db_anonymisation_notes = SmartTextField("DataBase anonymisation")
-    mt_db_anonymisation_signoff = SigneeField(related_name='signed_db_anonymisation')
+    mt_db_anonymisation_status = panopticum.fields.NoPartialYesField("DataBase anonymisation")
+    mt_db_anonymisation_notes = panopticum.fields.SmartTextField("DataBase anonymisation")
+    mt_db_anonymisation_signoff = panopticum.fields.SigneeField(related_name='signed_db_anonymisation')
 
     # quality assurance
 
     qa_applicable = models.BooleanField(verbose_name="Tests requirements are applicable", default=True)
 
-    qa_manual_tests_status = LowMedHighField("Manual tests", help_text="Completeness, coverage, quality")
-    qa_manual_tests_notes = SmartTextField("Manual tests notes")
-    qa_manual_tests_signoff = SigneeField(related_name='signed_manual_tests')
+    qa_manual_tests_status = panopticum.fields.LowMedHighField("Manual tests", help_text="Completeness, coverage, quality")
+    qa_manual_tests_notes = panopticum.fields.SmartTextField("Manual tests notes")
+    qa_manual_tests_signoff = panopticum.fields.SigneeField(related_name='signed_manual_tests')
 
-    qa_unit_tests_status = LowMedHighField("Unit tests", help_text="Completeness, coverage, quality")
-    qa_unit_tests_notes = SmartTextField("Unit tests notes")
-    qa_unit_tests_signoff = SigneeField(related_name='signed_unit_tests')
+    qa_unit_tests_status = panopticum.fields.LowMedHighField("Unit tests", help_text="Completeness, coverage, quality")
+    qa_unit_tests_notes = panopticum.fields.SmartTextField("Unit tests notes")
+    qa_unit_tests_signoff = panopticum.fields.SigneeField(related_name='signed_unit_tests')
 
-    qa_e2e_tests_status = LowMedHighField("E2E tests", help_text="Completeness, coverage, quality")
-    qa_e2e_tests_notes = SmartTextField("E2E tests notes")
-    qa_e2e_tests_signoff = SigneeField(related_name='signed_e2e_tests')
+    qa_e2e_tests_status = panopticum.fields.LowMedHighField("E2E tests", help_text="Completeness, coverage, quality")
+    qa_e2e_tests_notes = panopticum.fields.SmartTextField("E2E tests notes")
+    qa_e2e_tests_signoff = panopticum.fields.SigneeField(related_name='signed_e2e_tests')
 
-    qa_perf_tests_status = LowMedHighField("Performance tests", help_text="Completeness, coverage, quality")
-    qa_perf_tests_notes = SmartTextField("Perf tests notes")
-    qa_perf_tests_signoff = SigneeField(related_name='signed_perf_tests')
+    qa_perf_tests_status = panopticum.fields.LowMedHighField("Performance tests", help_text="Completeness, coverage, quality")
+    qa_perf_tests_notes = panopticum.fields.SmartTextField("Perf tests notes")
+    qa_perf_tests_signoff = panopticum.fields.SigneeField(related_name='signed_perf_tests')
 
-    qa_longhaul_tests_status = LowMedHighField("Long-haul tests", help_text="Completeness, coverage, quality")
-    qa_longhaul_tests_notes = SmartTextField("Long-hault tests notes")
-    qa_longhaul_tests_signoff = SigneeField(related_name='signed_longhaul_tests')
+    qa_longhaul_tests_status = panopticum.fields.LowMedHighField("Long-haul tests", help_text="Completeness, coverage, quality")
+    qa_longhaul_tests_notes = panopticum.fields.SmartTextField("Long-hault tests notes")
+    qa_longhaul_tests_signoff = panopticum.fields.SigneeField(related_name='signed_longhaul_tests')
 
-    qa_security_tests_status = LowMedHighField("Security tests", help_text="Completeness, coverage, quality")
-    qa_security_tests_notes = SmartTextField("Security tests notes")
-    qa_security_tests_signoff = SigneeField(related_name='signed_security_tests')
+    qa_security_tests_status = panopticum.fields.LowMedHighField("Security tests", help_text="Completeness, coverage, quality")
+    qa_security_tests_notes = panopticum.fields.SmartTextField("Security tests notes")
+    qa_security_tests_signoff = panopticum.fields.SigneeField(related_name='signed_security_tests')
 
-    qa_api_tests_status = LowMedHighField("API tests", help_text="Completeness, coverage, quality")
-    qa_api_tests_notes = SmartTextField("API tests notes")
-    qa_api_tests_signoff = SigneeField(related_name='signed_api_tests')
+    qa_api_tests_status = panopticum.fields.LowMedHighField("API tests", help_text="Completeness, coverage, quality")
+    qa_api_tests_notes = panopticum.fields.SmartTextField("API tests notes")
+    qa_api_tests_signoff = panopticum.fields.SigneeField(related_name='signed_api_tests')
 
-    qa_anonymisation_tests_status = LowMedHighField("DB anonymisation tests")
-    qa_anonymisation_tests_notes = SmartTextField("DB anonymisation tests notes")
-    qa_anonymisation_tests_signoff = SigneeField(related_name='signed_anonymisation_tests')
+    qa_anonymisation_tests_status = panopticum.fields.LowMedHighField("DB anonymisation tests")
+    qa_anonymisation_tests_notes = panopticum.fields.SmartTextField("DB anonymisation tests notes")
+    qa_anonymisation_tests_signoff = panopticum.fields.SigneeField(related_name='signed_anonymisation_tests')
 
-    qa_upgrade_tests_status = LowMedHighField("Upgrade tests", help_text="Functional, performance, real volume")
-    qa_upgrade_tests_notes = SmartTextField("Upgrade tests notes")
-    qa_upgrade_tests_signoff = SigneeField(related_name='signed_upgrade_tests')
+    qa_upgrade_tests_status = panopticum.fields.LowMedHighField("Upgrade tests", help_text="Functional, performance, real volume")
+    qa_upgrade_tests_notes = panopticum.fields.SmartTextField("Upgrade tests notes")
+    qa_upgrade_tests_signoff = panopticum.fields.SigneeField(related_name='signed_upgrade_tests')
 
     # meta
 
@@ -626,7 +570,7 @@ class ComponentDependencyModel(models.Model):
     type = models.CharField(max_length=16, choices=DEPENDENCY_TYPE, default=DEPENDENCY_TYPE[0][0])
     component = models.ForeignKey(ComponentModel, on_delete=models.PROTECT)
     version = models.ForeignKey(ComponentVersionModel, on_delete=models.PROTECT)
-    notes = SmartTextField("Dependency notes")
+    notes = panopticum.fields.SmartTextField("Dependency notes")
 
 
 ##################################################################################################
@@ -727,9 +671,9 @@ class ComponentDeploymentModel(models.Model):
 
 class DatacenterModel(models.Model):
     name = models.CharField(max_length=64, help_text="Datacenter name")
-    info = SmartTextField("Info link")
-    grafana = SmartTextField("Grafana link")
-    metrics = SmartTextField("Metrics link")
+    info = panopticum.fields.SmartTextField("Info link")
+    grafana = panopticum.fields.SmartTextField("Grafana link")
+    metrics = panopticum.fields.SmartTextField("Metrics link")
     components_deployments = models.ManyToManyField(ComponentDeploymentModel)
 
     class Meta:
