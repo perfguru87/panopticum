@@ -152,11 +152,20 @@ function init_profile_completeness_gauge(component) {
     };
 
     $('#profile-completeness-gauge-text').each(function(index, el) {
-        if (component.latest_version.meta_profile_not_filled_fields)
+        if (component.latest_version.meta_profile_not_filled_fields == "")
+            $(el).attr('title', 'Good job!');
+        else if (component.latest_version.meta_profile_not_filled_fields)
             $(el).attr('title', pa_tooltip_from_list('<b>Fields to be filled:</b>',
                                                       component.latest_version.meta_profile_not_filled_fields));
         else
             $(el).attr('title', 'no component version created in admin panel!');
+
+        $(el).click(function() {
+            window.open('/admin/panopticum/componentversionmodel/' + component.latest_version.id + '/change/');
+            return false;
+        });
+        $(el).css('cursor', 'pointer');
+
         pa_tooltip(el);
     });
 
