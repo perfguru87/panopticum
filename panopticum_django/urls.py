@@ -13,6 +13,7 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path, re_path
 from django.conf.urls import url, include
@@ -22,6 +23,7 @@ import rest_framework.authtoken.views
 
 from panopticum import views
 from panopticum import jira
+from panopticum_django import settings
 
 router = routers.DefaultRouter()
 router.register(r'product_version', views.ProductVersionViewSet)
@@ -43,7 +45,10 @@ urlpatterns = [
     path('api/login/', rest_framework.authtoken.views.obtain_auth_token),
     re_path(r'^api/jira/([A-Z]*-\d+)', views.JiraIssueView.as_view(), name='jira'),
     url(r'^api/jira_url/', views.JiraUrlView.as_view(), name='jira_url'),
-    path('api/login/', views.LoginView.as_view()),
+    path('api/login/', views.LoginAPIView.as_view()),
+    path('accounts/', include('django.contrib.auth.urls')),
     url('^api/', include(router.urls)),
-    url('', views.dashboard_components, name='Components')
 ]
+
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+urlpatterns += (url('', views.dashboard_components, name='Components'), )

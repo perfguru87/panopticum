@@ -143,7 +143,7 @@ ADMIN_REORDER = (
     # Keep original label and models
     'sites',
 
-    # {'app': 'auth', 'models': ('auth.User', 'auth.Group')},
+    {'app': 'auth', 'models': ('panopticum.User', 'auth.Group')},
 
     {'app': 'panopticum', 'label': 'Components', 'models':
         ('panopticum.ComponentVersionModel',)
@@ -187,7 +187,19 @@ PAGE_FOOTER = "Copyright © 2019"
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
 STATIC_URL = '/static/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/media/'
 
+# CORS settings for JS UI frameworks
+# Uncomment that string if you need allow all host for CORS
+#CORS_ORIGIN_ALLOW_ALL = True
+
+# add your client JS UI address, if that different with django server
+CORS_ORIGIN_WHITELIST = [
+    'http://127.0.0.1:8080'
+]
+
+AUTH_USER_MODEL = 'panopticum.User'
 
 curr_dir = os.path.abspath(os.path.dirname(__file__))
 if os.path.exists(os.path.join(curr_dir, "settings_local.py")):

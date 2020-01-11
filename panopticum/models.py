@@ -3,6 +3,18 @@ from datatableview.views import DatatableView
 from datatableview import helpers
 from django.forms.models import model_to_dict
 import datetime
+from django.contrib.auth.models import AbstractUser
+from django.utils.safestring import mark_safe
+
+
+class User(AbstractUser):
+    photo = models.ImageField(upload_to='avatars', default='avatars/default.png')
+
+    @property
+    def photo_url(self):
+        if self.photo and hasattr(self.photo, 'url'):
+            return self.photo.url
+
 
 import panopticum.fields
 

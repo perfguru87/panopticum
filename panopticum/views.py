@@ -65,7 +65,7 @@ class Token(viewsets.ModelViewSet):
     permission_classes = (permissions.IsAuthenticated,)
 
 
-class LoginView(APIView):
+class LoginAPIView(APIView):
 
     def get(self, request, format=None):
         if not isinstance(request.user, django.contrib.auth.models.AnonymousUser):
