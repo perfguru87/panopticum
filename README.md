@@ -9,12 +9,16 @@ UI is based on ["django-gentelella"](https://github.com/GiriB/django-gentelella)
 
 ![Component info example](https://github.com/perfguru87/panopticum/raw/master/panopticum/static/images/panopticum-component.png)
 
+Panopcicum database objects and their relations:
+
+![Component data model](https://github.com/perfguru87/panopticum/raw/master/panopticum/static/images/panopticum-model.png)
+
 # Features
 
 - Components registry
 - Components attributes: category, language, framework, maintainers, etc.
 - Components dependencies
-- Other connected objects: Products, Persons, 
+- Other connected objects: Products, Persons, Deployments
 - REST API
 - Users sync-up from Active Directory
 
