@@ -1,3 +1,4 @@
+{% load static %}
 <div class="left_col scroll-view">
   <div class="navbar nav_title" style="border: 0;">
     <div class="nav toggle">
@@ -11,7 +12,9 @@
   <div class="profile clearfix">
   {% if user.is_authenticated %}
     <div class="profile_pic">
-      <img src="{{user.photo_url}}" alt="..." class="img-circle profile_img">
+      <img src="{% if user.photo %}{{user.photo_url}}{% else %}{% static 'images/default_avatar.png' %}{% endif %}"
+           alt="{{user.username}}"
+           class="img-circle profile_img">
     </div>
     <div class="profile_info">
       <span>Welcome,</span>
@@ -20,7 +23,7 @@
 
   {% else %}
     <div class="profile_info">
-      <h2><a href="/accounts/login/?next={{ request.get_full_path }}">Login</a></h2>
+      <h2><a href="{% url 'login' %}?next={{ request.get_full_path }}">Login</a></h2>
     </div>
   {% endif %}
   </div>

@@ -8,7 +8,7 @@ from django.utils.safestring import mark_safe
 
 
 class User(AbstractUser):
-    photo = models.ImageField(upload_to='avatars', default='avatars/default.png')
+    photo = models.ImageField(upload_to='avatars')
 
     @property
     def photo_url(self):

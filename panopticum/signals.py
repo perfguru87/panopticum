@@ -14,6 +14,6 @@ def create_auth_token(sender, instance=None, created=False, **kwargs):
 
 @receiver(django_auth_ldap.backend.populate_user, sender=django_auth_ldap.backend.LDAPBackend)
 def add_photo(sender, instance=None, created=False, user=None, ldap_user=None, **kwargs):
-    if ldap_user.attrs.data['thumbnailphoto']:
-        user.photo.save(name=f'{user.pk}.jpg',
+    if ldap_user.attrs.data['thumbnailphoto'] and not user.photo:
+        user.photo.save(name=f'{user.username}.jpg',
                         content=ContentFile(ldap_user.attrs.data['thumbnailphoto'][0]))
