@@ -5,5 +5,4 @@ class PanopticumConfig(AppConfig):
     name = 'panopticum'
 
     def ready(self):
-        import panopticum.signals
-        pass
+        import panopticum.signals  # init signals

@@ -74,7 +74,6 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'corsheaders.middleware.CorsMiddleware',
-    'django.middleware.common.CommonMiddleware',
     'admin_reorder.middleware.ModelAdminReorder',
 ]
 
@@ -109,8 +108,6 @@ DATABASES = {
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
-# uncomment if you need ldap auth
-#AUTHENTICATION_BACKENDS = ["django_auth_ldap.backend.LDAPBackend"]
 
 # JIRA
 
