@@ -8,7 +8,22 @@ from django.utils.safestring import mark_safe
 
 
 class User(AbstractUser):
+    dn = models.CharField(max_length=255, null=True)
+    title = models.CharField(max_length=64, blank=True, null=True)
     photo = models.ImageField(upload_to='avatars')
+    organization = models.ForeignKey('OrganizationModel', on_delete=models.PROTECT, blank=True,
+                                     null=True)
+    department = models.ForeignKey('OrgDepartmentModel', on_delete=models.PROTECT, blank=True,
+                                   null=True)
+    role = models.ForeignKey('PersonRoleModel', on_delete=models.PROTECT, blank=True, null=True)
+    office_phone = models.CharField(max_length=64, blank=True, null=True)
+    mobile_phone = models.CharField(max_length=64, blank=True, null=True)
+    active_directory_guid = models.CharField(max_length=64, blank=True, null=True)
+    employee_number = models.CharField(max_length=64, blank=True, null=True)
+    info = models.TextField(blank=True, null=True)
+    hidden = models.BooleanField(help_text="Hide the person from the potential assignee lists",
+                                 db_index=True, default=False)
+    manager = models.ForeignKey("self", on_delete=models.PROTECT, blank=True, null=True)
 
     @property
     def photo_url(self):
