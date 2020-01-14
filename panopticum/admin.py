@@ -26,8 +26,16 @@ formfields_small = {models.ForeignKey: {'widget': Select(attrs={'width': '200px'
 
 
 class UserAdmin(django.contrib.auth.admin.UserAdmin):
-    readonly_fields = ['image']
-    fieldsets = django.contrib.auth.admin.UserAdmin.fieldsets + ((_('misc'), {'fields': ('image', )}), )
+
+    fieldsets = (
+        (None, {'fields': ('username', 'password')}),
+        (_('Personal info'), {'fields': ('first_name', 'last_name', 'email',
+                                         'office_phone', 'mobile_phone', 'image')}),
+        (_('Organization'), {'fields': ('organization', 'department', 'role', 'title', 'manager')}),
+        (_('Permissions'), {'fields': ('is_active', 'is_staff', 'is_superuser',
+                                       'groups', 'user_permissions')}),
+        (_('Important dates'), {'fields': ('last_login', 'date_joined')}),
+    )
 
     def image(self, obj):
         return mark_safe('<img src="{url}" width="{width}" height={height} />'.format(
