@@ -1,13 +1,10 @@
-import re
-
 import ldap
-from django.conf import settings
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django_auth_ldap.config import LDAPSearch
 from rest_framework.authtoken.models import Token
 from django.core.files.base import ContentFile
-import django_auth_ldap.backend
+import panopticum.ldap
 from panopticum_django import settings
 from django.core.exceptions import ObjectDoesNotExist
 
@@ -19,20 +16,21 @@ def create_auth_token(sender, instance=None, created=False, **kwargs):
         Token.objects.create(user=instance)
 
 
-@receiver(django_auth_ldap.backend.populate_user, sender=django_auth_ldap.backend.LDAPBackend)
+@receiver(panopticum.ldap.populate_user, sender=panopticum.ldap.PanopticumLDAPBackend)
 def add_photo(sender, instance=None, created=False, user=None, ldap_user=None, **kwargs):
     """ Download and assign user photo at user population from LDAP """
-    ldap_field_name = settings.LDAP_USER_ATTR_MAP.get("photo")
+    backend = panopticum.ldap.PanopticumLDAPBackend()
+    ldap_field_name = backend.settings.FOREIGNKEY_USER_ATTR_MAP.get("photo")
 
     if ldap_field_name and ldap_user.attrs.data[ldap_field_name] and not user.photo:
         user.photo.save(name=f'{user.username}.jpg',
                         content=ContentFile(ldap_user.attrs.data[ldap_field_name][0]))
 
 
-@receiver(django_auth_ldap.backend.populate_user, sender=django_auth_ldap.backend.LDAPBackend)
+@receiver(panopticum.ldap.populate_user, sender=panopticum.ldap.PanopticumLDAPBackend)
 def update_user_foreign_keys(sender, instance=None, created=False, user=None, ldap_user=None, **kwargs):
-    backend = django_auth_ldap.backend.LDAPBackend()
-    for model_field_name, val in settings.LDAP_USER_ATTR_MAP.items():
+    backend = panopticum.ldap.PanopticumLDAPBackend()
+    for model_field_name, val in backend.settings.FOREIGNKEY_USER_ATTR_MAP.items():
         search_field = "name"
         create = True
 
@@ -57,13 +55,7 @@ def update_user_foreign_keys(sender, instance=None, created=False, user=None, ld
                     and not backend.get_user_model().objects.filter(dn=ldap_value).exists():
                 search = LDAPSearch(ldap_value, ldap.SCOPE_BASE)
                 related_ldap_attrs = search.execute(ldap_user._get_connection())[0][1]
-                related_username = related_ldap_attrs.data.get(settings.AUTH_LDAP_USER_SEARCH_FIELD)[0]
-                related_ldap_user = django_auth_ldap.backend._LDAPUser(backend, related_username)
-                related_ldap_user._user_attrs = related_ldap_attrs
-                related_ldap_user._get_or_create_user()
-
-                field_model_instance, built = backend.get_or_build_user(related_username,
-                                                                        related_ldap_user)
+                field_model_instance = backend.create_user(related_ldap_attrs)
             else:
                 field_model_instance = field_model.objects.get_or_create(**{
                     search_field: ldap_value
