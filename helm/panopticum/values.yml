@@ -1,8 +1,0 @@
-database:
-  driver: sqlite
-  image:
-  imageTag: latest
-  resources:
-    requests:
-      memory: 128Mi
-      cpu: 100m
