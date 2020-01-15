@@ -198,10 +198,6 @@ CORS_ORIGIN_WHITELIST = [
 
 AUTH_USER_MODEL = 'panopticum.User'
 
-# Object relation map for adding foreign key objects like AUTH_LDAP_USER_ATTR_MAP.
-# key is foreignKey field at django model
-# value is LDAP field
-LDAP_USER_ATTR_MAP = {}
 
 curr_dir = os.path.abspath(os.path.dirname(__file__))
 if os.path.exists(os.path.join(curr_dir, "settings_local.py")):
