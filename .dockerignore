@@ -1,6 +1,8 @@
 .gitignore
 Dockerfile
 env
+venv
 *.db
 data
 panopticum_django/settings_local.py
+panopticum/migrations
