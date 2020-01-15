@@ -22,7 +22,7 @@ def add_photo(sender, instance=None, created=False, user=None, ldap_user=None, *
     backend = panopticum.ldap.PanopticumLDAPBackend()
     ldap_field_name = backend.settings.FOREIGNKEY_USER_ATTR_MAP.get("photo")
 
-    if ldap_field_name and ldap_user.attrs.data[ldap_field_name] and not user.photo:
+    if ldap_field_name and ldap_field_name in ldap_user.attrs.data and not user.photo:
         user.photo.save(name=f'{user.username}.jpg',
                         content=ContentFile(ldap_user.attrs.data[ldap_field_name][0]))
 
@@ -55,7 +55,7 @@ def update_user_foreign_keys(sender, instance=None, created=False, user=None, ld
                     and not backend.get_user_model().objects.filter(dn=ldap_value).exists():
                 search = LDAPSearch(ldap_value, ldap.SCOPE_BASE)
                 related_ldap_attrs = search.execute(ldap_user._get_connection())[0][1]
-                field_model_instance = backend.create_user(related_ldap_attrs)
+                field_model_instance, built = backend.update_user(related_ldap_attrs)
             else:
                 field_model_instance = field_model.objects.get_or_create(**{
                     search_field: ldap_value
