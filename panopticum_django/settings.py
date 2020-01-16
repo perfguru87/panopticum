@@ -39,19 +39,26 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'rest_framework.authtoken',
     'rest_framework_datatables',
     'django_extensions',
+    'corsheaders',
     'admin_reorder',
     'panopticum'
 ]
 
 REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.TokenAuthentication',
+        'rest_framework.authentication.SessionAuthentication'
+    ),
     'DEFAULT_RENDERER_CLASSES': (
         'rest_framework.renderers.JSONRenderer',
         'rest_framework.renderers.BrowsableAPIRenderer',
         'rest_framework_datatables.renderers.DatatablesRenderer',
     ),
     'DEFAULT_FILTER_BACKENDS': (
+        'django_filters.rest_framework.DjangoFilterBackend',
         'rest_framework_datatables.filters.DatatablesFilterBackend',
     ),
     'DEFAULT_PAGINATION_CLASS': 'rest_framework_datatables.pagination.DatatablesPageNumberPagination',
@@ -66,6 +73,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'admin_reorder.middleware.ModelAdminReorder',
 ]
 
@@ -101,7 +109,6 @@ DATABASES = {
     }
 }
 
-
 # JIRA
 
 JIRA_CONFIG = { }
@@ -133,7 +140,7 @@ ADMIN_REORDER = (
     # Keep original label and models
     'sites',
 
-    # {'app': 'auth', 'models': ('auth.User', 'auth.Group')},
+    {'app': 'auth', 'models': ('panopticum.User', 'auth.Group')},
 
     {'app': 'panopticum', 'label': 'Components', 'models':
         ('panopticum.ComponentVersionModel',)
@@ -177,6 +184,11 @@ PAGE_FOOTER = "Copyright © 2019"
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
 STATIC_URL = '/static/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/media/'
+
+
+AUTH_USER_MODEL = 'panopticum.User'
 
 curr_dir = os.path.abspath(os.path.dirname(__file__))
 if os.path.exists(os.path.join(curr_dir, "settings_local.py")):

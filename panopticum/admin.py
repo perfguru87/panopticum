@@ -1,5 +1,7 @@
 from django.contrib import admin
 from django.forms.widgets import SelectMultiple, NumberInput, TextInput, Textarea, Select
+import django.contrib.auth.admin
+from django.utils.translation import gettext_lazy as _
 
 import datetime
 
@@ -21,6 +23,19 @@ formfields_small = {models.ForeignKey: {'widget': Select(attrs={'width': '200px'
                     models.URLField: {'widget': TextInput(attrs={'width': '180px', 'style': 'width:180px'})},
                     models.TextField: {'widget': Textarea(attrs={'rows': 2, 'cols': 30})},
                     }
+
+
+class UserAdmin(django.contrib.auth.admin.UserAdmin):
+    readonly_fields = ['image']
+    fieldsets = django.contrib.auth.admin.UserAdmin.fieldsets + ((_('misc'), {'fields': ('image', )}), )
+
+    def image(self, obj):
+        return mark_safe('<img src="{url}" width="{width}" height={height} />'.format(
+            url=obj.photo.url,
+            width=obj.photo.width,
+            height=obj.photo.height,
+        )
+        )
 
 
 class ComponentDependencyAdmin(admin.TabularInline):
@@ -139,6 +154,7 @@ class ComponentVersionAdmin(admin.ModelAdmin):
               }
 
 
+admin.site.register(User, UserAdmin)
 admin.site.register(CountryModel)
 admin.site.register(OrganizationModel)
 admin.site.register(OrgDepartmentModel)
