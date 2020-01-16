@@ -40,12 +40,18 @@ class UserAdmin(django.contrib.auth.admin.UserAdmin):
     )
 
     def image(self, obj):
-        return mark_safe('<img src="{url}" width="{width}" height={height} />'.format(
-            url=obj.photo.url,
-            width=obj.photo.width,
-            height=obj.photo.height,
-        )
-        )
+        max_size = 280
+        if obj.photo.height < max_size and obj.photo.width < max_size:
+            max_size = max(obj.photo.height, obj.photo.width)
+
+        ratio = obj.photo.width / obj.photo.height
+        if obj.photo.width >= obj.photo.height:
+            width = max_size * ratio
+            height = max_size
+        else:
+            height = max_size /ratio
+            width = max_size
+        return mark_safe(f'<img src="{obj.photo.url}" width="{width}" height={height} />')
 
 
 class ComponentDependencyAdmin(admin.TabularInline):
