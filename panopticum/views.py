@@ -77,7 +77,7 @@ class LoginAPIView(APIView):
             }
             return Response(content)
         else:
-            return Response({"error": "not logined"}, 401)
+            return Response({"error": "not logged in"}, 401)
 
     def post(self, request):
         user = django.contrib.auth.authenticate(request,
@@ -90,7 +90,7 @@ class LoginAPIView(APIView):
                 "token": rest_framework.authtoken.models.Token.objects.get_or_create(user=request.user)[0].key
             })
         else:
-            return Response({"error": "not valid credentials"}, 403)
+            return Response({"error": "not valid credentials"}, 401)
 
 
 def component(request):
