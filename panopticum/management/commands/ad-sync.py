@@ -8,6 +8,19 @@ logger = logging.getLogger(__name__)
 
 
 def fetch_users():
+    """ Copy some behavior from django-auth-ldap login. Unfortunately django-auth-ldap library allow
+     populate users only by username. But user LDAP structure can contain user foreign key with different
+     value, for example DN instead username. For example LDAP attrs:
+     {
+        "cn=John.Doe,ou=users,dn=example,dn=com",
+        "company": "Some company",
+        "manager": "cn=big.boss,ou=users,dn=example,dn=com",
+        ...
+     }
+     At this example will be all ok if "manager" = "big.boss". Also "CN" ca be different with "username".
+     For resolving "manager" field we should make request to LDAP by CN, get LDAP attrs, and create
+     manager django user from LDAP attrs.
+     """
     updated = 0
     added = 0
     backend = PanopticumLDAPBackend()
@@ -21,6 +34,7 @@ def fetch_users():
                         backend.settings.USER_SEARCH.scope,
                         filterstr)
 
+    # define connection to LDAP
     connection = backend.ldap.initialize(backend.settings.SERVER_URI, bytes_mode=False)
     if backend.settings.BIND_DN:
         connection.simple_bind_s(backend.settings.BIND_DN, backend.settings.BIND_PASSWORD)
@@ -30,6 +44,7 @@ def fetch_users():
     if backend.settings.START_TLS:
         logger.debug("Initiating TLS")
         connection.start_tls_s()
+
     ldap_attrs = search.execute(connection)
     logger.info(f'Found {len(ldap_attrs)} entries')
     for ldap_attr in ldap_attrs:

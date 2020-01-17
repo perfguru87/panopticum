@@ -27,7 +27,7 @@ formfields_small = {models.ForeignKey: {'widget': Select(attrs={'width': '200px'
 
 class UserAdmin(django.contrib.auth.admin.UserAdmin):
     readonly_fields = ['image', ]
-    list_display = ('username', 'first_name', 'last_name', 'is_staff', 'title')
+    list_display = ('username', 'first_name', 'last_name', 'is_staff', 'title', 'department')
 
     fieldsets = (
         (None, {'fields': ('username', 'password')}),
