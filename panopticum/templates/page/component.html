@@ -2,7 +2,13 @@
 
 {% block title %} [[ component.name ]] {% endblock title %}
 
+{% block scripts %}
+  {{ block.super }}
+  <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+{% endblock %}
+
 {% block stylesheets %}
+  <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
   {{ block.super }}
 {% endblock stylesheets %}
 
@@ -233,7 +239,6 @@ function vue_component_init() {
       props: ['status'],
       computed: {
           classObject: function() {
-            console.log(this.status);
             return {
               yes: this.status == 'yes',
               no: this.status == 'no',
@@ -242,9 +247,18 @@ function vue_component_init() {
           }
       },
       template: `
-        <span v-bind:class="classObject" v-if="['yes', 'no'].includes(status)">
-          {% templatetag openvariable %} status.toUpperCase() {% templatetag closevariable %}
-        </span>
+         <el-popover
+                v-if="['yes', 'no'].includes(status)"
+                placement="top-end"
+                width="200"
+                trigger="click"
+                popper-class="signoff-popover"
+         >
+            <div>Signed by John Doe<br/>at 17.01.2020</div>
+            <span v-bind:class="classObject" slot="reference" style="cursor: pointer">
+              {% templatetag openvariable %} status.toUpperCase() {% templatetag closevariable %}
+            </span>
+        </el-popover>
         <i v-else class="unknown fa fa-question-circle" style="font-size: 12px; color: crimson;" />
         </span>
       `

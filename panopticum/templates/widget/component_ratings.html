@@ -114,7 +114,7 @@
               <tbody>
                 <tr v-for='item in component.latest_version.compliance' v-cloak>
                   <td>[[ item.title ]]</td>
-                  <td class='pa-status'>[[ item.status ]]</td>
+                  <td class='pa-status'><widget-signoff v-bind:status="item.status"/>/td>
                   <td class='pa-replace-urls'>[[ item.notes ]]</td>
                 </tr>
               </tbody>

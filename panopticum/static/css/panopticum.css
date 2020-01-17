@@ -348,6 +348,14 @@ i.yes { color: green; }
 i.no { color: #bf9e9e; }
 i.unknown { color: #aaa; }
 
+.el-popper[x-placement^=top] .popper__arrow  {
+    border-top-color: #777;
+}
+
+div.signoff-popover {
+    border-color: #999;
+}
+
 td.pa-quality, td.pa-status { white-space: nowrap; text-align: center;}
 td.pa-quality i, td.pa-status i { width: 10px; }
 td.pa-quality i.fa-star, td.pa-status i.fa-star { color: green; }
