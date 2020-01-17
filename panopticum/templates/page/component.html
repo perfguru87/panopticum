@@ -236,7 +236,7 @@ function vue_component_init() {
     var url = '/api' + window.location.pathname + '/?format=json'
 
     Vue.component('widget-signoff', {
-      props: ['status'],
+      props: ['status', 'signoff'],
       computed: {
           classObject: function() {
             return {
@@ -254,7 +254,8 @@ function vue_component_init() {
                 trigger="click"
                 popper-class="signoff-popover"
          >
-            <div>Signed by John Doe<br/>at 17.01.2020</div>
+            <div>Updated by {% templatetag openvariable %} signoff.user.username {% templatetag closevariable %}<br/>
+            at {% templatetag openvariable %} signoff.date {% templatetag closevariable %}</div>
             <span v-bind:class="classObject" slot="reference" style="cursor: pointer">
               {% templatetag openvariable %} status.toUpperCase() {% templatetag closevariable %}
             </span>
