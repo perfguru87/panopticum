@@ -275,14 +275,14 @@ class ComponentVersionModel(models.Model):
 
     # ownership
 
-    owner_maintainer = models.ForeignKey(PersonModel, related_name='maintainer_of', on_delete=models.PROTECT, blank=True, null=True)
-    owner_responsible_qa = models.ForeignKey(PersonModel, related_name='responsible_qa_of',
+    owner_maintainer = models.ForeignKey(User, related_name='maintainer_of', on_delete=models.PROTECT, blank=True, null=True)
+    owner_responsible_qa = models.ForeignKey(User, related_name='responsible_qa_of',
                                              on_delete=models.PROTECT, blank=True, null=True)
-    owner_product_manager = models.ManyToManyField(PersonModel, related_name='product_manager_of', blank=True)
-    owner_program_manager = models.ManyToManyField(PersonModel, related_name='program_managed_of', blank=True)
-    owner_escalation_list = models.ManyToManyField(PersonModel, related_name='escalation_list_of', blank=True)
-    owner_expert = models.ManyToManyField(PersonModel, related_name='expert_of', blank=True)
-    owner_architect = models.ManyToManyField(PersonModel, related_name='architect_of', blank=True)
+    owner_product_manager = models.ManyToManyField(User, related_name='product_manager_of', blank=True)
+    owner_program_manager = models.ManyToManyField(User, related_name='program_managed_of', blank=True)
+    owner_escalation_list = models.ManyToManyField(User, related_name='escalation_list_of', blank=True)
+    owner_expert = models.ManyToManyField(User, related_name='expert_of', blank=True)
+    owner_architect = models.ManyToManyField(User, related_name='architect_of', blank=True)
 
     # development
 
@@ -433,7 +433,7 @@ class ComponentVersionModel(models.Model):
 
     # meta
 
-    meta_update_by = models.ForeignKey(PersonModel, on_delete=models.PROTECT, blank=True, null=True, related_name='updater_of')
+    meta_update_by = models.ForeignKey(User, on_delete=models.PROTECT, blank=True, null=True, related_name='updater_of')
     meta_update_date = models.DateTimeField(db_index=True)
     meta_deleted = models.BooleanField()
 

@@ -44,11 +44,10 @@ class ProductVersionSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class PersonSerializer(serializers.ModelSerializer):
+class UserSerializer(serializers.ModelSerializer):
     class Meta:
-        model = PersonModel
-        fields = '__all__'
-
+        model = get_user_model()
+        exclude = ('password', )
 
 class SoftwareVendorSerializer(serializers.ModelSerializer):
     class Meta:
@@ -108,14 +107,14 @@ class ComponentVersionSerializerSimple(serializers.ModelSerializer):
 
     depends_on = ComponentDependencySerializerSimple(source='componentdependencymodel_set', many=True, read_only=True)
 
-    owner_maintainer = PersonSerializer(read_only=True)
-    owner_responsible_qa = PersonSerializer(read_only=True)
+    owner_maintainer = UserSerializer(read_only=True)
+    owner_responsible_qa = UserSerializer(read_only=True)
 
-    owner_product_manager = PersonSerializer(read_only=True, many=True)
-    owner_program_manager = PersonSerializer(read_only=True, many=True)
-    owner_escalation_list = PersonSerializer(read_only=True, many=True)
-    owner_expert = PersonSerializer(read_only=True, many=True)
-    owner_architect = PersonSerializer(read_only=True, many=True)
+    owner_product_manager = UserSerializer(read_only=True, many=True)
+    owner_program_manager = UserSerializer(read_only=True, many=True)
+    owner_escalation_list = UserSerializer(read_only=True, many=True)
+    owner_expert = UserSerializer(read_only=True, many=True)
+    owner_architect = UserSerializer(read_only=True, many=True)
 
     dev_languages = serializers.SerializerMethodField()
     dev_frameworks = serializers.SerializerMethodField()
@@ -185,12 +184,6 @@ class ComponentSerializer(ComponentSerializerSimple):
 
 class ComponentVersionSerializer(ComponentVersionSerializerSimple):
     component = ComponentSerializerSimple(read_only=True)
-
-
-class UserSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = get_user_model()
-        exclude = ('password', )
 
 
 class TokenSerializer(serializers.ModelSerializer):
