@@ -352,7 +352,7 @@ td.pa-quality, td.pa-status { white-space: nowrap; text-align: center;}
 td.pa-quality i, td.pa-status i { width: 10px; }
 td.pa-quality i.fa-star, td.pa-status i.fa-star { color: green; }
 td.pa-quality i.fa-star-o, td.pa-status i.fa-star-o { color: #aaa; }
-td.pa-quality i.unknown, td.pa-status i.unknown { font-size: 12px; color: crimson; }
+td.pa-quality i.unknown { font-size: 12px; color: crimson; }
 
 span.yes, span.no, span.na, span.unknown, span.some {
     display: block;

@@ -191,10 +191,6 @@ function update_component_page_elements(component) {
         $(el).html(pa_star_rating($(el).html()));
     });
 
-    $(".pa-status").each(function(index, el) {
-        $(el).html(pa_no_partial_yes($(el).html()));
-    });
-
     $(".pa-component-stars").each(function(index, el) {
         var val = parseInt($(el).html());
         console.log($(el), val);
@@ -232,6 +228,27 @@ function vue_component_init() {
     console.log("vue_component_init()");
 
     var url = '/api' + window.location.pathname + '/?format=json'
+
+    Vue.component('widget-signoff', {
+      props: ['status'],
+      computed: {
+          classObject: function() {
+            console.log(this.status);
+            return {
+              yes: this.status == 'yes',
+              no: this.status == 'no',
+              unknown: this.status == 'unknown' || this.status === null
+            }
+          }
+      },
+      template: `
+        <span v-bind:class="classObject" v-if="['yes', 'no'].includes(status)">
+          {% templatetag openvariable %} status.toUpperCase() {% templatetag closevariable %}
+        </span>
+        <i v-else class="unknown fa fa-question-circle" style="font-size: 12px; color: crimson;" />
+        </span>
+      `
+    })
 
     const app = new Vue({
         el: "#vue-component",
