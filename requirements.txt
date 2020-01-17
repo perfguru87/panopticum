@@ -7,7 +7,6 @@ django-filter
 django-modeladmin-reorder
 django-simple-history
 djangorestframework-datatables
-djangorestframework-filters
 gevent
 gunicorn
 jira-python

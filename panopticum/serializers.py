@@ -176,7 +176,10 @@ class ComponentVersionSerializerSimple(serializers.ModelSerializer):
 
     class Meta:
         model = ComponentVersionModel
-        fields = '__all__'
+        exclude = ComponentVersionModel.get_compliance_fields() + \
+                  ComponentVersionModel.get_maintenance_fields() + \
+                  ComponentVersionModel.get_operations_fields() + \
+                  ComponentVersionModel.get_quality_assurance_fields()
 
 
 class ComponentVersionSerializer(ComponentVersionSerializerSimple):

@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'rest_framework_datatables',
     'rest_framework_filters',
     'django_extensions',
+    'django_filters',
     'corsheaders',
     'admin_reorder',
     'simple_history',

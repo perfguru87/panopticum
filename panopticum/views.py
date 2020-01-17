@@ -5,7 +5,6 @@ from django.conf import settings
 from django.http import JsonResponse
 
 from rest_framework import viewsets, permissions, views
-from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from rest_framework.views import APIView
@@ -42,13 +41,6 @@ class ComponentViewSet(viewsets.ModelViewSet):
                             status=rest_framework.status.HTTP_404_NOT_FOUND)
         return Response(ComponentVersionSerializerSimple(component_version,
                                                          context={'request': self.request}).data)
-
-class ComponentChangesViewSet(viewsets.ViewSet):
-    def list(self, request: Request):
-        queryset = ComponentVersionModel.objects.get(pk=int(request.query_params.get('componentVersion_id'))).history.all()
-        serializer = HistoricalComponentVersionSerializer(queryset, many=True, context={'request': self.request})
-        return Response(serializer.data)
-
 
 class DeploymentLocationClassViewSet(viewsets.ModelViewSet):
     queryset = DeploymentLocationClassModel.objects.all()
@@ -122,22 +114,6 @@ def component(request):
 
 def dashboard_components(request):
     return render(request, 'dashboard/components.html')
-
-
-def dashboard_operations(request):
-    return render(request, 'dashboard/operations.html')
-
-
-def dashboard_quality_assurance(request):
-    return render(request, 'dashboard/quality_assurance.html')
-
-
-def dashboard_maintenance(request):
-    return render(request, 'dashboard/maintenance.html')
-
-
-def dashboard_compliance(request):
-    return render(request, 'dashboard/compliance.html')
 
 
 class JiraIssueView(views.APIView):
