@@ -78,30 +78,6 @@ class PersonRoleModel(models.Model):
         return "%s - #%d" % (self.name, self.id)
 
 
-class PersonModel(models.Model):
-    name = models.CharField(max_length=64)
-    surname = models.CharField(max_length=64)
-    title = models.CharField(max_length=64, blank=True, null=True)
-    email = models.EmailField()
-    organization = models.ForeignKey(OrganizationModel, on_delete=models.PROTECT, blank=True, null=True)
-    org_department = models.ForeignKey(OrgDepartmentModel, on_delete=models.PROTECT, blank=True, null=True)
-    country = models.ForeignKey(CountryModel, on_delete=models.PROTECT, blank=True, null=True)
-    office_phone = models.CharField(max_length=64, blank=True, null=True)
-    mobile_phone = models.CharField(max_length=64, blank=True, null=True)
-    active_directory_guid = models.CharField(max_length=64, blank=True, null=True)
-    employee_number = models.CharField(max_length=64, blank=True, null=True)
-    info = models.TextField(blank=True, null=True)
-    role = models.ForeignKey(PersonRoleModel, on_delete=models.PROTECT, blank=True, null=True)
-    manager = models.ForeignKey("self", on_delete=models.PROTECT, blank=True, null=True)
-    hidden = models.BooleanField(help_text="Hide the person from the potential assignee lists", db_index=True, default=False)
-
-    class Meta:
-        ordering = ['email']
-
-    def __str__(self):
-        return self.email
-
-
 ##################################################################################################
 # Components
 ##################################################################################################
