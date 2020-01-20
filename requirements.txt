@@ -4,7 +4,6 @@ django-cors-headers
 django-filter
 django-datatable-view
 django-auth-ldap
-ldapdomaindump
 django-extensions
 pygraphviz
 pillow
