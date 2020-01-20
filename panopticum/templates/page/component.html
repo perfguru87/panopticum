@@ -203,16 +203,7 @@ function update_component_page_elements(component) {
     });
 
     $(".pa-status").each(function(index, el) {
-        var val = $(el).html();
-        if (val == "unknown") {
-            $(el).html("<i class='unknown fa fa-question-circle'></i>");
-        } else if (val == "no") {
-            $(el).html("<span class='no'>NO</span>");
-        } else if (val == "partial") {
-            $(el).html("<span class='some'>Some</span>");
-        } else if (val == "yes") {
-            $(el).html("<span class='yes'>YES</span>");
-        }
+        $(el).html(pa_no_partial_yes($(el).html()));
     });
 
     $(".pa-component-stars").each(function(index, el) {

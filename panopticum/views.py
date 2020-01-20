@@ -55,6 +55,10 @@ def dashboard_components(request):
     return render(request, 'dashboard/components.html')
 
 
+def dashboard_operations(request):
+    return render(request, 'dashboard/operations.html')
+
+
 class JiraIssueView(views.APIView):
 
     def validate(self, request):

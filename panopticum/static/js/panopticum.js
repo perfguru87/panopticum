@@ -19,6 +19,8 @@ function meta_searchstr_wrap(s) {
 }
 
 function meta_searchstr_unwrap(s) {
+    if (!s)
+        return "";
     return s.replace(/{/g, "").replace(/}/g, "");
 }
 
@@ -47,6 +49,8 @@ function pa_tooltip(el) {
 }
 
 function pa_tooltip_from_list(title, str) {
+    if (!str)
+        return "";
     str = str.replace(/\, /g, '<br>- ');
     str = str.replace(/\,/g, '<br>- ');
     if (title && str)
@@ -133,4 +137,29 @@ function pa_replace_urls() {
             _pa_replace_urls_in_text(el, jira_url, $(el).html());
         });
     });
+}
+
+/*
+ * Options
+ */
+function pa_no_partial_yes(str) {
+    if (str == "unknown")
+        return "<i class='unknown fa fa-question-circle'></i>";
+    if (str == "no")
+        return "<span class='no'>NO</span>";
+    if (str == "partial")
+        return "<span class='some'>Some</span>";
+    if (str == "yes")
+        return "<span class='yes'>YES</span>";
+    return str;
+}
+
+function pa_get_no_partial_yes_select(id) {
+    return "<select class='update-table' id='{0}'>".pa_format(id) +
+           "<option selected='true'></option>" +
+           "<option value='unknown'>?</option>" +
+           "<option value='no'>No</option>" +
+           "<option value='partial'>Some</option>" +
+           "<option value='yes'>Yes</option>" +
+           "</select>";
 }

@@ -36,6 +36,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     url('^component/', views.component, name='Component'),
     url('^dashboard/components.html', views.dashboard_components, name='Components'),
+    url('^dashboard/operations.html', views.dashboard_operations, name='Operations'),
     url('^dashboard/links.html', views.dashboard_components, name='Links'),
     re_path(r'^api/jira/([A-Z]*-\d+)', views.JiraIssueView.as_view(), name='jira'),
     url(r'^api/jira_url/', views.JiraUrlView.as_view(), name='jira_url'),

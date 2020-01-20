@@ -1,0 +1,242 @@
+{% extends "layout/_base.html" %}
+
+{% block title %} Operations dashboard {% endblock title %}
+
+{% block stylesheets %}
+  {{ block.super }}
+{% endblock stylesheets %}
+
+{% block content %}
+  <div class="right_col" role="main">
+    <div class="">
+
+<div class="row title_left">
+    <div class="col-sm-12">
+        <h3>Operations dashboard</h3>
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-3">
+         <label for="product_version">Product</label>
+         <select class="form-control update-table" id="product_version"></select>
+    </div>
+    <div class="col-sm-3">
+         <label for="location_class">Location class</label>
+         <select class="form-control update-table" id="location_class"></select>
+    </div>
+    <div class="col-sm-3">
+         <label for="component_runtime_type">Runtime type</label>
+         <select class="form-control update-table" id="component_runtime_type"></select>
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-12"><hr></div>
+</div>
+<div class="row">
+    <div class="col-sm-12">
+      <div class='x_panel'>
+        <table id="components" class="table table-striped" style="width:100%">
+            <thead>
+                <tr>
+                    <th class='colId'>ID</th>
+                    <th class='colProductVersion'></th>
+                    <th class='colLocationClass'></th>
+                    <th class='colRuntimeType'></th>
+                    <th class='colComponent searchable'>Component</th>
+                    <th class='colGuide'>Guide</th>
+                    <th class='colFailover'>Failover</th>
+                    <th class='colScaleout'>Horizontal<br>scalability</th>
+                    <th class='colScaleGuide'>Scaling<br>guide</th>
+                    <th class='colSLO'>SLO/SLA</th>
+                    <th class='colMetrics'>Metrics</th>
+                    <th class='colAlerts'>Alerts</th>
+                    <th class='colUpgrade' title='Zero-downtime upgrade'>ZD Upgrade</th>
+                    <th class='colBackup'>Backup</th>
+                    <th class='colRating'>Rating</th>
+                </tr>
+            </thead>
+        </table>
+      </div>
+    </div>
+</div>
+{% endblock %}
+{% block extra_js %}
+  {{ block.super }}
+<script>
+
+function populate_options(refc, id, url, first_is_empty) {
+    let dropdown = $(id);
+
+    refc.inc();
+
+    dropdown.empty();
+    if (first_is_empty)
+        dropdown.append('<option selected="true"></option>');
+    dropdown.prop('selectedIndex', 0);
+
+    $.getJSON(url, function (data) {
+        $.each(data.results, function (key, entry) {
+            dropdown.append($('<option></option>').attr('value', entry.id).text(entry.name));
+        })
+        refc.dec();
+    });
+
+    // FIXME: add on-change action to put it into the URL
+    // FIXME: set URL-passed parameter as default
+}
+
+function load_table(table) {
+    var product_version = meta_searchstr_wrap($("#product_version").children("option:selected").text());
+    var location_class = meta_searchstr_wrap($("#location_class").children("option:selected").text());
+    var runtime_type = $("#component_runtime_type").children("option:selected").text();
+    var filter = $("#components_filter").children("input").text();
+
+    var guide = $("#op_guide_status").children("option:selected").val();
+    var failover = $("#op_failover_status").children("option:selected").val();
+    var scaleout = $("#op_horizontal_scalability_status").children("option:selected").val();
+    var scaling_guide = $("#op_scaling_guide_status").children("option:selected").val();
+    var slo = $("#op_sla_guide_status").children("option:selected").val();
+    var metrics = $("#op_metrics_status").children("option:selected").val();
+    var alerts = $("#op_alerts_status").children("option:selected").val();
+    var upgrade = $("#op_zero_downtime_status").children("option:selected").val();
+    var backup = $("#op_backup_status").children("option:selected").val();
+
+    guide = guide ? '^{0}$'.pa_format(guide) : '';
+    failover = failover ? '^{0}$'.pa_format(failover) : '';
+    scaleout = scaleout ? '^{0}$'.pa_format(scaleout) : '';
+    scaling_guide = scaling_guide ? '^{0}$'.pa_format(scaling_guide) : '';
+    slo = slo ? '^{0}$'.pa_format(slo) : '';
+    metrics = metrics ? '^{0}$'.pa_format(metrics) : '';
+    alerts = alerts ? '^{0}$'.pa_format(alerts) : '';
+    upgrade = upgrade ? '^{0}$'.pa_format(upgrade) : '';
+    backup = backup ? '^{0}$'.pa_format(backup) : '';
+
+    table.columns(1 /*"colProductVersion"*/).search(product_version).
+          columns(2 /*"colLocationClass"*/).search(location_class).
+          columns(3 /*"colRuntimeType"*/).search(runtime_type).
+          columns(4, /*"colComponent"*/).search(filter).
+          columns(5, /*"colGuide"*/).search(guide, true, false).
+          columns(6, /*"colFailover"*/).search(failover, true, false).
+          columns(7, /*"colScaleout"*/).search(scaleout, true, false).
+          columns(8, /*"colScaleGuide"*/).search(scaling_guide, true, false).
+          columns(9, /*"colSLO"*/).search(slo, true, false).
+          columns(10, /*"colMetrics"*/).search(metrics, true, false).
+          columns(11, /*"colAlerts"*/).search(alerts, true, false).
+          columns(12, /*"colUpgrade"*/).search(upgrade, true, false).
+          columns(13, /*"colBackup"*/).search(backup, true, false).
+          draw();
+}
+
+function create_table() {
+    var table = $('#components').DataTable({
+        "orderCellsTop": true,
+        "fixedHeader": true,
+        "serverSide": true,
+        "deferLoading": false, // do not load data after table creation
+        "ajax": "/api/component_version/?format=datatables",
+        "drawCallback": function(settings) {
+            pa_replace_urls();
+            pa_tooltip('[data-toggle="tooltip"]');
+        },
+        "columns": [
+            {"data": "id", "searchable": false},
+            {"data": "meta_searchstr_product_versions"},
+            {"data": "meta_searchstr_locations"},
+            {"data": "component.runtime_type.name"},
+            {"data": "component.name"},
+            {"data": "op_guide_status"},
+            {"data": "op_failover_status"},
+            {"data": "op_horizontal_scalability_status"},
+            {"data": "op_scaling_guide_status"},
+            {"data": "op_sla_guide_status"},
+            {"data": "op_metrics_status"},
+            {"data": "op_alerts_status"},
+            {"data": "op_zero_downtime_status"},
+            {"data": "op_backup_status"},
+            {"data": "meta_op_rating"},
+        ],
+        "columnDefs": [
+            {
+                "targets": ["colProductVersion", "colLocationClass", "colRuntimeType"],
+                "type": "string",
+                "visible": false,
+            },
+            {
+                "targets": ["colId", "colComponent"],
+                "render": function(data, type, row) {
+                    return "<a target=_blank href='/component/" + row.component.id + "'>" + data + "</a>";
+                }
+            },
+            {
+                "targets": ["colGuide", "colFailover", "colScaleout", "colScaleGuide", "colSLO",
+                            "colMetrics", "colAlerts", "colUpgrade", "colBackup"],
+                "type": "string",
+                "searchable": true,
+                "render": function(data, type, row) {
+                    return pa_no_partial_yes(data);
+                }
+            },
+            {
+                "targets": ["colRating"],
+                "type": "string",
+                "render": function(data, type, row) {
+                    console.log(row);
+                    if (data == "100")
+                        return data + "%";
+                    else if (data)
+                        return "<a href='/admin/panopticum/componentversionmodel/" + row.id + "/change/' " +
+                               " target=_blank data-toggle='tooltip' data-placement='left'" +
+                               " title='" + pa_tooltip_from_list('<b>Bad rating:</b>', row.meta_bad_rating_fields) +
+                               "'>" + data + "%</span>";
+                    return "";
+                }
+            },
+        ]
+    });
+
+    $('.update-table').on('change', function() {
+        load_table(table);
+    });
+
+    load_table(table);
+}
+
+$(document).ready(function() {
+    var refc = new Refcounter(create_table);
+
+    populate_options(refc, "#product_version", "/api/product_version/?format=json", false);
+    populate_options(refc, "#location_class", "/api/location_class/?format=json", false);
+    populate_options(refc, "#component_runtime_type", "/api/component_runtime_type/?format=json", false);
+
+    // Setup - add a text input to each footer cell
+
+    $('#components thead tr').clone(true).appendTo('#components thead');
+    $('#components thead tr:eq(1) th').each( function (i) {
+        var cl = $(this).attr("class");
+
+        if (cl == "colGuide")
+            $(this).html(pa_get_no_partial_yes_select('op_guide_status'));
+        else if (cl == "colFailover")
+            $(this).html(pa_get_no_partial_yes_select('op_failover_status'));
+        else if (cl == "colScaleout")
+            $(this).html(pa_get_no_partial_yes_select('op_horizontal_scalability_status'));
+        else if (cl == "colScaleGuide")
+            $(this).html(pa_get_no_partial_yes_select('op_scaling_guide_status'));
+        else if (cl == "colSLO")
+            $(this).html(pa_get_no_partial_yes_select('op_sla_guide_status'));
+        else if (cl == "colMetrics")
+            $(this).html(pa_get_no_partial_yes_select('op_metrics_status'));
+        else if (cl == "colAlerts")
+            $(this).html(pa_get_no_partial_yes_select('op_alerts_status'));
+        else if (cl == "colUpgrade")
+            $(this).html(pa_get_no_partial_yes_select('op_zero_downtime_status'));
+        else if (cl == "colBackup")
+            $(this).html(pa_get_no_partial_yes_select('op_backup_status'));
+        else
+            $(this).html('');
+    });
+});
+</script>
+
+</div></div>
+{% endblock %}
