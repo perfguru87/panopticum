@@ -1,9 +1,13 @@
 Django==2.1.*
 djangorestframework-datatables
+django-cors-headers
+django-filter
 django-datatable-view
+django-auth-ldap
 ldapdomaindump
 django-extensions
 pygraphviz
+pillow
 django-modeladmin-reorder
 jira-python
 scalpl

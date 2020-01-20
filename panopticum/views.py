@@ -3,9 +3,14 @@ from django.conf import settings
 from django.http import JsonResponse
 
 from rest_framework import viewsets
+from rest_framework import permissions
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from rest_framework import views
+from rest_framework.views import APIView
+import rest_framework.authtoken.models
+import django.contrib.auth
+import django.contrib.auth.models
 
 from .models import *
 from .serializers import *
@@ -45,6 +50,47 @@ class ComponentDataPrivacyClassViewSet(viewsets.ModelViewSet):
 class ComponentCategoryViewSet(viewsets.ModelViewSet):
     queryset = ComponentCategoryModel.objects.all()
     serializer_class = ComponentCategorySerializer
+
+
+class UserDetail(viewsets.ModelViewSet):
+    queryset = get_user_model().objects.all()
+    serializer_class = UserSerializer
+    permission_classes = (permissions.IsAuthenticated,)
+    filterset_fields = ['username', 'email']
+
+
+class Token(viewsets.ModelViewSet):
+    queryset = rest_framework.authtoken.models.Token.objects.all()
+    serializer_class = TokenSerializer
+    permission_classes = (permissions.IsAuthenticated,)
+
+
+class LoginAPIView(APIView):
+
+    def get(self, request, format=None):
+        if not isinstance(request.user, django.contrib.auth.models.AnonymousUser):
+            content = {
+                'id': request.user.id,
+                'user': request.user.username,  # `django.contrib.auth.User` instance.
+                'is_authenticated': request.user.is_authenticated,
+                'auth': request.auth
+            }
+            return Response(content)
+        else:
+            return Response({"error": "not logged in"}, 401)
+
+    def post(self, request):
+        user = django.contrib.auth.authenticate(request,
+                                                username=request.data['username'],
+                                                password=request.data['password'])
+        if user:
+            django.contrib.auth.login(request, user)
+            return Response({
+                "username": user.username,
+                "token": rest_framework.authtoken.models.Token.objects.get_or_create(user=request.user)[0].key
+            })
+        else:
+            return Response({"error": "not valid credentials"}, 401)
 
 
 def component(request):
