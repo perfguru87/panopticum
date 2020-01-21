@@ -2,8 +2,14 @@ import rest_framework.authtoken.models
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from django.forms.models import model_to_dict
+import panopticum.models
+from panopticum.models import *
 
-from .models import *
+class HistoricalComponentVersionSerializer(serializers.HyperlinkedModelSerializer):
+
+    class Meta:
+        model = getattr(panopticum.models, 'HistoricalComponentVersionModel')
+        fields = '__all__'
 
 
 class ComponentDataPrivacyClassSerializer(serializers.ModelSerializer):
@@ -105,7 +111,11 @@ class ComponentDependencySerializerSimple(serializers.ModelSerializer):
 class ComponentVersionSerializerSimple(serializers.ModelSerializer):
     id = serializers.IntegerField(read_only=True)
 
-    depends_on = ComponentDependencySerializerSimple(source='componentdependencymodel_set', many=True, read_only=True)
+    history = serializers.HyperlinkedRelatedField(view_name='historicalcomponentversionmodel-detail',
+                                                  many=True, read_only=True,
+                                                  )
+    depends_on = ComponentDependencySerializerSimple(source='componentdependencymodel_set',
+                                                     many=True, read_only=True)
 
     owner_maintainer = UserSerializer(read_only=True)
     owner_responsible_qa = UserSerializer(read_only=True)
@@ -167,16 +177,6 @@ class ComponentVersionSerializerSimple(serializers.ModelSerializer):
     class Meta:
         model = ComponentVersionModel
         fields = '__all__'
-
-
-class ComponentSerializer(ComponentSerializerSimple):
-    latest_version = serializers.SerializerMethodField()
-
-    def get_latest_version(self, component):
-         objs = ComponentVersionModel.objects.filter(component=component.id).order_by('-meta_update_date')
-         if len(objs):
-              return ComponentVersionSerializerSimple(objs[0]).data
-         return None
 
 
 class ComponentVersionSerializer(ComponentVersionSerializerSimple):

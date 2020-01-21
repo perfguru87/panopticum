@@ -4,7 +4,7 @@ from datatableview import helpers
 from django.forms.models import model_to_dict
 import datetime
 from django.contrib.auth.models import AbstractUser
-from django.utils.safestring import mark_safe
+from simple_history.models import HistoricalRecords
 
 
 class User(AbstractUser):
@@ -244,6 +244,7 @@ class ComponentVersionModel(models.Model):
     version = models.CharField(max_length=64, verbose_name="Version or build",
                                help_text="note: component version instance will be cloned if you change version!")
     comments = models.TextField(blank=True, null=True)
+    history = HistoricalRecords()
 
     # dependencies
 

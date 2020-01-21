@@ -158,6 +158,7 @@ function init_profile_completeness_gauge(component) {
     };
 
     $('#profile-completeness-gauge-text').each(function(index, el) {
+
         if (component.latest_version.meta_profile_not_filled_fields == "")
             $(el).attr('title', 'Good job!');
         else if (component.latest_version.meta_profile_not_filled_fields)
@@ -190,7 +191,6 @@ function init_profile_completeness_gauge(component) {
 }
 
 function update_component_page_elements(component) {
-
     pa_replace_urls();
 
     $(".pa-quality").each(function(index, el) {
@@ -280,23 +280,38 @@ function vue_component_init() {
             erroed: false
         },
         created: function() {
-           axios
-               .get(url)
-               .then(response => {
-                   this.component = response.data;
-                   if (this.component.latest_version == undefined)
-                       this.component.latest_version = default_latest_version;
-                   this.$nextTick(function () {
-                       update_component_page_elements(this.component);
-                   });
-               })
-               .catch(error => {
+           let component;
+           let latest_version = default_latest_version;
+           let requests = [
+              axios.get(url)
+                .then(response => {
+                   // we can't assign response.data directly to this.component, because it will trigger
+                   // rerender. We doesn't have component.latest_version at this moment and it will raise error at render.
+                   // We will get it component.latest_version later. Also if next request will be finished
+                   // first we will overwrite component.latest_version.
+                   component = response.data;
+                })
+                .catch(error => {
                    console.log(error);
                    this.errored = true
-               })
-               .finally(res => {
-                   this.loading = false;
+                }),
+              axios.get(`/api${window.location.pathname}/latest_version/?format=json`)
+                .then(response => {
+                    latest_version = response.data;
+                })
+                .catch(error => {
+                })
+           ];
+           // make parallel requests
+           axios.all(requests).then(_ => {
+               // when all requests is finished and all required data obtained, we can trigger rerender
+               component.latest_version = latest_version;
+               this.component = component;
+               this.loading = false;
+               this.$nextTick(function () {
+                    update_component_page_elements(this.component);
                });
+           });
         },
     });
 }

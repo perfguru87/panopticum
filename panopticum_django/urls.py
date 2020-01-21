@@ -28,6 +28,7 @@ from panopticum_django import settings
 router = routers.DefaultRouter()
 router.register(r'product_version', views.ProductVersionViewSet)
 router.register(r'component', views.ComponentViewSet)
+router.register(r'component_history', views.HistoryComponentVersionViewSet)
 router.register(r'component_version', views.ComponentVersionViewSet)
 router.register(r'location_class', views.DeploymentLocationClassViewSet)
 router.register(r'component_category', views.ComponentCategoryViewSet)

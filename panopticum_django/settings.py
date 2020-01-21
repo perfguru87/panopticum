@@ -42,8 +42,10 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'rest_framework_datatables',
     'django_extensions',
+    'django_filters',
     'corsheaders',
     'admin_reorder',
+    'simple_history',
     'panopticum'
 ]
 
@@ -75,6 +77,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'admin_reorder.middleware.ModelAdminReorder',
+    'simple_history.middleware.HistoryRequestMiddleware'
 ]
 
 ROOT_URLCONF = 'panopticum_django.urls'
