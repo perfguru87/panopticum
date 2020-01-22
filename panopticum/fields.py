@@ -52,5 +52,5 @@ class SigneeField(models.ForeignKey):
         kwargs['on_delete'] = models.PROTECT
         kwargs['null'] = True
         kwargs['blank'] = True
-        kwargs['to'] = 'panopticum.PersonModel'
+        kwargs['to'] = 'panopticum.User'
         super().__init__(*args, **kwargs)

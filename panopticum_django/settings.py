@@ -156,7 +156,7 @@ ADMIN_REORDER = (
 
     {'app': 'panopticum', 'label': 'Active Directory', 'models':
         ('panopticum.CountryModel', 'panopticum.OrganizationModel', 'panopticum.OrgDepartmentModel',
-         'panopticum.PersonRoleModel', 'panopticum.PersonModel')
+         'panopticum.PersonRoleModel', 'panopticum.User')
     }
 )
 

@@ -130,13 +130,13 @@ class ComponentVersionAdmin(admin.ModelAdmin):
         # standard django method
         if db_field.name in ("owner_product_manager", "owner_program_manager", "owner_expert",
                              "owner_escalation_list", "owner_architect"):
-            kwargs["queryset"] = PersonModel.objects.filter(hidden=False)
+            kwargs["queryset"] = User.objects.filter(hidden=False)
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         # standard django method
         if db_field.name in ("owner_maintainer", "owner_responsible_qa"):
-            kwargs["queryset"] = PersonModel.objects.filter(hidden=False)
+            kwargs["queryset"] = User.objects.filter(hidden=False)
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     def _clone(self, obj):
@@ -175,7 +175,6 @@ admin.site.register(CountryModel)
 admin.site.register(OrganizationModel)
 admin.site.register(OrgDepartmentModel)
 admin.site.register(PersonRoleModel)
-admin.site.register(PersonModel)
 
 admin.site.register(SoftwareVendorModel)
 admin.site.register(DatabaseVendorModel)
