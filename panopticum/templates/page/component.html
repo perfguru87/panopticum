@@ -1,10 +1,12 @@
 {% extends "layout/_base.html" %}
+{% load static %}
 
 {% block title %} [[ component.name ]] {% endblock title %}
 
 {% block scripts %}
   {{ block.super }}
-  <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+ <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+ <script src="https://unpkg.com/http-vue-loader"></script>
 {% endblock %}
 
 {% block stylesheets %}
@@ -235,38 +237,11 @@ function vue_component_init() {
 
     var url = '/api' + window.location.pathname + '/?format=json'
 
-    Vue.component('widget-signoff', {
-      props: ['status', 'signoff'],
-      computed: {
-          classObject: function() {
-            return {
-              yes: this.status == 'yes',
-              no: this.status == 'no',
-              unknown: this.status == 'unknown' || this.status === null
-            }
-          }
-      },
-      template: `
-         <el-popover
-                v-if="['yes', 'no'].includes(status)"
-                placement="top-end"
-                width="200"
-                trigger="click"
-                popper-class="signoff-popover"
-         >
-            <div>Updated by {% templatetag openvariable %} signoff.user.username {% templatetag closevariable %}<br/>
-            at {% templatetag openvariable %} signoff.date {% templatetag closevariable %}</div>
-            <span v-bind:class="classObject" slot="reference" style="cursor: pointer">
-              {% templatetag openvariable %} status.toUpperCase() {% templatetag closevariable %}
-            </span>
-        </el-popover>
-        <i v-else class="unknown fa fa-question-circle" style="font-size: 12px; color: crimson;" />
-        </span>
-      `
-    })
-
     const app = new Vue({
         el: "#vue-component",
+        components: {
+            'widget-signoff': httpVueLoader('{% static "components/widget-signoff.vue"%}')
+        },
         delimiters: ['[[', ']]'],
         data: {
             component: {
