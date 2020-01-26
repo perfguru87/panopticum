@@ -188,18 +188,7 @@ function update_component_page_elements(component) {
     pa_replace_urls();
 
     $(".pa-quality").each(function(index, el) {
-        var val = $(el).html();
-        if (val == "unknown") {
-            $(el).html("<i class='unknown fa fa-question-circle'></i>");
-        } else if (val == "none") {
-            $(el).html("<i class='fa fa-star-o'></i><i class='fa fa-star-o'></i><i class='fa fa-star-o'></i>");
-        } else if (val == "low") {
-            $(el).html("<i class='fa fa-star'></i><i class='fa fa-star-o'></i><i class='fa fa-star-o'></i>");
-        } else if (val == "med") {
-            $(el).html("<i class='fa fa-star'></i><i class='fa fa-star'></i><i class='fa fa-star-o'></i>");
-        } else if (val == "high") {
-            $(el).html("<i class='fa fa-star'></i><i class='fa fa-star'></i><i class='fa fa-star'></i>");
-        }
+        $(el).html(pa_star_rating($(el).html()));
     });
 
     $(".pa-status").each(function(index, el) {

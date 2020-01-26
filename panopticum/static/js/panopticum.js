@@ -164,6 +164,31 @@ function pa_get_no_partial_yes_select(id) {
            "</select>";
 }
 
+function pa_star_rating(str) {
+    if (str == "unknown")
+        return "<i class='unknown fa fa-question-circle'></i>";
+    if (str == "none")
+        return "<i class='fa fa-star-o'></i><i class='fa fa-star-o'></i><i class='fa fa-star-o'></i>";
+    if (str == "low")
+        return "<i class='fa fa-star'></i><i class='fa fa-star-o'></i><i class='fa fa-star-o'></i>";
+    if (str == "med")
+        return "<i class='fa fa-star'></i><i class='fa fa-star'></i><i class='fa fa-star-o'></i>";
+    if (str == "high")
+        return "<i class='fa fa-star'></i><i class='fa fa-star'></i><i class='fa fa-star'></i>";
+    return str;
+}
+
+function pa_get_star_rating_select(id) {
+    return "<select class='update-table' id='{0}'>".pa_format(id) +
+           "<option selected='true'></option>" +
+           "<option value='unknown'>?</option>" +
+           "<option value='none'>None</option>" +
+           "<option value='low'>Low</option>" +
+           "<option value='med'>Med</option>" +
+           "<option value='high'>High</option>" +
+           "</select>";
+}
+
 function pa_populate_options(refc, id, url, first_is_empty) {
     let dropdown = $(id);
 
