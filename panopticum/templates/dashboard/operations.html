@@ -64,66 +64,35 @@
   {{ block.super }}
 <script>
 
-function populate_options(refc, id, url, first_is_empty) {
-    let dropdown = $(id);
-
-    refc.inc();
-
-    dropdown.empty();
-    if (first_is_empty)
-        dropdown.append('<option selected="true"></option>');
-    dropdown.prop('selectedIndex', 0);
-
-    $.getJSON(url, function (data) {
-        $.each(data.results, function (key, entry) {
-            dropdown.append($('<option></option>').attr('value', entry.id).text(entry.name));
-        })
-        refc.dec();
-    });
-
-    // FIXME: add on-change action to put it into the URL
-    // FIXME: set URL-passed parameter as default
-}
-
 function load_table(table) {
     var product_version = meta_searchstr_wrap($("#product_version").children("option:selected").text());
     var location_class = meta_searchstr_wrap($("#location_class").children("option:selected").text());
     var runtime_type = $("#component_runtime_type").children("option:selected").text();
     var filter = $("#components_filter").children("input").text();
 
-    var guide = $("#op_guide_status").children("option:selected").val();
-    var failover = $("#op_failover_status").children("option:selected").val();
-    var scaleout = $("#op_horizontal_scalability_status").children("option:selected").val();
-    var scaling_guide = $("#op_scaling_guide_status").children("option:selected").val();
-    var slo = $("#op_sla_guide_status").children("option:selected").val();
-    var metrics = $("#op_metrics_status").children("option:selected").val();
-    var alerts = $("#op_alerts_status").children("option:selected").val();
-    var upgrade = $("#op_zero_downtime_status").children("option:selected").val();
-    var backup = $("#op_backup_status").children("option:selected").val();
+    var values = {}
+    var fields = ["op_guide_status", "op_failover_status", "op_horizontal_scalability_status", "op_scaling_guide_status",
+                  "op_sla_guide_status", "op_metrics_status", "op_alerts_status", "op_zero_downtime_status", "op_backup_status"];
 
-    guide = guide ? '^{0}$'.pa_format(guide) : '';
-    failover = failover ? '^{0}$'.pa_format(failover) : '';
-    scaleout = scaleout ? '^{0}$'.pa_format(scaleout) : '';
-    scaling_guide = scaling_guide ? '^{0}$'.pa_format(scaling_guide) : '';
-    slo = slo ? '^{0}$'.pa_format(slo) : '';
-    metrics = metrics ? '^{0}$'.pa_format(metrics) : '';
-    alerts = alerts ? '^{0}$'.pa_format(alerts) : '';
-    upgrade = upgrade ? '^{0}$'.pa_format(upgrade) : '';
-    backup = backup ? '^{0}$'.pa_format(backup) : '';
+    for (var i = 0; i < fields.length; i++) {
+        var field = fields[i];
+        values[field] = $("#" + field).children("option:selected").val();
+        values[field] = values[field] ? '^{0}$'.pa_format(field) : '';
+    }
 
     table.columns(1 /*"colProductVersion"*/).search(product_version).
           columns(2 /*"colLocationClass"*/).search(location_class).
           columns(3 /*"colRuntimeType"*/).search(runtime_type).
           columns(4, /*"colComponent"*/).search(filter).
-          columns(5, /*"colGuide"*/).search(guide, true, false).
-          columns(6, /*"colFailover"*/).search(failover, true, false).
-          columns(7, /*"colScaleout"*/).search(scaleout, true, false).
-          columns(8, /*"colScaleGuide"*/).search(scaling_guide, true, false).
-          columns(9, /*"colSLO"*/).search(slo, true, false).
-          columns(10, /*"colMetrics"*/).search(metrics, true, false).
-          columns(11, /*"colAlerts"*/).search(alerts, true, false).
-          columns(12, /*"colUpgrade"*/).search(upgrade, true, false).
-          columns(13, /*"colBackup"*/).search(backup, true, false).
+          columns(5, /*"colGuide"*/).search(values['op_guide_status'], true, false).
+          columns(6, /*"colFailover"*/).search(values['op_failover_status'], true, false).
+          columns(7, /*"colScaleout"*/).search(values['op_horizontal_scalability_status'], true, false).
+          columns(8, /*"colScaleGuide"*/).search(values['op_scaling_guide_status'], true, false).
+          columns(9, /*"colSLO"*/).search(values['op_sla_guide_status'], true, false).
+          columns(10, /*"colMetrics"*/).search(values['op_metrics_status'], true, false).
+          columns(11, /*"colAlerts"*/).search(values['op_alerts_status'], true, false).
+          columns(12, /*"colUpgrade"*/).search(values['op_zero_downtime_status'], true, false).
+          columns(13, /*"colBackup"*/).search(values['op_backup_status'], true, false).
           draw();
 }
 
@@ -204,9 +173,9 @@ function create_table() {
 $(document).ready(function() {
     var refc = new Refcounter(create_table);
 
-    populate_options(refc, "#product_version", "/api/product_version/?format=json", false);
-    populate_options(refc, "#location_class", "/api/location_class/?format=json", false);
-    populate_options(refc, "#component_runtime_type", "/api/component_runtime_type/?format=json", false);
+    pa_populate_options(refc, "#product_version", "/api/product_version/?format=json", false);
+    pa_populate_options(refc, "#location_class", "/api/location_class/?format=json", false);
+    pa_populate_options(refc, "#component_runtime_type", "/api/component_runtime_type/?format=json", false);
 
     // Setup - add a text input to each footer cell
 
