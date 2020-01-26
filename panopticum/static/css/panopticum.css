@@ -113,6 +113,10 @@ table.dataTable thead .sorting:after, table.dataTable thead .sorting_asc:after, 
     top: 0px;
 }
 
+table.dataTable thead .sorting,
+table.dataTable thead .sorting_asc,
+table.dataTable thead .sorting_desc { cursor: pointer; }
+
 table.dataTable thead .sorting:before,
 table.dataTable thead .sorting:after,
 table.dataTable thead .sorting_asc:before,
@@ -123,17 +127,17 @@ table.dataTable thead .sorting_asc_disabled:before,
 table.dataTable thead .sorting_asc_disabled:after,
 table.dataTable thead .sorting_desc_disabled:before,
 table.dataTable thead .sorting_desc_disabled:after {
-    opacity: 0.0;
-    float: right;
     position: relative;
-    display: table-cell;
+    display: inline-block;
     width: 0px;
-    left: -10px;
+    left: 3px;
+    font-family: FontAwesome;
+    cursor: pointer;
 }
 
-table.dataTable thead .sorting_asc:before, table.dataTable thead .sorting_desc:after {
-    opacity: 1;
-}
+.sorting:after { opacity: 0.2; content: "\f0dc"; }
+.sorting_asc:after { opacity: 1.0; content: "\f063"; }
+.sorting_desc:after { opacity: 1.0; content: "\f062"; }
 
 #components_filter input { margin-left: 10px; }
 table#components {
