@@ -78,7 +78,7 @@ function load_table(table) {
     for (var i = 0; i < fields.length; i++) {
         var field = fields[i];
         values[field] = $("#" + field).children("option:selected").val();
-        values[field] = values[field] ? '^{0}$'.pa_format(field) : '';
+        values[field] = values[field] ? '^{0}$'.pa_format(values[field]) : '';
     }
 
     table.columns(1 /*"colProductVersion"*/).search(product_version).
