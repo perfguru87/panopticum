@@ -163,3 +163,24 @@ function pa_get_no_partial_yes_select(id) {
            "<option value='yes'>Yes</option>" +
            "</select>";
 }
+
+function pa_populate_options(refc, id, url, first_is_empty) {
+    let dropdown = $(id);
+
+    refc.inc();
+
+    dropdown.empty();
+    if (first_is_empty)
+        dropdown.append('<option selected="true"></option>');
+    dropdown.prop('selectedIndex', 0);
+
+    $.getJSON(url, function (data) {
+        $.each(data.results, function (key, entry) {
+            dropdown.append($('<option></option>').attr('value', entry.id).text(entry.name));
+        })
+        refc.dec();
+    });
+
+    // FIXME: add on-change action to put it into the URL
+    // FIXME: set URL-passed parameter as default
+}
