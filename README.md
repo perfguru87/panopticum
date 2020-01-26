@@ -25,6 +25,8 @@ Panopcicum database objects and their relations:
 # Todo
 
 HIGH PRIO
+- Component tags, search by components tags in dashboard
+- URL to components dashboard with selected menu items
 - Property change audit (author and time of every property change)
 - Component data change history widget (who changed what, like in JIRA)
 - Integration with Active Directory: user auth
