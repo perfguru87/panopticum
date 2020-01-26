@@ -42,6 +42,7 @@ urlpatterns = [
     url('^component/', views.component, name='Component'),
     url('^dashboard/components.html', views.dashboard_components, name='Components'),
     url('^dashboard/operations.html', views.dashboard_operations, name='Operations'),
+    url('^dashboard/quality_assurance.html', views.dashboard_quality_assurance, name='Quality Assurance'),
     url('^dashboard/maintenance.html', views.dashboard_maintenance, name='Maintenance'),
     url('^dashboard/compliance.html', views.dashboard_compliance, name='Compliance'),
     url('^dashboard/links.html', views.dashboard_components, name='Links'),

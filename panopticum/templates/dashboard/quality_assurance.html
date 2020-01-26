@@ -1,0 +1,216 @@
+{% extends "layout/_base.html" %}
+
+{% block title %} Quality Assurance dashboard {% endblock title %}
+
+{% block stylesheets %}
+  {{ block.super }}
+{% endblock stylesheets %}
+
+{% block content %}
+  <div class="right_col" role="main">
+    <div class="">
+
+<div class="row title_left">
+    <div class="col-sm-12">
+        <h3>Quality Assurance dashboard</h3>
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-3">
+         <label for="product_version">Product</label>
+         <select class="form-control update-table" id="product_version"></select>
+    </div>
+    <div class="col-sm-3">
+         <label for="location_class">Location class</label>
+         <select class="form-control update-table" id="location_class"></select>
+    </div>
+    <div class="col-sm-3">
+         <label for="component_runtime_type">Runtime type</label>
+         <select class="form-control update-table" id="component_runtime_type"></select>
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-12"><hr></div>
+</div>
+<div class="row">
+    <div class="col-sm-12">
+      <div class='x_panel'>
+        <table id="components" class="table table-striped" style="width:100%">
+            <thead>
+                <tr>
+                    <th class='colId'>ID</th>
+                    <th class='colProductVersion'></th>
+                    <th class='colLocationClass'></th>
+                    <th class='colRuntimeType'></th>
+                    <th class='colComponent searchable'>Component</th>
+                    <th class='colManual'>Manual</th>
+                    <th class='colUnit'>Unit</th>
+                    <th class='colE2E'>End-to-end</th>
+                    <th class='colPerformance'>Performance</th>
+                    <th class='colLongHaul'>Long-haul</th>
+                    <th class='colSecurity'>Security</th>
+                    <th class='colAPI'>API</th>
+                    <th class='colAnonymisation'>Anonymisation</th>
+                    <th class='colUpgrade'>Upgrade</th>
+                    <th class='colRating'>QA Rating</th>
+                </tr>
+            </thead>
+        </table>
+      </div>
+    </div>
+</div>
+{% endblock %}
+{% block extra_js %}
+  {{ block.super }}
+<script>
+
+function load_table(table) {
+    var product_version = meta_searchstr_wrap($("#product_version").children("option:selected").text());
+    var location_class = meta_searchstr_wrap($("#location_class").children("option:selected").text());
+    var runtime_type = $("#component_runtime_type").children("option:selected").text();
+    var filter = $("#components_filter").children("input").text();
+
+    var values = {}
+    var fields = ["qa_manual_tests_status", "qa_unit_tests_status", "qa_e2e_tests_status", "qa_perf_tests_status",
+                  "qa_longhaul_tests_status", "qa_security_tests_status", "qa_api_tests_status",
+                  "qa_anonymisation_tests_status", "qa_upgrade_tests_status"];
+
+    for (var i = 0; i < fields.length; i++) {
+        var field = fields[i];
+        values[field] = $("#" + field).children("option:selected").val();
+        values[field] = values[field] ? '^{0}$'.pa_format(field) : '';
+    }
+
+    table.columns(1 /*"colProductVersion"*/).search(product_version).
+          columns(2 /*"colLocationClass"*/).search(location_class).
+          columns(3 /*"colRuntimeType"*/).search(runtime_type).
+          columns(4, /*"colComponent"*/).search(filter).
+          columns(5, /*"colManual"*/).search(values['qa_manual_tests_status'], true, false).
+          columns(6, /*"colUnit"*/).search(values['qa_unit_tests_status'], true, false).
+          columns(7, /*"colE2E"*/).search(values['qa_e2e_tests_status'], true, false).
+          columns(8, /*"colPerformance"*/).search(values['qa_perf_tests_status'], true, false).
+          columns(9, /*"colLongHaul"*/).search(values['qa_longhaul_tests_status'], true, false).
+          columns(10, /*"colSecurity"*/).search(values['qa_security_tests_status'], true, false).
+          columns(11, /*"colAPI"*/).search(values['qa_api_tests_status'], true, false).
+          columns(12, /*"colAnonymisation"*/).search(values['qa_anonymisation_tests_status'], true, false).
+          columns(12, /*"colUpgrade"*/).search(values['qa_upgrade_tests_status'], true, false).
+          draw();
+}
+
+function create_table() {
+    var table = $('#components').DataTable({
+        "orderCellsTop": true,
+        "fixedHeader": true,
+        "serverSide": true,
+        "deferLoading": false, // do not load data after table creation
+        "ajax": "/api/component_version/?format=datatables",
+        "drawCallback": function(settings) {
+            pa_replace_urls();
+            pa_tooltip('[data-toggle="tooltip"]');
+        },
+        "columns": [
+            {"data": "id", "searchable": false},
+            {"data": "meta_searchstr_product_versions"},
+            {"data": "meta_searchstr_locations"},
+            {"data": "component.runtime_type.name"},
+            {"data": "component.name"},
+            {"data": "qa_manual_tests_status"},
+            {"data": "qa_unit_tests_status"},
+            {"data": "qa_e2e_tests_status"},
+            {"data": "qa_perf_tests_status"},
+            {"data": "qa_longhaul_tests_status"},
+            {"data": "qa_security_tests_status"},
+            {"data": "qa_api_tests_status"},
+            {"data": "qa_anonymisation_tests_status"},
+            {"data": "qa_upgrade_tests_status"},
+            {"data": "meta_qa_rating"},
+        ],
+        "columnDefs": [
+            {
+                "targets": ["colProductVersion", "colLocationClass", "colRuntimeType"],
+                "type": "string",
+                "visible": false,
+            },
+            {
+                "targets": ["colId", "colComponent"],
+                "render": function(data, type, row) {
+                    return "<a target=_blank href='/component/" + row.component.id + "'>" + data + "</a>";
+                }
+            },
+            {
+                "targets": ["colComponent"],
+                "width": "200px",
+            },
+            {
+                "targets": ["colManual", "colUnit", "colE2E", "colPerformance", "colLongHaul", "colSecurity", "colAPI",
+                            "colAnonymisation", "colUpgrade"],
+                "type": "string",
+                "searchable": true,
+                "render": function(data, type, row) {
+                    return pa_star_rating(data);
+                }
+            },
+            {
+                "targets": ["colRating"],
+                "type": "string",
+                "width": "75px",
+                "render": function(data, type, row) {
+                    console.log(row);
+                    if (data == "100")
+                        return data + "%";
+                    else if (data)
+                        return "<a href='/admin/panopticum/componentversionmodel/" + row.id + "/change/' " +
+                               " target=_blank data-toggle='tooltip' data-placement='left'" +
+                               " title='" + pa_tooltip_from_list('<b>Bad rating:</b>', row.meta_bad_rating_fields) +
+                               "'>" + data + "%</span>";
+                    return "";
+                }
+            },
+        ]
+    });
+
+    $('.update-table').on('change', function() {
+        load_table(table);
+    });
+
+    load_table(table);
+}
+
+$(document).ready(function() {
+    var refc = new Refcounter(create_table);
+
+    pa_populate_options(refc, "#product_version", "/api/product_version/?format=json", false);
+    pa_populate_options(refc, "#location_class", "/api/location_class/?format=json", false);
+    pa_populate_options(refc, "#component_runtime_type", "/api/component_runtime_type/?format=json", false);
+
+    // Setup - add a text input to each footer cell
+
+    $('#components thead tr').clone(true).appendTo('#components thead');
+    $('#components thead tr:eq(1) th').each( function (i) {
+        var cl = $(this).attr("class");
+        if (cl == "colManual")
+            $(this).html(pa_get_star_rating_select('qa_manual_tests_status'));
+        else if (cl == "colUnit")
+            $(this).html(pa_get_star_rating_select('qa_unit_tests_status'));
+        else if (cl == "colE2E")
+            $(this).html(pa_get_star_rating_select('qa_e2e_tests_status'));
+        else if (cl == "colPerformance")
+            $(this).html(pa_get_star_rating_select('qa_performance_tests_status'));
+        else if (cl == "colLongHaul")
+            $(this).html(pa_get_star_rating_select('qa_longhaul_tests_status'));
+        else if (cl == "colSecurity")
+            $(this).html(pa_get_star_rating_select('qa_security_tests_status'));
+        else if (cl == "colAPI")
+            $(this).html(pa_get_star_rating_select('qa_api_tests_status'));
+        else if (cl == "colAnonymisation")
+            $(this).html(pa_get_star_rating_select('qa_anonymisation_tests_status'));
+        else if (cl == "colUpgrade")
+            $(this).html(pa_get_star_rating_select('qa_upgrade_tests_status'));
+        else
+            $(this).html('');
+    });
+});
+</script>
+
+</div></div>
+{% endblock %}
