@@ -42,6 +42,7 @@ urlpatterns = [
     url('^component/', views.component, name='Component'),
     url('^dashboard/components.html', views.dashboard_components, name='Components'),
     url('^dashboard/operations.html', views.dashboard_operations, name='Operations'),
+    url('^dashboard/maintenance.html', views.dashboard_maintenance, name='Maintenance'),
     url('^dashboard/links.html', views.dashboard_components, name='Links'),
     path('api/login/', rest_framework.authtoken.views.obtain_auth_token),
     re_path(r'^api/jira/([A-Z]*-\d+)', views.JiraIssueView.as_view(), name='jira'),

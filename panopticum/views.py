@@ -105,6 +105,10 @@ def dashboard_operations(request):
     return render(request, 'dashboard/operations.html')
 
 
+def dashboard_maintenance(request):
+    return render(request, 'dashboard/maintenance.html')
+
+
 class JiraIssueView(views.APIView):
 
     def validate(self, request):
