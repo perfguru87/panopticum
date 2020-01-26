@@ -14,7 +14,7 @@
               <tr>
                 <td class='owner'>
                   <div class='block'>
-                    <div class='image'><img src="/static/images/img.jpg"></div>
+                    <div class='image'><img v-bind:src="component.latest_version.owner_maintainer.photo"></div>
                     <div class='details'>
                       <b v-if='component.latest_version.owner_maintainer'>
                         [[ component.latest_version.owner_maintainer.name ]]</b> - Maintainer<br>
@@ -31,7 +31,7 @@
               <tr>
                 <td class='owner'>
                   <div class='block'>
-                    <div class='image'><img src="/static/images/img.jpg"></div>
+                    <div class='image'><img v-bind:src="component.latest_version.owner_responsible_qa.photo">></div>
                     <div class='details'>
                       <b v-if='component.latest_version.owner_responsible_qa'>
                         [[ component.latest_version.owner_responsible_qa.name ]]</b> - Responsible QA<br>
@@ -48,7 +48,7 @@
               <tr v-for="p in component.latest_version.owner_product_manager">
                 <td class='owner'>
                   <div class='block'>
-                    <div class='image'><img src="/static/images/img.jpg"></div>
+                    <div class='image'><img v-bind:src="p.photo"></div>
                     <div class='details'>
                       <b>[[ p.name ]]</b> - Product Manager<br>
                       <a v-bind:href="'mailto:[[ p.email ]]'">[[ p.email ]]</a>, [[ p.mobile_phone ]]
@@ -60,7 +60,7 @@
               <tr v-for="p in component.latest_version.owner_program_manager">
                 <td class='owner'>
                   <div class='block'>
-                    <div class='image'><img src="/static/images/img.jpg"></div>
+                    <div class='image'><img v-bind:src="p.photo"></div>
                     <div class='details'>
                       <b>[[ p.name ]]</b> - Program Manager<br>
                       <a v-bind:href="'mailto:[[ p.email ]]'">[[ p.email ]]</a>, [[ p.mobile_phone ]]
@@ -72,7 +72,7 @@
               <tr v-for="p in component.latest_version.owner_architect">
                 <td class='owner'>
                   <div class='block'>
-                    <div class='image'><img src="/static/images/img.jpg"></div>
+                    <div class='image'><img v-bind:src="p.photo"></div>
                     <div class='details'>
                       <b>[[ p.name ]]</b> - Architect<br>
                       <a v-bind:href="'mailto:[[ p.email ]]'">[[ p.email ]]</a>, [[ p.mobile_phone ]]

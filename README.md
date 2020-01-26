@@ -29,8 +29,6 @@ HIGH PRIO
 - URL to components dashboard with selected menu items
 - Property change audit (author and time of every property change)
 - Component data change history widget (who changed what, like in JIRA)
-- Integration with Active Directory: user auth
-- Integration with Active Directory: people and org chart syncup
 - Roles: allow users to manage only their components (QA manages QA fields, Dev - manage dev fields, etc)
 - Export whole data to XLS
 - Embed static documentation page
@@ -172,7 +170,7 @@ python3.6 ./manage.py createsuperuser
 
 ### Authenticate via Active Directory
 In order to use AD `settings_local.py` should contain the following:
-```python3.7
+```python
 import ldap
 from django_auth_ldap.config import LDAPSearch
 
@@ -183,6 +181,44 @@ AUTH_LDAP_USER_SEARCH = LDAPSearch(
                         "ou=users,dc=example,dc=com",
                         ldap.SCOPE_SUBTREE,
                         "(uid=%(user)s)")
+
+AUTHENTICATION_BACKENDS = ["panopticum.ldap.PanopticumLDAPBackend",
+                           "django.contrib.auth.backends.ModelBackend"]
+
+
+AUTH_LDAP_USER_FLAGS_BY_GROUP = {
+     "is_active": "cn=active,ou=users,dc=example,dc=com",
+     "is_staff": "cn=staff,ou=users,dc=example,dc=com",
+     "is_superuser": "cn=superuser,ou=users,dc=example,dc=com"
+}
+
+# django user model and ldap fields map
+AUTH_LDAP_USER_ATTR_MAP = {
+    "dn": "distinguishedName",
+    "first_name": "givenname",
+    "last_name": "sn",
+    "email": "mail",
+    "title": "title",
+    "mobile_phone": "mobile",
+    "office_phone": "telephoneNumber",
+    "info": "info",
+    "employee_number": "employeeNumber",
+    "active_directory_guid": "objectGUID",
+    #"hidden": "msExchHideFromAddressLists"
+}
+
+# Object relation map for adding foreign key objects like AUTH_LDAP_USER_ATTR_MAP.
+# key is foreignKey field at django model
+# value is LDAP field
+AUTH_LDAP_FOREIGNKEY_USER_ATTR_MAP = {
+    "organization": "company",
+    "photo": "thumbnailphoto",
+    "department": "department",
+    "manager": {
+        "searchField": "dn",
+        "ldapFieldName": "manager"
+    }
+}
 ```
 For more information please refer to [documentation](https://django-auth-ldap.readthedocs.io/en/latest/authentication.html).
 
@@ -201,15 +237,12 @@ docker-compose up -d
 
 Service will available at http://127.0.0.1:8080/
 
-# Tools
-
-All the integration tools (like JIRA or Active Directory connectors) live in the `panopticum/tools` folder
-
 ## Active Directory users import
 
+For import users from your Active Directory use:
+
 ```
-ldapdomaindump -o /tmp/ -u "DOMAIN\USER" ldap://LDAP.SERVER.URL:PORT
-python3.6 ./manage.py ad-sync /tmp/domain_users.json
+python3.6  manage.py ad-sync
 ```
 
 ## Data model visualization

@@ -26,16 +26,32 @@ formfields_small = {models.ForeignKey: {'widget': Select(attrs={'width': '200px'
 
 
 class UserAdmin(django.contrib.auth.admin.UserAdmin):
-    readonly_fields = ['image']
-    fieldsets = django.contrib.auth.admin.UserAdmin.fieldsets + ((_('misc'), {'fields': ('image', )}), )
+    readonly_fields = ['image', ]
+    list_display = ('username', 'first_name', 'last_name', 'is_staff', 'title', 'department')
+
+    fieldsets = (
+        (None, {'fields': ('username', 'password')}),
+        (_('Personal info'), {'fields': ('first_name', 'last_name', 'email',
+                                         'office_phone', 'mobile_phone', 'image')}),
+        (_('Organization'), {'fields': ('organization', 'department', 'role', 'title', 'manager')}),
+        (_('Permissions'), {'fields': ('is_active', 'is_staff', 'is_superuser',
+                                       'groups', 'user_permissions')}),
+        (_('Important dates'), {'fields': ('last_login', 'date_joined')}),
+    )
 
     def image(self, obj):
-        return mark_safe('<img src="{url}" width="{width}" height={height} />'.format(
-            url=obj.photo.url,
-            width=obj.photo.width,
-            height=obj.photo.height,
-        )
-        )
+        max_size = 280
+        if obj.photo.height < max_size and obj.photo.width < max_size:
+            max_size = max(obj.photo.height, obj.photo.width)
+
+        ratio = obj.photo.width / obj.photo.height
+        if obj.photo.width >= obj.photo.height:
+            width = max_size * ratio
+            height = max_size
+        else:
+            height = max_size /ratio
+            width = max_size
+        return mark_safe(f'<img src="{obj.photo.url}" width="{width}" height={height} />')
 
 
 class ComponentDependencyAdmin(admin.TabularInline):
@@ -114,13 +130,13 @@ class ComponentVersionAdmin(admin.ModelAdmin):
         # standard django method
         if db_field.name in ("owner_product_manager", "owner_program_manager", "owner_expert",
                              "owner_escalation_list", "owner_architect"):
-            kwargs["queryset"] = PersonModel.objects.filter(hidden=False)
+            kwargs["queryset"] = User.objects.filter(hidden=False)
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         # standard django method
         if db_field.name in ("owner_maintainer", "owner_responsible_qa"):
-            kwargs["queryset"] = PersonModel.objects.filter(hidden=False)
+            kwargs["queryset"] = User.objects.filter(hidden=False)
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     def _clone(self, obj):
@@ -159,7 +175,6 @@ admin.site.register(CountryModel)
 admin.site.register(OrganizationModel)
 admin.site.register(OrgDepartmentModel)
 admin.site.register(PersonRoleModel)
-admin.site.register(PersonModel)
 
 admin.site.register(SoftwareVendorModel)
 admin.site.register(DatabaseVendorModel)

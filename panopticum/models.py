@@ -8,7 +8,22 @@ from django.utils.safestring import mark_safe
 
 
 class User(AbstractUser):
+    dn = models.CharField(max_length=255, null=True)
+    title = models.CharField(max_length=64, blank=True, null=True)
     photo = models.ImageField(upload_to='avatars')
+    organization = models.ForeignKey('OrganizationModel', on_delete=models.PROTECT, blank=True,
+                                     null=True)
+    department = models.ForeignKey('OrgDepartmentModel', on_delete=models.PROTECT, blank=True,
+                                   null=True)
+    role = models.ForeignKey('PersonRoleModel', on_delete=models.PROTECT, blank=True, null=True)
+    office_phone = models.CharField(max_length=64, blank=True, null=True)
+    mobile_phone = models.CharField(max_length=64, blank=True, null=True)
+    active_directory_guid = models.CharField(max_length=64, blank=True, null=True)
+    employee_number = models.CharField(max_length=64, blank=True, null=True)
+    info = models.TextField(blank=True, null=True)
+    hidden = models.BooleanField(help_text="Hide the person from the potential assignee lists",
+                                 db_index=True, default=False)
+    manager = models.ForeignKey("self", on_delete=models.PROTECT, blank=True, null=True)
 
     @property
     def photo_url(self):
@@ -61,30 +76,6 @@ class PersonRoleModel(models.Model):
 
     def __str__(self):
         return "%s - #%d" % (self.name, self.id)
-
-
-class PersonModel(models.Model):
-    name = models.CharField(max_length=64)
-    surname = models.CharField(max_length=64)
-    title = models.CharField(max_length=64, blank=True, null=True)
-    email = models.EmailField()
-    organization = models.ForeignKey(OrganizationModel, on_delete=models.PROTECT, blank=True, null=True)
-    org_department = models.ForeignKey(OrgDepartmentModel, on_delete=models.PROTECT, blank=True, null=True)
-    country = models.ForeignKey(CountryModel, on_delete=models.PROTECT, blank=True, null=True)
-    office_phone = models.CharField(max_length=64, blank=True, null=True)
-    mobile_phone = models.CharField(max_length=64, blank=True, null=True)
-    active_directory_guid = models.CharField(max_length=64, blank=True, null=True)
-    employee_number = models.CharField(max_length=64, blank=True, null=True)
-    info = models.TextField(blank=True, null=True)
-    role = models.ForeignKey(PersonRoleModel, on_delete=models.PROTECT, blank=True, null=True)
-    manager = models.ForeignKey("self", on_delete=models.PROTECT, blank=True, null=True)
-    hidden = models.BooleanField(help_text="Hide the person from the potential assignee lists", db_index=True, default=False)
-
-    class Meta:
-        ordering = ['email']
-
-    def __str__(self):
-        return self.email
 
 
 ##################################################################################################
@@ -260,14 +251,14 @@ class ComponentVersionModel(models.Model):
 
     # ownership
 
-    owner_maintainer = models.ForeignKey(PersonModel, related_name='maintainer_of', on_delete=models.PROTECT, blank=True, null=True)
-    owner_responsible_qa = models.ForeignKey(PersonModel, related_name='responsible_qa_of',
+    owner_maintainer = models.ForeignKey(User, related_name='maintainer_of', on_delete=models.PROTECT, blank=True, null=True)
+    owner_responsible_qa = models.ForeignKey(User, related_name='responsible_qa_of',
                                              on_delete=models.PROTECT, blank=True, null=True)
-    owner_product_manager = models.ManyToManyField(PersonModel, related_name='product_manager_of', blank=True)
-    owner_program_manager = models.ManyToManyField(PersonModel, related_name='program_managed_of', blank=True)
-    owner_escalation_list = models.ManyToManyField(PersonModel, related_name='escalation_list_of', blank=True)
-    owner_expert = models.ManyToManyField(PersonModel, related_name='expert_of', blank=True)
-    owner_architect = models.ManyToManyField(PersonModel, related_name='architect_of', blank=True)
+    owner_product_manager = models.ManyToManyField(User, related_name='product_manager_of', blank=True)
+    owner_program_manager = models.ManyToManyField(User, related_name='program_managed_of', blank=True)
+    owner_escalation_list = models.ManyToManyField(User, related_name='escalation_list_of', blank=True)
+    owner_expert = models.ManyToManyField(User, related_name='expert_of', blank=True)
+    owner_architect = models.ManyToManyField(User, related_name='architect_of', blank=True)
 
     # development
 
@@ -418,7 +409,7 @@ class ComponentVersionModel(models.Model):
 
     # meta
 
-    meta_update_by = models.ForeignKey(PersonModel, on_delete=models.PROTECT, blank=True, null=True, related_name='updater_of')
+    meta_update_by = models.ForeignKey(User, on_delete=models.PROTECT, blank=True, null=True, related_name='updater_of')
     meta_update_date = models.DateTimeField(db_index=True)
     meta_deleted = models.BooleanField()
 
