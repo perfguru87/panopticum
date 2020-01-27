@@ -237,6 +237,29 @@ class ComponentModel(models.Model):
     def __str__(self):
         return "%s" % self.name
 
+class RequirementType(models.Model): # cloud, maintenance. Equal widget
+    name = models.CharField(max_length=64)
+
+class RequirementStatus(models.Model): # base model for status.
+    name = models.CharField(max_length=20) # yes, no, ready ...
+    description = models.TextField(null=True, blank=True, max_length=255) # ready status is mean ...
+
+
+class RequirementStatusType(models.Model): # base model for status.
+    owner = models.CharField(max_length=24)
+
+class RequirementStatusEntry(models.Model): # instance of status with value and owner type eqaul cell in widget
+    status = models.ForeignKey(RequirementStatus, on_delete=models.CASCADE)
+    type = models.ForeignKey(RequirementStatusType, on_delete=models.CASCADE) # component owner or approver
+    requirement = models.ForeignKey('Requirement', on_delete=models.CASCADE)
+    notes = models.TextField(null=True, blank=True, max_length=255)
+    component_version = models.ForeignKey('ComponentVersionModel', on_delete=models.CASCADE)
+
+class Requirement(models.Model): # base model for requirement equal requirement header in widget
+    title = models.CharField(max_length=20) # backup, logging storage
+    description = models.TextField(max_length=1024) # that requirements about ...
+    type = models.ForeignKey(RequirementType, on_delete=models.CASCADE) # cloud, maintenance, qa
+
 
 class ComponentVersionModel(models.Model):
     component = models.ForeignKey(ComponentModel, on_delete=models.PROTECT, related_name='component_version')
@@ -412,7 +435,7 @@ class ComponentVersionModel(models.Model):
 
     meta_update_by = models.ForeignKey(User, on_delete=models.PROTECT, blank=True, null=True, related_name='updater_of')
     meta_update_date = models.DateTimeField(db_index=True)
-    meta_deleted = models.BooleanField()
+    meta_deleted = models.BooleanField(default=False)
 
     meta_compliance_rating = models.IntegerField(default=0)
     meta_mt_rating = models.IntegerField(default=0)

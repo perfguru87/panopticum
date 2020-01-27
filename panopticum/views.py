@@ -5,6 +5,7 @@ from django.conf import settings
 from django.http import JsonResponse
 
 from rest_framework import viewsets, permissions, views
+from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from rest_framework.views import APIView
@@ -41,6 +42,13 @@ class ComponentViewSet(viewsets.ModelViewSet):
                             status=rest_framework.status.HTTP_404_NOT_FOUND)
         return Response(ComponentVersionSerializerSimple(component_version,
                                                          context={'request': self.request}).data)
+
+class ComponentChangesViewSet(viewsets.ViewSet):
+    def list(self, request: Request):
+        queryset = ComponentVersionModel.objects.get(pk=int(request.query_params.get('componentVersion_id'))).history.all()
+        serializer = HistoricalComponentVersionSerializer(queryset, many=True, context={'request': self.request})
+        return Response(serializer.data)
+
 
 class DeploymentLocationClassViewSet(viewsets.ModelViewSet):
     queryset = DeploymentLocationClassModel.objects.all()

@@ -1,0 +1,107 @@
+[
+  {
+    "model": "panopticum.requirementtype",
+    "pk": 1,
+    "fields": {
+      "name": "cloud"
+    }
+  },
+  {
+    "model": "panopticum.requirementtype",
+    "pk": 2,
+    "fields": {
+      "name": "maintenance"
+    }
+  },
+  {
+    "model": "panopticum.requirementstatus",
+    "pk": 1,
+    "fields": {
+      "name": "unknown",
+      "description": ""
+    }
+  },
+  {
+    "model": "panopticum.requirementstatus",
+    "pk": 2,
+    "fields": {
+      "name": "no",
+      "description": "Requirement declined by approver"
+    }
+  },
+  {
+    "model": "panopticum.requirementstatus",
+    "pk": 3,
+    "fields": {
+      "name": "yes",
+      "description": "Requirement approved"
+    }
+  },
+  {
+    "model": "panopticum.requirementstatus",
+    "pk": 4,
+    "fields": {
+      "name": "partial",
+      "description": "Requirement partial ready"
+    }
+  },
+  {
+    "model": "panopticum.requirementstatustype",
+    "pk": 1,
+    "fields": {
+      "owner": "component owner"
+    }
+  },
+  {
+    "model": "panopticum.requirementstatustype",
+    "pk": 2,
+    "fields": {
+      "owner": "requirement reviewer"
+    }
+  },
+  {
+    "model": "panopticum.requirement",
+    "pk": 1,
+    "fields": {
+      "title": "Design review",
+      "description": "Late involvement of DCO into the development process leads to delays for the release and bring operations problems for the component in production.",
+      "type": 1
+    }
+  },
+  {
+    "model": "panopticum.requirement",
+    "pk": 2,
+    "fields": {
+      "title": "SLO/SLI",
+      "description": "We don't have metrics to understand if the component addresses a user's business needs or not.",
+      "type": 1
+    }
+  },
+  {
+    "model": "panopticum.requirement",
+    "pk": 3,
+    "fields": {
+      "title": "Component state",
+      "description": "Most of the updates and other operations on containers lead to downtime if the component keeps a state on the same container.",
+      "type": 1
+    }
+  },
+  {
+    "model": "panopticum.requirement",
+    "pk": 4,
+    "fields": {
+      "title": "HTTP requests tracing",
+      "description": "",
+      "type": 2
+    }
+  },
+  {
+    "model": "panopticum.requirement",
+    "pk": 5,
+    "fields": {
+      "title": "Logging completeness",
+      "description": "",
+      "type": 2
+    }
+  }
+]
