@@ -5,6 +5,26 @@ from django.forms.models import model_to_dict
 import panopticum.models
 from panopticum.models import *
 
+class DynamicFieldsModelSerializer(serializers.ModelSerializer):
+    """
+    A ModelSerializer that takes an additional `fields` argument that
+    controls which fields should be displayed.
+    """
+
+    def __init__(self, *args, **kwargs):
+        # Don't pass the 'fields' arg up to the superclass
+        fields = kwargs.pop('fields', None)
+
+        # Instantiate the superclass normally
+        super(DynamicFieldsModelSerializer, self).__init__(*args, **kwargs)
+
+        if fields is not None:
+            # Drop any fields that are not specified in the `fields` argument.
+            allowed = set(fields)
+            existing = set(self.fields)
+            for field_name in existing - allowed:
+                self.fields.pop(field_name)
+
 class HistoricalComponentVersionSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
@@ -107,6 +127,33 @@ class ComponentDependencySerializerSimple(serializers.ModelSerializer):
         model = ComponentDependencyModel
         fields = '__all__'
 
+class RequirementSerializer(DynamicFieldsModelSerializer, serializers.ModelSerializer):
+    type = serializers.SlugRelatedField(
+        slug_field='name',
+        read_only=True
+    )
+
+    class Meta:
+        model = Requirement
+        fields = '__all__'
+
+
+
+class RequirementStatusEntrySerializer(serializers.HyperlinkedModelSerializer):
+    status = serializers.SlugRelatedField(
+        read_only=True,
+        slug_field='name'
+    )
+    type =  serializers.SlugRelatedField(
+        read_only=True,
+        slug_field='owner'
+    )
+
+    requirement = RequirementSerializer()
+
+    class Meta:
+        model = RequirementStatusEntry
+        fields = '__all__'
 
 class ComponentVersionSerializerSimple(serializers.ModelSerializer):
     id = serializers.IntegerField(read_only=True)

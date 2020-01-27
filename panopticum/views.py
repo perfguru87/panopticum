@@ -66,6 +66,13 @@ class ComponentCategoryViewSet(viewsets.ModelViewSet):
     queryset = ComponentCategoryModel.objects.all()
     serializer_class = ComponentCategorySerializer
 
+class RequirementViewSet(viewsets.ModelViewSet):
+    queryset = Requirement.objects.all()
+    serializer_class = RequirementSerializer
+
+class RequirementStatusViewSet(viewsets.ModelViewSet):
+    queryset = RequirementStatusEntry.objects.all()
+    serializer_class = RequirementStatusEntrySerializer
 
 class UserDetail(viewsets.ModelViewSet):
     queryset = get_user_model().objects.all()
