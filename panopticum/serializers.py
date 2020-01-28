@@ -127,6 +127,7 @@ class ComponentDependencySerializerSimple(serializers.ModelSerializer):
         model = ComponentDependencyModel
         fields = '__all__'
 
+
 class RequirementSerializer(DynamicFieldsModelSerializer, serializers.ModelSerializer):
     type = serializers.SlugRelatedField(
         slug_field='name',
@@ -138,22 +139,20 @@ class RequirementSerializer(DynamicFieldsModelSerializer, serializers.ModelSeria
         fields = '__all__'
 
 
-
 class RequirementStatusEntrySerializer(serializers.HyperlinkedModelSerializer):
     status = serializers.SlugRelatedField(
         read_only=True,
         slug_field='name'
     )
-    type =  serializers.SlugRelatedField(
+    type = serializers.SlugRelatedField(
         read_only=True,
         slug_field='owner'
     )
 
-    requirement = RequirementSerializer()
-
     class Meta:
         model = RequirementStatusEntry
         fields = '__all__'
+
 
 class ComponentVersionSerializerSimple(serializers.ModelSerializer):
     id = serializers.IntegerField(read_only=True)

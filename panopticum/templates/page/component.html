@@ -250,7 +250,11 @@ function vue_component_init() {
 
     const app = new Vue({
         el: "#vue-component",
+        mixins: [
+          httpVueLoader('{% static "mixins/api.vue"%}')
+        ],
         components: {
+            'widget-requirements': httpVueLoader('{% static "components/widget-requirements.vue"%}'),
             'widget-signoff': httpVueLoader('{% static "components/widget-signoff.vue"%}')
         },
         delimiters: ['[[', ']]'],

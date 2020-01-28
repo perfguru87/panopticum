@@ -12,6 +12,7 @@ import rest_framework.authtoken.models
 import django.contrib.auth
 import django.contrib.auth.models
 
+import panopticum.filters
 from .models import *
 from .serializers import *
 from .jira import JiraProxy
@@ -66,13 +67,19 @@ class ComponentCategoryViewSet(viewsets.ModelViewSet):
     queryset = ComponentCategoryModel.objects.all()
     serializer_class = ComponentCategorySerializer
 
+
 class RequirementViewSet(viewsets.ModelViewSet):
     queryset = Requirement.objects.all()
     serializer_class = RequirementSerializer
+    filterset_fields = '__all__'
+
 
 class RequirementStatusViewSet(viewsets.ModelViewSet):
     queryset = RequirementStatusEntry.objects.all()
     serializer_class = RequirementStatusEntrySerializer
+    filter_class = panopticum.filters.RequirementStatusFilter
+    filterset_fields = '__all__'
+
 
 class UserDetail(viewsets.ModelViewSet):
     queryset = get_user_model().objects.all()
