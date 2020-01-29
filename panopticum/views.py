@@ -71,6 +71,7 @@ class ComponentCategoryViewSet(viewsets.ModelViewSet):
 class RequirementViewSet(viewsets.ModelViewSet):
     queryset = Requirement.objects.all()
     serializer_class = RequirementSerializer
+    filter_class = panopticum.filters.RequirementFilter
     filterset_fields = '__all__'
 
 

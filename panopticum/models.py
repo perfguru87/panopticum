@@ -256,7 +256,7 @@ class RequirementStatusEntry(models.Model): # instance of status with value and 
     component_version = models.ForeignKey('ComponentVersionModel', on_delete=models.CASCADE)
 
 class Requirement(models.Model): # base model for requirement equal requirement header in widget
-    title = models.CharField(max_length=20) # backup, logging storage
+    title = models.CharField(max_length=30) # backup, logging storage
     description = models.TextField(max_length=1024) # that requirements about ...
     type = models.ForeignKey(RequirementType, on_delete=models.CASCADE) # cloud, maintenance, qa
 

@@ -1,7 +1,9 @@
+import django.forms
 from django.contrib import admin
 from django.forms.widgets import SelectMultiple, NumberInput, TextInput, Textarea, Select
 import django.contrib.auth.admin
 from django.utils.translation import gettext_lazy as _
+import django.core.exceptions
 
 import datetime
 
@@ -70,10 +72,120 @@ class ComponentDeploymentAdmin(admin.TabularInline):
     verbose_name_plural = "Component Deployments"
 
 
+
+class RequirementAdmin(admin.TabularInline):
+    model = Requirement
+
+
+class RequirementChoiceField(django.forms.ModelChoiceField):
+    def label_from_instance(self, obj):
+        return f"Requirement: {obj.title}"
+
+class RequirementStatusChoiceField(django.forms.ModelChoiceField):
+    def label_from_instance(self, obj):
+        return f"{obj.name}"
+
+class RequirementStatusTypeChoiceField(django.forms.ModelChoiceField):
+    def label_from_instance(self, obj):
+        return f"Status: {obj.owner}"
+
+class RequirementForm(django.forms.ModelForm):
+    requirement = RequirementChoiceField(queryset=Requirement.objects.all()),
+    owner_status = RequirementStatusChoiceField(queryset=RequirementStatus.objects.all(),
+                                                label='Readiness')
+    owner_notes = django.forms.CharField(label='notes',
+                                         widget=django.forms.Textarea({'rows': '2'}),
+                                         max_length=1024,
+                                         required=False)
+    approve_status = RequirementStatusChoiceField(queryset=RequirementStatus.objects.all(),
+                                                  label='Sign off')
+    approve_notes = django.forms.CharField(label='Sign off notes',
+                                           widget=django.forms.Textarea({'rows': '2'}),
+                                           max_length=1024,
+                                           required=False)
+
+    def __init__(self, *args, **kwargs):
+        if kwargs.get('instance'):
+            initial = {
+                'owner_status': kwargs['instance'].status,
+                'owner_notes': kwargs['instance'].notes
+            }
+            try:
+                approve_status_obj = RequirementStatusEntry.objects.get(
+                    requirement = kwargs['instance'].requirement,
+                    type = 2, #approve person
+                    component_version = kwargs['instance'].component_version
+                )
+                initial['approve_status'] = approve_status_obj.status
+                initial['approve_notes'] = approve_status_obj.notes
+            except django.core.exceptions.ObjectDoesNotExist:
+                initial['approve_status'] = RequirementStatus.objects.get(pk=1) # unknown
+            kwargs.update(initial=initial)
+        super().__init__(*args, **kwargs)
+
+    def is_valid(self):
+        if 'requirement' not in self.cleaned_data:
+            return True
+        return super().is_valid()
+
+    def _save_status(self, field_prefix, type_pk):
+        status = self.cleaned_data[f'{field_prefix}_status']
+        notes =  self.cleaned_data[field_prefix + "_notes"]
+        status_obj, created = RequirementStatusEntry.objects.get_or_create(
+            component_version=self.instance.component_version,
+            requirement=self.instance.requirement,
+            type=RequirementStatusType.objects.get(pk=type_pk),
+            defaults={
+                "status": status,
+                "notes": notes
+            }
+        )
+        if not created:
+            status_obj.status = status
+            status_obj.notes = notes
+            status_obj.save()
+        return status_obj
+
+    def save(self, commit=True, *args, **kwargs):
+        if 'requirement' in self.cleaned_data:
+            if 'approve_status' in self.changed_data or 'approve_notes' in self.changed_data:
+                self._save_status('approve', 2)
+
+            elif 'owner_status' in self.changed_data: # reset sign off if readiness is changed
+                self.cleaned_data['approve_status'] = RequirementStatus.objects.get(pk=1) # unknown status
+                self._save_status('approve', 2)
+            return self._save_status('owner', 1)
+
+
+class RequirementStatusEntryAdmin(admin.TabularInline):
+    model = RequirementStatusEntry
+    inlines = (RequirementAdmin, )
+    form = RequirementForm
+    fields = ('requirement', 'owner_status', 'owner_notes','approve_status',  'approve_notes')
+
+    def get_queryset(self, request):
+        qs =super().get_queryset(request)
+        return qs.filter(type=1) # component owner
+
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+
+        field_map = {
+            "requirement": RequirementChoiceField(queryset=Requirement.objects.all()),
+            "status": RequirementStatusChoiceField(queryset=RequirementStatus.objects.all()),
+            "type": RequirementStatusTypeChoiceField(queryset=RequirementStatusType.objects.all())
+        }
+
+        if db_field.name in field_map:
+            return field_map[db_field.name]
+        else:
+             return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+
 class ComponentVersionAdmin(admin.ModelAdmin):
     formfield_overrides = formfields_large
 
-    inlines = (ComponentDependencyAdmin, ComponentDeploymentAdmin)
+    inlines = (ComponentDependencyAdmin, ComponentDeploymentAdmin, RequirementStatusEntryAdmin)
 
     fieldsets = (
         (None, {'fields': ('component', 'version', 'comments')}),
