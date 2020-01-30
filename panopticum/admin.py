@@ -97,8 +97,10 @@ class RequirementForm(django.forms.ModelForm):
                                          widget=django.forms.Textarea({'rows': '2'}),
                                          max_length=1024,
                                          required=False)
-    approve_status = RequirementStatusChoiceField(queryset=RequirementStatus.objects.all(),
-                                                  label='Sign off')
+    approve_status = RequirementStatusChoiceField(
+        queryset=RequirementStatus.objects.filter(allow_for=RequirementStatusType.objects.get(pk=2)),
+        label='Sign off'
+    )
     approve_notes = django.forms.CharField(label='Sign off notes',
                                            widget=django.forms.Textarea({'rows': '2'}),
                                            max_length=1024,

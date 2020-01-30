@@ -240,13 +240,13 @@ class ComponentModel(models.Model):
 class RequirementType(models.Model): # cloud, maintenance. Equal widget
     name = models.CharField(max_length=64)
 
+class RequirementStatusType(models.Model): # base model for status.
+    owner = models.CharField(max_length=24)
+
 class RequirementStatus(models.Model): # base model for status.
     name = models.CharField(max_length=20) # yes, no, ready ...
     description = models.TextField(null=True, blank=True, max_length=255) # ready status is mean ...
-
-
-class RequirementStatusType(models.Model): # base model for status.
-    owner = models.CharField(max_length=24)
+    allow_for = models.ManyToManyField('RequirementStatusType')
 
 class RequirementStatusEntry(models.Model): # instance of status with value and owner type eqaul cell in widget
     status = models.ForeignKey(RequirementStatus, on_delete=models.CASCADE)

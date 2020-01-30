@@ -18,7 +18,8 @@
     "pk": 1,
     "fields": {
       "name": "unknown",
-      "description": ""
+      "description": "",
+      "allow_for": [1, 2 ]
     }
   },
   {
@@ -26,7 +27,8 @@
     "pk": 2,
     "fields": {
       "name": "no",
-      "description": "Requirement declined by approver"
+      "description": "Requirement declined by approver",
+      "allow_for": [1, 2 ]
     }
   },
   {
@@ -34,7 +36,8 @@
     "pk": 3,
     "fields": {
       "name": "yes",
-      "description": "Requirement approved"
+      "description": "Requirement approved",
+      "allow_for": [1, 2 ]
     }
   },
   {
@@ -42,7 +45,8 @@
     "pk": 4,
     "fields": {
       "name": "n/a",
-      "description": "not applicable. That requirement doesn't need for that component"
+      "description": "not applicable. That requirement doesn't need for that component",
+      "allow_for": [1 ]
     }
   },
   {
