@@ -2,6 +2,7 @@ import django.forms
 from django.contrib import admin
 from django.forms.widgets import SelectMultiple, NumberInput, TextInput, Textarea, Select
 import django.contrib.auth.admin
+from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 import django.core.exceptions
 
@@ -89,6 +90,7 @@ class RequirementStatusTypeChoiceField(django.forms.ModelChoiceField):
     def label_from_instance(self, obj):
         return f"Status: {obj.owner}"
 
+
 class RequirementForm(django.forms.ModelForm):
     requirement = RequirementChoiceField(queryset=Requirement.objects.all()),
     owner_status = RequirementStatusChoiceField(queryset=RequirementStatus.objects.all(),
@@ -107,6 +109,10 @@ class RequirementForm(django.forms.ModelForm):
                                            required=False)
 
     def __init__(self, *args, **kwargs):
+        unknown_status = RequirementStatus.objects.get(pk=1)
+        self.base_fields['owner_status'].initial = unknown_status
+        self.base_fields['approve_status'].initial = unknown_status
+
         if kwargs.get('instance'):
             initial = {
                 'owner_status': kwargs['instance'].status,
@@ -114,9 +120,9 @@ class RequirementForm(django.forms.ModelForm):
             }
             try:
                 approve_status_obj = RequirementStatusEntry.objects.get(
-                    requirement = kwargs['instance'].requirement,
-                    type = 2, #approve person
-                    component_version = kwargs['instance'].component_version
+                    requirement=kwargs['instance'].requirement,
+                    type=2,  # approve person
+                    component_version=kwargs['instance'].component_version
                 )
                 initial['approve_status'] = approve_status_obj.status
                 initial['approve_notes'] = approve_status_obj.notes
@@ -153,8 +159,8 @@ class RequirementForm(django.forms.ModelForm):
             if 'approve_status' in self.changed_data or 'approve_notes' in self.changed_data:
                 self._save_status('approve', 2)
 
-            elif 'owner_status' in self.changed_data: # reset sign off if readiness is changed
-                self.cleaned_data['approve_status'] = RequirementStatus.objects.get(pk=1) # unknown status
+            elif 'owner_status' in self.changed_data:  # reset sign off if readiness is changed
+                self.cleaned_data['approve_status'] = RequirementStatus.objects.get(pk=1)  # unknown status
                 self._save_status('approve', 2)
             return self._save_status('owner', 1)
 

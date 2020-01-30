@@ -40,14 +40,8 @@
               </tbody>
             </table>
 
-            <h3 v-cloak>Cloud Requirements
-              <span class='pa-component-rating' v-cloak v-if='component.latest_version.op_applicable'>
-                [[ component.latest_version.meta_op_rating ]]%
-              </span>
-              <span class='pa-component-stars' v-cloak v-if='component.latest_version.op_applicable'>
-                [[ component.latest_version.meta_op_rating ]]
-              </span>
-            </h2>
+            <widget-requirements api-url="http://127.0.0.1:8000/api" 
+            type="cloud" v-bind:component_version="component.latest_version"></widget-requirements>
 
             <table class='status-table' v-bind:class="[ component.latest_version.op_applicable ? '' : 'status-table-na']" v-cloak>
               <thead>
