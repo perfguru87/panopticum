@@ -124,7 +124,7 @@ class LoginAPIView(APIView):
 
 
 def component(request):
-    return render(request, 'page/component.html')
+    return render(request, 'page/component.html', context={'API_URL': settings.API_URL})
 
 
 def dashboard_components(request):

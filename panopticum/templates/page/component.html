@@ -247,13 +247,11 @@ function vue_component_init() {
     console.log("vue_component_init()");
 
     var url = '/api' + window.location.pathname + '/?format=json'
+    {% include "vue/widget-requirements.js" %}
+    {% include "vue/widget-signoff.js" %}
 
     const app = new Vue({
         el: "#vue-component",
-        components: {
-            'widget-signoff': httpVueLoader('{% static "components/widget-signoff.vue"%}'),
-            'widget-requirements': httpVueLoader('{% static "components/widget-requirements.vue"%}'),
-        },
         delimiters: ['[[', ']]'],
         data: {
             component: {
@@ -267,9 +265,9 @@ function vue_component_init() {
             erroed: false
         },
         created: function() {
-           let component;
-           let latest_version = default_latest_version;
-           let requests = [
+          let component;
+          let latest_version = default_latest_version;
+          let requests = [
               axios.get(url)
                 .then(response => {
                    // we can't assign response.data directly to this.component, because it will trigger
@@ -288,9 +286,9 @@ function vue_component_init() {
                 })
                 .catch(error => {
                 })
-           ];
-           // make parallel requests
-           axios.all(requests).then(_ => {
+          ];
+          // make parallel requests
+          axios.all(requests).then(_ => {
                // when all requests is finished and all required data obtained, we can trigger rerender
                component.latest_version = latest_version;
                this.component = component;
@@ -298,7 +296,7 @@ function vue_component_init() {
                this.$nextTick(function () {
                     update_component_page_elements(this.component);
                });
-           });
+          });
         },
     });
 }
