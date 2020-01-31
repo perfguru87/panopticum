@@ -1,0 +1,305 @@
+{
+   "ComponentCategories":{
+      "Platform":{
+         "description":"",
+         "order":1
+      },
+      "Search":{
+         "description":"Search Services use this category",
+         "order":2
+      }
+   },
+   "ComponentSubCategories":[
+      {
+         "category":"SubCategory_A",
+         "description":"",
+         "name":"Platform"
+      },
+      {
+         "category":"SubCategory_B",
+         "description":"",
+         "name":"Platform"
+      },
+      {
+         "category":"SubCategory_B",
+         "description":"",
+         "name":"Search"
+      },
+      {
+         "category":"SubCategory_C",
+         "description":"",
+         "name":"Search"
+      }
+   ],
+   "ComponentDataPrivacies":{
+      "Framework":{
+         "order":1
+      },
+      "Infrastructure":{
+         "order":2
+      }
+   },
+   "ComponentRuntimes":[
+      "Library",
+      "Framework",
+      "Driver",
+      "OS Service",
+      "OS Process",
+      "Web Service",
+      "Database",
+      "MQ Service",
+      "Database",
+      "Component"
+   ],
+   "Loggers":[
+      "Logf"
+   ],
+   "Countries":[
+      "Russia",
+      "United Kingdom",
+      "Japan",
+      "Singapore",
+      "Germany",
+      "Estonia",
+      "France",
+      "United States",
+      "Korea",
+      "Switzerland",
+      "Italy",
+      "China",
+      "United States of America",
+      "Bulgaria",
+      "India",
+      "Australia",
+      "UNITED STATES",
+      "Belgium",
+      "Spain",
+      "Denmark",
+      "Romania",
+      "Malaysia",
+      "Belarus",
+      "Sweden",
+      "Hong Kong S.A.R.",
+      "Taiwan",
+      "Hong Kong SAR",
+      "Thailand",
+      "United Arab Emirates",
+      "Turkey",
+      "Brazil",
+      "Czech Republic",
+      "Israel",
+      "Netherlands",
+      "Ukraine",
+      "Poland",
+      "Indonesia",
+      "Hungary",
+      "South Africa",
+      "Sierra Leone",
+      "Kazakhstan"
+   ],
+   "DataCenters":{
+      "EU2":{
+         "info":"",
+         "grafana":"https://grafana.company.com/display/EU2.html",
+         "metrics":"https://intranet.company.com/metrics/EU2.html"
+      },
+      "EU1":{
+         "info":"https://intranet.company.com/DCs/EU1.html",
+         "grafana":"https://grafana.company.com/display/EU1.html",
+         "metrics":"https://intranet.company.com/metrics/EU1.html"
+      },
+      "AU1":{
+         "info":"https://intranet.company.com/DCs/AU1.html",
+         "grafana":"https://grafana.company.com/display/AU1.html",
+         "metrics":"https://intranet.company.com/metrics/AU1.html"
+      }
+   },
+   "DBVendors":[
+      "Percona",
+      "PostgreSQL",
+      "MSSQL",
+      "SQLite",
+      "Oracle",
+      "None"
+   ],
+   "DeploymentEnvironments":{
+      "VZ":"Virtuozzo Container",
+      "WindowsVM": "Windows VM",
+      "LinuxVM": "Linux VM",
+      "LinuxContainer": "Linux Container",
+      "LinuxOS": "Linux OS",
+      "MacOS": "Mac OS",
+      "plesk": "Plesk",
+      "agent": "Agent machine",
+      "K8S":"K8S pod",
+      "ios": "iOS Device",
+      "vmware appliance": "VMWare Appliance",
+      "android": "Android Device",
+      "-":"Not Applicable",
+      "N/A":"Not Applicable",
+      "TBD": "TBD"
+   },
+   "DeploymentLocations":{
+      "Cloud datacenter":{
+         "order":1,
+         "description":""
+      },
+      "Cloud agent unit":{
+         "order":2,
+         "description":""
+      },
+      "On-prem centralized":{
+         "order":3,
+         "description":""
+      },
+      "On-prem agent unit":{
+         "order":4,
+         "description":""
+      },
+      "Microsoft Azure":{
+         "order":5,
+         "description":"https://azure.microsoft.com/en-us/"
+      },
+      "Amazon Web Services":{
+         "order":6,
+         "description":"https://aws.amazon.com/"
+      },
+      "Plesk":{
+         "order":7,
+         "description":"plesk.com Plesk is a commercial web hosting platform with a control panel that allows a server administrator to set up new websites, reseller accounts, e-mail accounts and DNS entries through a web-based interface. Originally designed in Novosibirsk, Russia, the hosting automation software was released by Plesk Inc.."
+      },
+      "iOS Device":{
+         "order":8,
+         "description":"iOS device"
+      },
+      "Android Device":{
+         "order":9,
+         "description":"Android device"
+      },
+      "VMWare Appliance":{
+         "order":11,
+         "description":"The Virtual Appliance Marketplace contains a variety of virtual appliances packaged in OVF format that you can download and deploy in your vSphere environment."
+      },
+      "TBD":{
+         "order":12,
+         "description":"To be filled later by user."
+      },
+      "OSA":{
+         "order":13,
+         "description":"OpenStack-Ansible (OSA) uses the Ansible IT automation engine to deploy an OpenStack environment on Ubuntu Linux. https://docs.openstack.org/project-deploy-guide/openstack-ansible/ocata/overview-osa.html"
+      }
+   },
+   "DeploymentLocationMapping": {
+      "cloud-only": "Cloud datacenter",
+      "cloud": "Cloud datacenter",
+      "PDS operator side": "On-prem centralized",
+      "on-prem": "On-prem centralized",
+      "on-prem-only": "On-prem centralized",
+      "azure": "Microsoft Azure",
+      "aws": "Amazon Web Services",
+      "plesk": "Plesk",
+      "ios": "iOS Device",
+      "android": "Android Device",
+      "vmware appliance": "VMWare Appliance",
+      "Agent": "On-prem agent unit",
+      "osa": "OSA",
+      "TBD": "TBD"
+   },
+   "ProgrammingLanguages":[
+      "Go-lang",
+      "Python",
+      "C/C++",
+      "Javascript",
+      "Java",
+      "Ruby",
+      "Erlang",
+      "shellscript",
+      "Perl",
+      "Objective-C",
+      "Android",
+      "Powershell-script",
+      ".Net",
+      "PHP"
+   ],
+   "ApplicationVendors":[
+      "Acronis",
+      "OpenSource",
+      "Percona",
+      "Google",
+      "Commercial"
+   ],
+   "ApplicationFrameworks":{
+      "tornado":"Python",
+      "sqlalchmey":"Python",
+      "fastcgi":"Python",
+      "storedprocs":"Python",
+      "aiohttp":"Python",
+      "angular4":"Javascript",
+      "vuejs":"Javascript",
+      "angular1":"Javascript",
+      "laravel":"PHP",
+      "werkzeug":"Python",
+      "flask":"Python",
+      "go-std":"Go-lang",
+      "beego":"Go-lang",
+      "xorm":"Go-lang",
+      "gorm":"Go-lang",
+      "WPF":".Net",
+      "angular2":"Javascript",
+      "extjs4":"Javascript",
+      "gevent":"Python",
+      "ruby on rails":"Ruby",
+      "android sdk":"Android",
+      "wix":"C/C++",
+      "phantomjs":"Python",
+      "asyncio":"Python",
+      "go-micro":"Go-lang",
+      "gin":"Go-lang",
+      "gorp":"Go-lang",
+      "DBIx":"Perl",
+      "Mason":"Perl",
+      "boost":"C/C++"
+   },
+   "ProductVersions":{
+      "Company Cloud 1.0":{
+         "shortname":"ComCloud1.0",
+         "order":1,
+         "family":"Cloud Services"
+      },
+      "Google Maps 1.0":{
+         "shortname":"Maps1.0",
+         "order":2,
+         "family":"Cloud Services"
+      }
+   },
+   "ProductFamilies":[
+      "Cloud Services",
+      "Native Applications"
+   ],
+   "Ports":{
+      "HTTP-80":{
+         "port":80
+      },
+      "HTTPS-443":{
+         "port":443
+      },
+      "HTTP-8080":{
+         "port":8080
+      },
+      "HTTP-8081":{
+         "port":8081
+      }
+   },
+   "Defaults":{
+      "DeploymentEnvironment":"K8S pod",
+      "DeploymentLocation":"Cloud datacenter",
+      "ProductFamily":"Cloud Services",
+      "ProductVersion":"Company Cloud 1.0",
+      "Port":"TBD",
+      "ApplicationVendor":"OpenSource",
+      "DependencyType":"sync_rw",
+      "ComponentDataPrivacy":"Application",
+      "ComponentRuntime":"Component",
+      "ComponentVersion":"1.0"
+   }
+}
