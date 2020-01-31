@@ -34,12 +34,15 @@ Vue.component('widget-requirements', {
             for (let requirement of this.requirements) {
                 let ownerStatus = this.statuses.find(el => requirement.id == this.getId(el.requirement) && el.type == "component owner")
                 if (ownerStatus == undefined) {
-                    this.table.push({title: requirement.title, status: 'unknown', notes: ''})
+                    this.table.push({title: requirement.title, status: 'unknown', signoffStatus:'unknown', notes: ''})
                 } else {
+                    let signeeStatus = this.statuses.find(el => requirement.id == this.getId(el.requirement) && el.type == "requirement reviewer")
                     this.table.push({
                         title: requirement.title,
                         status: ownerStatus.status, 
-                        notes: ownerStatus.notes
+                        notes: ownerStatus.notes,
+                        signoffStatus: signeeStatus.status,
+                        signoffNotes: signeeStatus.notes
                     })
                 }
             }
@@ -68,11 +71,12 @@ Vue.component('widget-requirements', {
             </span>
         </h3>
 
-        <table class='status-table' v-bind:class="[ component_version.op_applicable ? '' : 'status-table-na']">
+        <table class='status-table' v-bind:class="[ requirements ? '' : 'status-table-na']">
             <thead>
             <tr>
                 <th>Requirement</th>
                 <th>Status</th>
+                <th>Signee</th>
                 <th>Notes</th>
             </tr>
             </thead>
@@ -80,7 +84,8 @@ Vue.component('widget-requirements', {
             <tr v-for="row of table">
                 <td>{{ row.title }}</td>
 
-                <td><widget-signoff v-bind:status="row.status"></widget-signoff></td>
+                <td><widget-signoff v-bind:status="row.status" v-bind:signoff-status="row.signoffStatus"></widget-signoff></td>
+                <td><widget-signoff v-bind:status="row.signoffStatus"></widget-signoff></td>
                 <td class='pa-replace-urls'>{{ row.notes }}</td>
             </tr>
             </tbody>

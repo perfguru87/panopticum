@@ -130,6 +130,46 @@
     }
   },
   {
+    "model": "panopticum.requirement",
+    "pk": 11,
+    "fields": {
+      "title": "Logging completeness",
+      "description": ""
+    }
+  },
+  {
+    "model": "panopticum.requirement",
+    "pk": 12,
+    "fields": {
+      "title": "Logging format",
+      "description": ""
+    }
+  },
+  {
+    "model": "panopticum.requirement",
+    "pk": 13,
+    "fields": {
+      "title": "Logging storage",
+      "description": ""
+    }
+  },
+  {
+    "model": "panopticum.requirement",
+    "pk": 14,
+    "fields": {
+      "title": "Logs sanitization",
+      "description": ""
+    }
+  },
+  {
+    "model": "panopticum.requirement",
+    "pk": 15,
+    "fields": {
+      "title": "DataBase anonymisation",
+      "description": ""
+    }
+  },
+  {
     "model": "panopticum.requirementset",
     "pk": 1,
     "fields": {
@@ -144,7 +184,7 @@
     "fields": {
       "name": "Maintenance",
       "description": "",
-      "requirements": [10]
+      "requirements": [10, 11, 12, 13, 14, 15]
     }
   }
 ]

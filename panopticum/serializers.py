@@ -143,7 +143,7 @@ class RequirementSimpleSerializer(DynamicFieldsModelSerializer, serializers.Mode
 
 
 class RequirementSerializer(DynamicFieldsModelSerializer, serializers.ModelSerializer):
-    requirementset_set = RequirementSetSimpleSerializer(many=True, read_only=True)
+    requirements = RequirementSetSimpleSerializer(many=True, read_only=True)
 
     class Meta:
         model = Requirement

@@ -211,8 +211,7 @@ function update_component_page_elements(component) {
     });
 
     $(".pa-component-stars").each(function(index, el) {
-        var val = parseInt($(el).html());
-        console.log($(el), val);
+        var val = parseInt($(el).html());;
         var new_val = "";
         var on = "<i class='fa fa-star'></i>";
         var off = "<i class='fa fa-star-o'></i>";
@@ -221,8 +220,7 @@ function update_component_page_elements(component) {
         new_val += (val >= 40) ? on : off;
         new_val += (val >= 60) ? on : off;
         new_val += (val >= 80) ? on : off;
-        new_val += (val >= 95) ? on : off;
-        console.log(new_val);
+        new_val += (val >= 95) ? on : off;;
 
         $(el).html(new_val);
     });
@@ -244,9 +242,8 @@ function update_component_page_elements(component) {
 }
 
 function vue_component_init() {
-    console.log("vue_component_init()");
 
-    var url = '/api' + window.location.pathname + '/?format=json'
+    var url = `/api${window.location.pathname}/?format=json`
     {% include "vue/widget-requirements.js" %}
     {% include "vue/widget-signoff.js" %}
 
@@ -300,8 +297,6 @@ function vue_component_init() {
         },
     });
 }
-$(document).ready(function() {
-    vue_component_init();
-});
+vue_component_init();
 </script>
 {% endblock %}

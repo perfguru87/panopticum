@@ -7,6 +7,7 @@ from django.contrib.auth.models import AbstractUser
 from simple_history.models import HistoricalRecords
 
 
+
 class User(AbstractUser):
     dn = models.CharField(max_length=255, null=True)
     title = models.CharField(max_length=64, blank=True, null=True)
@@ -251,9 +252,9 @@ class RequirementStatus(models.Model): # base model for status.
 class RequirementStatusEntry(models.Model):  # instance of status with value and owner type eqaul cell in widget
     status = models.ForeignKey(RequirementStatus, on_delete=models.CASCADE)
     type = models.ForeignKey(RequirementStatusType, on_delete=models.CASCADE) # component owner or approver
-    requirement = models.ForeignKey('Requirement', on_delete=models.CASCADE)
+    requirement = models.ForeignKey('Requirement', related_name='statuses', on_delete=models.CASCADE)
     notes = models.TextField(null=True, blank=True, max_length=255)
-    component_version = models.ForeignKey('ComponentVersionModel', on_delete=models.CASCADE)
+    component_version = models.ForeignKey('ComponentVersionModel', related_name='statuses', on_delete=models.CASCADE)
 
     class Meta:
         unique_together = ['status', 'type', 'component_version', 'requirement']
@@ -266,6 +267,7 @@ class Requirement(models.Model):  # base model for requirement equal requirement
     title = models.CharField(max_length=30, unique=True)  # backup, logging storage
     description = models.TextField(max_length=1024)  # that requirements about ...
 
+
     def __unicode__(self):
         return f"{self.__class__.__name__}: {self.title}"
 
@@ -275,8 +277,10 @@ class Requirement(models.Model):  # base model for requirement equal requirement
 
 class RequirementSet(models.Model):
     name = models.CharField(max_length=30, unique=True)
-    requirements = models.ManyToManyField(Requirement)
-    description = models.TextField()
+    requirements = models.ManyToManyField(Requirement,
+                                          related_name='requirements+',
+                                          )
+    description = models.TextField(null=True, blank=True)
 
     def __unicode__(self):
         return f"{self.__class__.__name__}: {self.name}"

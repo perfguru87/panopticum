@@ -1,4 +1,5 @@
 from django.db import models
+import django.forms
 
 NO_PARTIAL_YES = (
     ('unknown', "?"),
@@ -54,3 +55,16 @@ class SigneeField(models.ForeignKey):
         kwargs['blank'] = True
         kwargs['to'] = 'panopticum.User'
         super().__init__(*args, **kwargs)
+
+
+class RequirementChoiceField(django.forms.ModelChoiceField):
+    def label_from_instance(self, obj):
+        return f"{obj.title}"
+
+class RequirementStatusChoiceField(django.forms.ModelChoiceField):
+    def label_from_instance(self, obj):
+        return f"{obj.name}"
+
+class RequirementStatusTypeChoiceField(django.forms.ModelChoiceField):
+    def label_from_instance(self, obj):
+        return f"Status: {obj.owner}"

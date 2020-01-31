@@ -9,6 +9,7 @@ import django.core.exceptions
 import datetime
 
 # Register your models here.
+import panopticum.fields
 from panopticum.models import *
 
 formfields_large = {models.ForeignKey: {'widget': Select(attrs={'width': '300px', 'style': 'width:300px'})},
@@ -73,47 +74,39 @@ class ComponentDeploymentAdmin(admin.TabularInline):
     verbose_name_plural = "Component Deployments"
 
 
-
-class RequirementAdmin(admin.TabularInline):
+class RequirementInlineAdmin(admin.TabularInline):
     model = Requirement
 
 
-class RequirementChoiceField(django.forms.ModelChoiceField):
-    def label_from_instance(self, obj):
-        return f"Requirement: {obj.title}"
-
-class RequirementStatusChoiceField(django.forms.ModelChoiceField):
-    def label_from_instance(self, obj):
-        return f"{obj.name}"
-
-class RequirementStatusTypeChoiceField(django.forms.ModelChoiceField):
-    def label_from_instance(self, obj):
-        return f"Status: {obj.owner}"
-
-
 class RequirementForm(django.forms.ModelForm):
-    requirement = RequirementChoiceField(queryset=Requirement.objects.all()),
-    owner_status = RequirementStatusChoiceField(queryset=RequirementStatus.objects.all(),
-                                                label='Readiness')
+    owner_status = panopticum.fields.RequirementStatusChoiceField(queryset=RequirementStatus.objects.all(),
+                                                           label='Readiness')
     owner_notes = django.forms.CharField(label='notes',
                                          widget=django.forms.Textarea({'rows': '2'}),
                                          max_length=1024,
-                                         required=False)
-    approve_status = RequirementStatusChoiceField(
-        queryset=RequirementStatus.objects.filter(allow_for=2),
+                                         required=False,
+                                         )
+    approve_status = panopticum.fields.RequirementStatusChoiceField(
+        queryset=RequirementStatus.objects.filter(allow_for=2),  # signee status
         label='Sign off'
     )
     approve_notes = django.forms.CharField(label='Sign off notes',
                                            widget=django.forms.Textarea({'rows': '2'}),
                                            max_length=1024,
                                            required=False)
+    signee_mode = False
 
     def __init__(self, *args, **kwargs):
+        if self.signee_mode:
+            self.base_fields['owner_notes'].disabled=True
+            self.base_fields['owner_status'].disabled = True
+            self.base_fields['requirement'].disabled = True
+
         unknown_status = RequirementStatus.objects.get(pk=1)
         self.base_fields['owner_status'].initial = unknown_status
         self.base_fields['approve_status'].initial = unknown_status
-
         if kwargs.get('instance'):
+
             initial = {
                 'owner_status': kwargs['instance'].status,
                 'owner_notes': kwargs['instance'].notes
@@ -167,7 +160,7 @@ class RequirementForm(django.forms.ModelForm):
 
 class RequirementStatusEntryAdmin(admin.TabularInline):
     model = RequirementStatusEntry
-    inlines = (RequirementAdmin, )
+    inlines = (RequirementInlineAdmin, )
     form = RequirementForm
     fields = ('requirement', 'owner_status', 'owner_notes','approve_status',  'approve_notes')
 
@@ -177,17 +170,24 @@ class RequirementStatusEntryAdmin(admin.TabularInline):
 
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        # TODO move to __init__
+        signee_mode = True if request.user.username == 'denis.epifanov' else False
+        self.form.signee_mode = signee_mode
 
         field_map = {
-            "requirement": RequirementChoiceField(queryset=Requirement.objects.all()),
-            "status": RequirementStatusChoiceField(queryset=RequirementStatus.objects.all()),
-            "type": RequirementStatusTypeChoiceField(queryset=RequirementStatusType.objects.all())
+            "requirement": panopticum.fields.RequirementChoiceField(
+                queryset=Requirement.objects.all()
+            ),
         }
 
         if db_field.name in field_map:
             return field_map[db_field.name]
         else:
              return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+class RequirementAdmin(admin.ModelAdmin):
+    list_display = ['title']
+    model = Requirement
 
 class RequirementSetAdmin(admin.ModelAdmin):
     filter_horizontal = ['requirements', ]
@@ -199,7 +199,7 @@ class ComponentVersionAdmin(admin.ModelAdmin):
 
     inlines = (ComponentDependencyAdmin, ComponentDeploymentAdmin, RequirementStatusEntryAdmin)
 
-    fieldsets = (
+    fieldsets = [
         (None, {'fields': ('component', 'version', 'comments')}),
         ('Ownership', {'classes': ('collapse', 'select-200px'),
                        'fields': (
@@ -212,31 +212,7 @@ class ComponentVersionAdmin(admin.ModelAdmin):
                                      ('dev_repo', 'dev_public_repo'),
                                      ('dev_docs', 'dev_public_docs'),
                                      ('dev_build_jenkins_job', 'dev_api_is_public'))}),
-        ('Compliance', {'classes': ('collapse', 'show_hide_applicable'),
-                          'fields': ('compliance_applicable',
-                                     ('compliance_fips_status', 'compliance_fips_notes'),
-                                     ('compliance_gdpr_status', 'compliance_gdpr_notes'),
-                                     ('compliance_api_status', 'compliance_api_notes'))}),
-        ('Operations capabilities', {'classes': ('collapse', 'show_hide_applicable'),
-                          'fields': ('op_applicable',
-                                     ('op_guide_status', 'op_guide_notes'),
-                                     ('op_failover_status', 'op_failover_notes'),
-                                     ('op_horizontal_scalability_status', 'op_horizontal_scalability_notes'),
-                                     ('op_scaling_guide_status', 'op_scaling_guide_notes'),
-                                     ('op_sla_guide_status', 'op_sla_guide_notes'),
-                                     ('op_metrics_status', 'op_metrics_notes'),
-                                     ('op_alerts_status', 'op_alerts_notes'),
-                                     ('op_zero_downtime_status', 'op_zero_downtime_notes'),
-                                     ('op_backup_status', 'op_backup_notes'),
-                                      'op_safe_restart')}),
-        ('Maintenance capabilities', {'classes': ('collapse', 'show_hide_applicable'),
-                          'fields': ('mt_applicable',
-                                     ('mt_http_tracing_status', 'mt_http_tracing_notes'),
-                                     ('mt_logging_completeness_status', 'mt_logging_completeness_notes'),
-                                     ('mt_logging_format_status', 'mt_logging_format_notes'),
-                                     ('mt_logging_storage_status', 'mt_logging_storage_notes'),
-                                     ('mt_logging_sanitization_status', 'mt_logging_sanitization_notes'),
-                                     ('mt_db_anonymisation_status', 'mt_db_anonymisation_notes'))}),
+
         ('Quality Assurance', {'classes': ('collapse', 'show_hide_applicable'),
                           'fields': ('qa_applicable',
                                      ('qa_manual_tests_status', 'qa_manual_tests_notes'),
@@ -248,7 +224,7 @@ class ComponentVersionAdmin(admin.ModelAdmin):
                                      ('qa_api_tests_status', 'qa_api_tests_notes'),
                                      ('qa_anonymisation_tests_status', 'qa_anonymisation_tests_notes'),
                                      ('qa_upgrade_tests_status', 'qa_upgrade_tests_notes'))}),
-    )
+    ]
 
     def formfield_for_manytomany(self, db_field, request, **kwargs):
         # standard django method
@@ -318,3 +294,4 @@ admin.site.register(DeploymentLocationClassModel)
 admin.site.register(DeploymentEnvironmentModel)
 admin.site.register(TCPPortModel)
 admin.site.register(RequirementSet, RequirementSetAdmin)
+admin.site.register(Requirement, RequirementAdmin)
