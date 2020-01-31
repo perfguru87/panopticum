@@ -100,7 +100,7 @@ class RequirementForm(django.forms.ModelForm):
                                          max_length=1024,
                                          required=False)
     approve_status = RequirementStatusChoiceField(
-        queryset=RequirementStatus.objects.filter(allow_for=RequirementStatusType.objects.get(pk=2)),
+        queryset=RequirementStatus.objects.filter(allow_for=2),
         label='Sign off'
     )
     approve_notes = django.forms.CharField(label='Sign off notes',
@@ -127,7 +127,7 @@ class RequirementForm(django.forms.ModelForm):
                 initial['approve_status'] = approve_status_obj.status
                 initial['approve_notes'] = approve_status_obj.notes
             except django.core.exceptions.ObjectDoesNotExist:
-                initial['approve_status'] = RequirementStatus.objects.get(pk=1) # unknown
+                initial['approve_status'] = RequirementStatus.objects.get(pk=1)  # unknown
             kwargs.update(initial=initial)
         super().__init__(*args, **kwargs)
 
@@ -138,7 +138,7 @@ class RequirementForm(django.forms.ModelForm):
 
     def _save_status(self, field_prefix, type_pk):
         status = self.cleaned_data[f'{field_prefix}_status']
-        notes =  self.cleaned_data[field_prefix + "_notes"]
+        notes = self.cleaned_data[field_prefix + "_notes"]
         status_obj, created = RequirementStatusEntry.objects.get_or_create(
             component_version=self.instance.component_version,
             requirement=self.instance.requirement,
@@ -189,6 +189,10 @@ class RequirementStatusEntryAdmin(admin.TabularInline):
         else:
              return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
+class RequirementSetAdmin(admin.ModelAdmin):
+    filter_horizontal = ['requirements', ]
+    list_display = ['name']
+    model = RequirementSet
 
 class ComponentVersionAdmin(admin.ModelAdmin):
     formfield_overrides = formfields_large
@@ -313,3 +317,4 @@ admin.site.register(ComponentVersionModel, ComponentVersionAdmin)
 admin.site.register(DeploymentLocationClassModel)
 admin.site.register(DeploymentEnvironmentModel)
 admin.site.register(TCPPortModel)
+admin.site.register(RequirementSet, RequirementSetAdmin)

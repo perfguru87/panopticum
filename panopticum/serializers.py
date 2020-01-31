@@ -128,11 +128,22 @@ class ComponentDependencySerializerSimple(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class RequirementSetSimpleSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = RequirementSet
+        fields = ['id', 'name']
+
+
+class RequirementSimpleSerializer(DynamicFieldsModelSerializer, serializers.ModelSerializer):
+
+    class Meta:
+        model = Requirement
+        fields = '__all__'
+
+
 class RequirementSerializer(DynamicFieldsModelSerializer, serializers.ModelSerializer):
-    type = serializers.SlugRelatedField(
-        slug_field='name',
-        read_only=True
-    )
+    requirementset_set = RequirementSetSimpleSerializer(many=True, read_only=True)
 
     class Meta:
         model = Requirement
@@ -151,6 +162,14 @@ class RequirementStatusEntrySerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = RequirementStatusEntry
+        fields = '__all__'
+
+
+class RequirementSetSerializer(serializers.ModelSerializer):
+    requirements = RequirementSimpleSerializer(read_only=True, many=True)
+
+    class Meta:
+        model = RequirementSet
         fields = '__all__'
 
 

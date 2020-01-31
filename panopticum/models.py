@@ -237,28 +237,52 @@ class ComponentModel(models.Model):
     def __str__(self):
         return "%s" % self.name
 
-class RequirementType(models.Model): # cloud, maintenance. Equal widget
-    name = models.CharField(max_length=64)
 
-class RequirementStatusType(models.Model): # base model for status.
+class RequirementStatusType(models.Model):  # base model for status.
     owner = models.CharField(max_length=24)
 
+
 class RequirementStatus(models.Model): # base model for status.
-    name = models.CharField(max_length=20) # yes, no, ready ...
+    name = models.CharField(max_length=20, unique=True)  # yes, no, ready ...
     description = models.TextField(null=True, blank=True, max_length=255) # ready status is mean ...
     allow_for = models.ManyToManyField('RequirementStatusType')
 
-class RequirementStatusEntry(models.Model): # instance of status with value and owner type eqaul cell in widget
+
+class RequirementStatusEntry(models.Model):  # instance of status with value and owner type eqaul cell in widget
     status = models.ForeignKey(RequirementStatus, on_delete=models.CASCADE)
     type = models.ForeignKey(RequirementStatusType, on_delete=models.CASCADE) # component owner or approver
     requirement = models.ForeignKey('Requirement', on_delete=models.CASCADE)
     notes = models.TextField(null=True, blank=True, max_length=255)
     component_version = models.ForeignKey('ComponentVersionModel', on_delete=models.CASCADE)
 
-class Requirement(models.Model): # base model for requirement equal requirement header in widget
-    title = models.CharField(max_length=30) # backup, logging storage
-    description = models.TextField(max_length=1024) # that requirements about ...
-    type = models.ForeignKey(RequirementType, on_delete=models.CASCADE) # cloud, maintenance, qa
+    class Meta:
+        unique_together = ['status', 'type', 'component_version', 'requirement']
+
+    def __unicode__(self):
+        return f"{self.__class__.__name__}: {self.status.name} ({self.status.type.name})"
+
+
+class Requirement(models.Model):  # base model for requirement equal requirement header in widget
+    title = models.CharField(max_length=30, unique=True)  # backup, logging storage
+    description = models.TextField(max_length=1024)  # that requirements about ...
+
+    def __unicode__(self):
+        return f"{self.__class__.__name__}: {self.title}"
+
+    def __str__(self):
+        return self.__unicode__()
+
+
+class RequirementSet(models.Model):
+    name = models.CharField(max_length=30, unique=True)
+    requirements = models.ManyToManyField(Requirement)
+    description = models.TextField()
+
+    def __unicode__(self):
+        return f"{self.__class__.__name__}: {self.name}"
+
+    def __str__(self):
+        return self.__unicode__()
 
 
 class ComponentVersionModel(models.Model):

@@ -161,7 +161,8 @@ ADMIN_REORDER = (
     {'app': 'panopticum', 'label': 'Active Directory', 'models':
         ('panopticum.CountryModel', 'panopticum.OrganizationModel', 'panopticum.OrgDepartmentModel',
          'panopticum.PersonRoleModel', 'panopticum.User')
-    }
+    },
+    {'app': 'panopticum', 'label': 'misc', 'models': ('panopticum.RequirementSet', )}
 )
 
 
@@ -194,7 +195,7 @@ MEDIA_URL = '/media/'
 
 AUTH_USER_MODEL = 'panopticum.User'
 #TODO: Workaround for pass REST API url to vue.js at front side. Remove that after migration to SPA and webpack
-API_URL = os.environ.get('API_URL','http://127.0.0.1:8000')
+API_URL = os.environ.get('API_URL','http://127.0.0.1:8000/api')
 
 curr_dir = os.path.abspath(os.path.dirname(__file__))
 if os.path.exists(os.path.join(curr_dir, "settings_local.py")):

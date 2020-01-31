@@ -39,34 +39,9 @@
                 </tr>
               </tbody>
             </table>
-            <widget-requirements type="cloud" v-bind:component_version="component.latest_version" v-cloak></widget-requirements>
+            <widget-requirements setid="1" v-bind:component_version="component.latest_version" v-cloak></widget-requirements>
+            <widget-requirements setid="2" v-bind:component_version="component.latest_version" v-cloak></widget-requirements>
 
-
-            <h3 v-cloak>Maintenance
-              <span class='pa-component-rating' v-cloak v-if='component.latest_version.mt_applicable'>
-                [[ component.latest_version.meta_mt_rating ]]%
-              </span>
-              <span class='pa-component-stars' v-cloak v-if='component.latest_version.mt_applicable'>
-                [[ component.latest_version.meta_mt_rating ]]
-              </span>
-            </h2>
-
-            <table class='status-table' v-bind:class="[ component.latest_version.mt_applicable ? '' : 'status-table-na']" v-cloak>
-              <thead>
-                <tr>
-                  <th>Requirement</th>
-                  <th>Status</th>
-                  <th>Notes</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for='item in component.latest_version.maintenance' v-cloak>
-                  <td>[[ item.title ]]</td>
-                  <td><widget-signoff v-bind:status="item.status" v-bind:signoff="{user: {username:'John.Doe'}, date:'17.01.2020'}"/></td>
-                  <td class='pa-replace-urls'>[[ item.notes ]]</td>
-                </tr>
-              </tbody>
-            </table>
 
             <h3 v-cloak>Compliance
               <span class='pa-component-rating' v-cloak v-if='component.latest_version.compliance_applicable'>

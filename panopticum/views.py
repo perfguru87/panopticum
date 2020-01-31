@@ -82,6 +82,12 @@ class RequirementStatusViewSet(viewsets.ModelViewSet):
     filterset_fields = '__all__'
 
 
+class RequirementSetViewSet(viewsets.ModelViewSet):
+    queryset = RequirementSet.objects.all()
+    serializer_class = RequirementSetSerializer
+    filterset_filelds = '__all__'
+
+
 class UserDetail(viewsets.ModelViewSet):
     queryset = get_user_model().objects.all()
     serializer_class = UserSerializer
