@@ -54,19 +54,19 @@ The 'Panopcitum' philosophy is based on approach when you have your RnD organiza
 
 1. `Vertical` teams - regular development teams that are responsible for the end to end delivery and knowledge of
 owned components including functionality, design, features set, etc. These teams are in charge of all the phases
-of ('Software Development Lifecycle')[https://en.wikipedia.org/wiki/Systems_development_life_cycle] phases like
+of ['Software Development Lifecycle'](https://en.wikipedia.org/wiki/Systems_development_life_cycle) phases like
 work estimation, component design, code and tests development, testing, roll-out and maintenance. 
 
 2. `Horizontal` teams - a set of `experts'` teams to help `vertical` development teams to deal with complicated areas like
 overall system architecture, performance, security, quality assurance, documentation, operations, maintenance, etc by
-sharing best practices, providing tools, design and implementation review process.
+sharing best practices, providing tools, establishing design and implementation review process, etc.
 
 ![Panopticum in Software Development Lifecycle](https://github.com/perfguru87/panopticum/raw/master/panopticum/static/images/panopticum-sdlc.png)
 
-Working together with development teams, experts accumulate specific knowledge and share it across all the development
-teams to help them to reduce the number of problems in production.
+Working together with `vertical` development teams, `experts` accumulate specific knowledge and share it across all 
+the development teams to help them to reduce the number of problems in production.
 
-`Panopticum` helps both `developers` and `expert's` teams to observe the overall landscape and status of all the components
+`Panopticum` helps both `developers` and `experts` to observe the overall landscape and status of all the components
 in the system. Also it helps `experts` to maintain a set of standard recomendations (like every component must have 
 unit tests, performance test, troubleshooting guide, etc) and even define mandatory sign-off procedure before a
 component goes to production. Ironically, components are treated as `prisoners` and experts teams as `jailers` and so `panopticum` plays a role of centralized place to see all the bad and good guys. :-)
