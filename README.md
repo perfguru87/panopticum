@@ -9,9 +9,68 @@ UI is based on ["django-gentelella"](https://github.com/GiriB/django-gentelella)
 
 ![Component info example](https://github.com/perfguru87/panopticum/raw/master/panopticum/static/images/panopticum-component.png)
 
+# Phylosophy
+
+Modern large cloud systems typically have so-called [microservices](https://martinfowler.com/articles/microservices.html) 
+architecture, when every service is responsible for a specific set of functionality like account and user management, orders
+processing, web store, audit, etc. This microservices architecture helps to structure and simplify development,
+deployment, operation and maintenance of large systems when alternative `monolith` approach becomes
+[inefficient](https://martinfowler.com/bliki/MicroservicePremium.html)
+
+When a system becomes really large and number or services grows you have to deal with organizational challenges
+(like [Conway's law](https://en.wikipedia.org/wiki/Conway%27s_law)) and eventually fall
+into the concept when a development team is fully responsible for a service, including design, development, testing, deployment, maintenance and even operation (['You built it, you own it'](https://dl.acm.org/doi/pdf/10.1145/1142055.1142065?download=true) (C) Amazon 2006.)
+
+However, the more developers you have in your organization and the more microservices you run, the quicker you realize that some common aspects of service behavior like performance, security, maintainability, etc require additional focus, skill set and even mandatory review procedures to minimize the number of production incidents.
+
+The 'Panopcitum' philosophy is based on approach when you have your RnD organization built from two types of teams:
+
+1. `Vertical` teams - regular development teams that are responsible for the end to end delivery and knowledge of
+owned components including functionality, design, features set, etc. These teams are in charge of all the phases
+of ('Software Development Lifecycle')[https://en.wikipedia.org/wiki/Systems_development_life_cycle] phases like
+work estimation, component design, code and tests development, testing, roll-out and maintenance. 
+
+2. `Horizontal` teams - a set of `experts'` teams to help `vertical` development teams to deal with complicated areas like
+overall system architecture, performance, security, quality assurance, documentation, operations, maintenance, etc by
+sharing best practices, providing tools, design and implementation review process.
+
+![Panopticum in Software Development Lifecycle](https://github.com/perfguru87/panopticum/raw/master/panopticum/static/images/panopticum-sdlc.png)
+
+Working together with development teams, experts accumulate specific knowledge and share it across all the development
+teams to help them to reduce the number of problems in production.
+
+`Panopticum` helps both `developers` and `expert's` teams to observe the overall landscape and status of all the components
+in the system. Also it helps `experts` to maintain a set of standard recomendations (like every component must have 
+unit tests, performance test, troubleshooting guide, etc) and even define mandatory sign-off procedure before a
+component goes to production. Ironically, components are treated as `prisoners` and experts teams as `jailers` and so `panopticum` plays a role of centralized place to see all the bad and good guys. :-)
+
+# Workflow
+
+### Data Model
+
 Panopcicum database objects and their relations:
 
 ![Component data model](https://github.com/perfguru87/panopticum/raw/master/panopticum/static/images/panopticum-model.png)
+
+Key components' attributes:
+- `Category` - a way to group similar components, like: platform, data services, applications, virtual infrastructure, etc.
+- `Data privacy class` - represents what kind of data a component is managing: customer data, customer secrets, metadata, etc
+- `Location class` - different components can be deployed in different locations: datacenter, on-prem, customer PC, mobile phone, etc
+
+### Initial data seeding
+
+1. Import users from Active Directory (or create them manually)
+2. Create requirements groups and requirements in the admin panel
+3. Fill-in standard models like: Component Data Privacy class, Category, Vendors, etc 
+4. Import initial set of microservices, their attributes and relations using Excel import function
+
+[TODO example]
+
+### Regular workflow: 
+
+4. Component owners add new components or update information about a component in the admin panel
+5. Experts' teams' leaders sign-off requirements before a component goes public
+6. Product Managers and RnD unit managers monitor overall status and plan the resources accordingly
 
 # Features
 
