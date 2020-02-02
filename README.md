@@ -1,5 +1,32 @@
-# Panopticum
-Software services registry for IT, RnD, DevOps, Support, Maintenance, Documentation and Operations teams. Could be used to document and link all your Kubernetes services together before and after they go live.
+Table of Contents
+=================
+
+   * [Panopticum](#panopticum)
+   * [Phylosophy](#panopticum-philosophy)
+   * [Workflow](#workflow)
+         * [Data Model](#data-model)
+         * [Initial data seeding](#initial-data-seeding)
+         * [Regular workflow:](#regular-workflow)
+   * [Features](#features)
+   * [Todo](#todo)
+      * [Requirements](#requirements)
+      * [Installation](#installation)
+         * [Install PostgreSQL](#install-postgresql)
+         * [Install python3](#install-python3)
+         * [Install Django and other requirements](#install-django-and-other-requirements)
+         * [Install WSGI](#install-wsgi)
+         * [Connecting to a database](#connecting-to-a-database)
+         * [Configuring JIRA account](#configuring-jira-account)
+         * [Create DB schema (apply migrations)](#create-db-schema-apply-migrations)
+         * [Create Django admin panel superuser](#create-django-admin-panel-superuser)
+         * [Authenticate via Active Directory](#authenticate-via-active-directory)
+      * [Running the server](#running-the-server)
+      * [Running at docker-compose](#running-at-docker-compose)
+      * [Active Directory users import](#active-directory-users-import)
+      * [Data model visualization](#data-model-visualization)
+      
+# Summary
+Software services registry for IT, RnD, DevOps, Support, Maintenance, Documentation and Operations teams. Could be used to document and link all your microservices together before and after they go live.
 
 ![Panopticum](https://worksthatwork.com/assets/Articles/81/Images/NYC2.jpg)
 
@@ -9,7 +36,7 @@ UI is based on ["django-gentelella"](https://github.com/GiriB/django-gentelella)
 
 ![Component info example](https://github.com/perfguru87/panopticum/raw/master/panopticum/static/images/panopticum-component.png)
 
-# Phylosophy
+# Panopticum Philosophy
 
 Modern large cloud systems typically have so-called [microservices](https://martinfowler.com/articles/microservices.html) 
 architecture, when every service is responsible for a specific set of functionality like account and user management, orders
@@ -74,12 +101,10 @@ Key components' attributes:
 
 # Features
 
-- Components registry
-- Components attributes: category, language, framework, maintainers, etc.
-- Components dependencies
-- Other connected objects: Products, Persons, Deployments
+- Components registry: category, language, framework, maintainers, dependencies, etc
+- Component requirements management and sign-off: autotests, operational, compliance, maintainability, etc
+- Users sync-up from Active Directory (maintaners, product managers, QA experts)
 - REST API
-- Users sync-up from Active Directory
 
 # Todo
 
