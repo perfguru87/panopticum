@@ -26,7 +26,7 @@ Table of Contents
       * [Data model visualization](#data-model-visualization)
       
 # Summary
-Software services registry for IT, RnD, DevOps, Support, Maintenance, Documentation and Operations teams. Could be used to document and link all your microservices together before and after they go live.
+Software services registry for IT, RnD, DevOps, Support, Maintenance, Documentation and Operations teams. It could be used to document and link all your microservices together before and after they go live.
 
 ![Panopticum](https://worksthatwork.com/assets/Articles/81/Images/NYC2.jpg)
 
@@ -75,7 +75,7 @@ component goes to production. Ironically, components are treated as `prisoners` 
 
 ### Data Model
 
-Panopcicum database objects and their relations:
+Panopticum database objects and their relations:
 
 ![Component data model](https://github.com/perfguru87/panopticum/raw/master/panopticum/static/images/panopticum-model.png)
 
