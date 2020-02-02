@@ -1,8 +1,8 @@
 Table of Contents
 =================
 
-   * [Panopticum](#panopticum)
-   * [Phylosophy](#panopticum-philosophy)
+   * [Summary](#summary)
+   * [Panopticum Philosophy](#panopticum-philosophy)
    * [Workflow](#workflow)
          * [Data Model](#data-model)
          * [Initial data seeding](#initial-data-seeding)
