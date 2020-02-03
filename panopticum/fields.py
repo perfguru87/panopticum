@@ -1,6 +1,7 @@
 from django.db import models
 import django.forms
 
+# TODO: can we remove that?
 NO_PARTIAL_YES = (
     ('unknown', "?"),
     ('n/a', "N/A"),
@@ -19,6 +20,7 @@ LOW_MED_HIGH = (
 )
 
 
+# TODO: can we remove that field?
 class NoPartialYesField(models.CharField):
     def __init__(self, _title="", *args, **kwargs):
         kwargs['verbose_name'] = _title
@@ -46,7 +48,7 @@ class SmartTextField(models.TextField):
         kwargs['blank'] = True
         super().__init__(*args, **kwargs)
 
-
+# TODO: can we remove that field?
 class SigneeField(models.ForeignKey):
     def __init__(self, _title="", *args, **kwargs):
         kwargs['verbose_name'] = _title
@@ -58,13 +60,12 @@ class SigneeField(models.ForeignKey):
 
 
 class RequirementChoiceField(django.forms.ModelChoiceField):
+    """ custom field for pretty presentation of Requirement model at django admin. It's same by
+    to override __str__ method by model, but affected only django admin panel.
+    """
     def label_from_instance(self, obj):
         return f"{obj.title}"
 
 class RequirementStatusChoiceField(django.forms.ModelChoiceField):
     def label_from_instance(self, obj):
         return f"{obj.name}"
-
-class RequirementStatusTypeChoiceField(django.forms.ModelChoiceField):
-    def label_from_instance(self, obj):
-        return f"Status: {obj.owner}"

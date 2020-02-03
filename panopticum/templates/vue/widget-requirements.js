@@ -3,12 +3,16 @@ Vue.component('widget-requirements', {
     props: ['component_version', 'setid'],
     data: function() {
         return {
-            apiUrl: '{{API_URL}}',
             requirements: [],
             statuses: [],
             table: [],
             title: "",
             description: ""
+        }
+    },
+    computed: {
+        apiUrl: function() {
+            return `${window.location.origin}/api`
         }
     },
     methods: {

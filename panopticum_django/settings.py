@@ -188,14 +188,13 @@ PAGE_FOOTER = "Copyright © 2019"
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
+STATIC_ROOT = 'static'
 STATIC_URL = '/static/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
 
 
 AUTH_USER_MODEL = 'panopticum.User'
-#TODO: Workaround for pass REST API url to vue.js at front side. Remove that after migration to SPA and webpack
-API_URL = os.environ.get('API_URL','http://127.0.0.1:8000/api')
 
 curr_dir = os.path.abspath(os.path.dirname(__file__))
 if os.path.exists(os.path.join(curr_dir, "settings_local.py")):

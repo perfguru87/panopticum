@@ -29,7 +29,7 @@ Vue.component('widget-signoff', {
       <i v-else-if="['n/a'].includes(status) && !history" v-bind:class="classObject" style="font-size: 12px;">
       N/A
 </i>
-      <i v-else class="el-icon-question" style="color: crimson;" style="font-size: 16px;"></i>
+      <i v-else class="el-icon-question" style="color: crimson;font-size: 16px;"></i>
     </span>{% endverbatim %}
   `
 })

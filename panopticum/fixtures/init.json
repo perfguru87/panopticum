@@ -54,7 +54,7 @@
     "pk": 1,
     "fields": {
       "title": "Design review",
-      "description": "Late involvement of DCO into the development process leads to delays for the release and bring operations problems for the component in production."
+      "description": "Late involvement of operation team into the development process leads to delays for the release and bring operations problems for the component in production."
     }
   },
   {
@@ -62,7 +62,7 @@
     "pk": 2,
     "fields": {
       "title": "SLO/SLI",
-      "description": "We don't have metrics to understand if the component addresses a user's business needs or not."
+      "description": "Operation team don't have metrics to understand if the component addresses a user's business needs or not."
     }
   },
   {
@@ -78,7 +78,7 @@
     "pk": 4,
     "fields": {
       "title": "Backup and restore",
-      "description": "DCO should be able to perform the consistent online backup of the component.\nDCO should be able to restore the component if the component data is corrupted."
+      "description": "Operation team should be able to perform the consistent online backup of the component.\nOperation team should be able to restore the component if the component data is corrupted."
     }
   },
   {
@@ -174,7 +174,7 @@
     "pk": 1,
     "fields": {
       "name": "Cloud requirements",
-      "description": "identifies a component needs, which based on its architecture, technologies and other details;\nseek ways to apply what DCO learned and experienced to ensure the high availability and reliability of a service operating in production with minimization of costs;\nIs a prerequisite for DCO team to accept a component and put a component into production.",
+      "description": "identifies a component needs, which based on its architecture, technologies and other details;\nseek ways to apply what operation team learned and experienced to ensure the high availability and reliability of a service operating in production with minimization of costs;\nIs a prerequisite for DCO team to accept a component and put a component into production.",
       "requirements": [1, 2, 3, 4, 5, 6, 7, 9]
     }
   },

@@ -26,7 +26,7 @@ class DynamicFieldsModelSerializer(serializers.ModelSerializer):
                 self.fields.pop(field_name)
 
 class HistoricalComponentVersionSerializer(serializers.HyperlinkedModelSerializer):
-
+    """ Model for history of Component version changes. Check https://django-simple-history.readthedocs.io"""
     class Meta:
         model = getattr(panopticum.models, 'HistoricalComponentVersionModel')
         fields = '__all__'

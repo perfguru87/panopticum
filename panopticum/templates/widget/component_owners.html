@@ -1,3 +1,4 @@
+{% load static %}
         <div class="x_panel">
           <div class="x_title">
             <h2>Owners</h2>
@@ -14,7 +15,10 @@
               <tr>
                 <td class='owner'>
                   <div class='block'>
-                    <div class='image'><img v-bind:src="component.latest_version.owner_maintainer.photo"></div>
+                    <div class='image'>
+                      <img v-bind:src="component.latest_version.owner_maintainer.photo" v-if="component.latest_version.owner_maintainer">
+                      <img v-else src="{% static '/images/default_avatar.png' %}">
+                    </div>
                     <div class='details'>
                       <b v-if='component.latest_version.owner_maintainer'>
                         [[ component.latest_version.owner_maintainer.name ]]</b> - Maintainer<br>
@@ -31,7 +35,10 @@
               <tr>
                 <td class='owner'>
                   <div class='block'>
-                    <div class='image'><img v-bind:src="component.latest_version.owner_responsible_qa.photo">></div>
+                    <div class='image'>
+                      <img v-bind:src="component.latest_version.owner_responsible_qa.photo" v-if="component.latest_version.owner_responsible_qa">
+                      <img v-else src="{% static '/images/default_avatar.png' %}">
+                    </div>
                     <div class='details'>
                       <b v-if='component.latest_version.owner_responsible_qa'>
                         [[ component.latest_version.owner_responsible_qa.name ]]</b> - Responsible QA<br>

@@ -3,6 +3,7 @@ from panopticum import models
 
 
 class RequirementFilter(filters.FilterSet):
+    """ allow to filter requirements at REST API side """
 
     class Meta:
         model = models.Requirement

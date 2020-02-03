@@ -41,34 +41,9 @@
             </table>
             <widget-requirements setid="1" v-bind:component_version="component.latest_version" v-cloak></widget-requirements>
             <widget-requirements setid="2" v-bind:component_version="component.latest_version" v-cloak></widget-requirements>
+            <widget-requirements setid="3" v-bind:component_version="component.latest_version" v-cloak></widget-requirements>
 
 
-            <h3 v-cloak>Compliance
-              <span class='pa-component-rating' v-cloak v-if='component.latest_version.compliance_applicable'>
-                [[ component.latest_version.meta_compliance_rating ]]%
-              </span>
-              <span class='pa-component-stars' v-cloak v-if='component.latest_version.compliance_applicable'>
-                [[ component.latest_version.meta_compliance_rating ]]
-              </span>
-            </h2>
-
-            <table class='status-table'
-                v-bind:class="[ component.latest_version.compliance_applicable ? '' : 'status-table-na']" v-cloak>
-              <thead>
-                <tr>
-                  <th>Compliance</th>
-                  <th>Status</th>
-                  <th>Notes</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for='item in component.latest_version.compliance' v-cloak>
-                  <td>[[ item.title ]]</td>
-                  <td class='pa-status'><widget-signoff v-bind:status="item.status"/>/td>
-                  <td class='pa-replace-urls'>[[ item.notes ]]</td>
-                </tr>
-              </tbody>
-            </table>
 
 
 

@@ -1,12 +1,10 @@
 {% extends "layout/_base.html" %}
-{% load static %}
 
 {% block title %} [[ component.name ]] {% endblock title %}
 
 {% block scripts %}
   {{ block.super }}
  <script src="https://unpkg.com/element-ui/lib/index.js"></script>
- <script src="https://unpkg.com/http-vue-loader"></script>
 {% endblock %}
 
 {% block stylesheets %}

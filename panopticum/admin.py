@@ -79,6 +79,9 @@ class RequirementInlineAdmin(admin.TabularInline):
 
 
 class RequirementForm(django.forms.ModelForm):
+    """ Custom admin form for Requirement row. We merge 2 requirement statuses to Requirement row.
+    Pay attention: we does not have model for Requirement row. We does not need at until we can calculate it
+    from requirement statues by django admin from and frontend """
     owner_status = panopticum.fields.RequirementStatusChoiceField(queryset=RequirementStatus.objects.all(),
                                                            label='Readiness')
     owner_notes = django.forms.CharField(label='notes',
@@ -94,37 +97,39 @@ class RequirementForm(django.forms.ModelForm):
                                            widget=django.forms.Textarea({'rows': '2'}),
                                            max_length=1024,
                                            required=False)
-    signee_mode = False
 
     def __init__(self, *args, **kwargs):
-        if self.signee_mode:
-            self.base_fields['owner_notes'].disabled=True
-            self.base_fields['owner_status'].disabled = True
-            self.base_fields['requirement'].disabled = True
 
-        unknown_status = RequirementStatus.objects.get(pk=1)
+        unknown_status = RequirementStatus.objects.get(pk=1) # pk =1 it's unknown status. Check init.json fixture
+
+        # define initial fields values
         self.base_fields['owner_status'].initial = unknown_status
         self.base_fields['approve_status'].initial = unknown_status
-        if kwargs.get('instance'):
 
+        if kwargs.get('instance'):
+            # read and set field values from status models
             initial = {
                 'owner_status': kwargs['instance'].status,
                 'owner_notes': kwargs['instance'].notes
             }
             try:
-                approve_status_obj = RequirementStatusEntry.objects.get(
+                signee_status_obj = RequirementStatusEntry.objects.get(
                     requirement=kwargs['instance'].requirement,
                     type=2,  # approve person
                     component_version=kwargs['instance'].component_version
                 )
-                initial['approve_status'] = approve_status_obj.status
-                initial['approve_notes'] = approve_status_obj.notes
+                initial['approve_status'] = signee_status_obj.status
+                initial['approve_notes'] = signee_status_obj.notes
             except django.core.exceptions.ObjectDoesNotExist:
+                # set default values for signee
                 initial['approve_status'] = RequirementStatus.objects.get(pk=1)  # unknown
+
             kwargs.update(initial=initial)
         super().__init__(*args, **kwargs)
 
+
     def is_valid(self):
+        # skip validation for 3 empty requirement rows that added bellow
         if 'requirement' not in self.cleaned_data:
             return True
         return super().is_valid()
@@ -150,7 +155,7 @@ class RequirementForm(django.forms.ModelForm):
     def save(self, commit=True, *args, **kwargs):
         if 'requirement' in self.cleaned_data:
             if 'approve_status' in self.changed_data or 'approve_notes' in self.changed_data:
-                self._save_status('approve', 2)
+                self._save_status('approve', 2) # 2 - is pk of approve reviewer status type
 
             elif 'owner_status' in self.changed_data:  # reset sign off if readiness is changed
                 self.cleaned_data['approve_status'] = RequirementStatus.objects.get(pk=1)  # unknown status
@@ -170,9 +175,6 @@ class RequirementStatusEntryAdmin(admin.TabularInline):
 
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        # TODO move to __init__
-        signee_mode = True if request.user.username == 'denis.epifanov' else False
-        self.form.signee_mode = signee_mode
 
         field_map = {
             "requirement": panopticum.fields.RequirementChoiceField(
