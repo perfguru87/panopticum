@@ -1,18 +1,33 @@
 import csv
+import json
 import logging
 import re
 import sys
-import json
 import traceback
+from enum import Enum
 
+from django.core import serializers
 from django.core.exceptions import MultipleObjectsReturned
 from django.core.management.base import BaseCommand, CommandError
-from django.core import serializers
-
 from panopticum.models import *
+from iso3166 import countries
 
 
-# Provides all the utility functions either in static form or as part of instance methods.
+class DataException(Exception):
+    def __init__(self, value):
+        self.value = value
+
+    def __str__(self):
+        return repr(self.value)
+
+
+# Provides all the utility functions in static form
+
+class Status(Enum):
+    UPDATED = 1
+    CREATED = 2
+    FAILED = -1
+
 class Utility:
     comp_categories = \
         {'Category1': {'description': '', 'order': 1}}
@@ -22,86 +37,52 @@ class Utility:
          {'name': 'SubCategory_B', 'description': '', 'category': 'Category1'},
          {'name': 'SubCategory_C', 'description': '', 'category': 'Category2'},
          {'name': 'SubCategory_B', 'description': '',
-          'category': 'Category2'}]  # We can have duplicate SubCategory name
+          'category': 'Category2'}]  # We can have duplicate SubCategory names
 
     comp_dataprivacies = \
         {'Framework': {'order': 1},
          'Infrastructure': {'order': 2}}  # Order can be same across records.
 
-    comp_runtimes = {"Library", "Framework", "Driver", "OS Service", "Component"}
+    comp_runtimes = ['Component', 'Driver']
 
     loggers = {'Logf'}
 
-    countries = \
-        {'Russia', 'United Kingdom', 'Japan', 'Singapore', 'Germany', 'Estonia'}
-
     data_centers = \
-        {'EU2': {'info': '', 'grafana': 'https://grafana.company.com/display/EU2.html',
-                 'metrics': 'https://intranet.company.com/metrics/EU2.html'},
-         'EU1': {'info': 'https://intranet.company.com/DCs/EU1.html',
-                 'grafana': 'https://grafana.company.com/display/EU1.html',
-                 'metrics': 'https://intranet.company.com/metrics/EU1.html'}}
+        {'USA 1': {'info': '', 'grafana': 'https://grafana.company.com/display/USA1.html',
+                   'metrics': 'https://intranet.company.com/metrics/USA1.html'},
+         'Europe 1': {'info': 'https://intranet.company.com/DCs/EU1.html',
+                      'grafana': 'https://grafana.company.com/display/EU1.html',
+                      'metrics': 'https://intranet.company.com/metrics/EU1.html'}}
 
-    db_vendors = {'Percona', 'PostgreSQL', 'MSSQL', 'SQLite', 'Oracle', 'None'}
+    db_vendors = ['MSSQL', 'None']
 
-    # depl_envs = \
-    #     {'Windows VM', 'Linux VM', 'Linux Container', 'Linux OS', 'Windows OS', 'Mac OS',
-    #      'K8S pod', 'Linux Baremetal', 'Virtuozzo Container', 'Not Applicable', 'TBD'}
-
-    # depl_envs = {'VZ': 'Virtuozzo Container', 'K8S': 'K8S pod', '-': 'Not Applicable', 'N/A': 'Not Applicable', 'TBD': 'TBD'}
-    depl_envs = {
-        "VZ": "Virtuozzo Container",
-        "WindowsVM": "Windows VM",
-        "LinuxVM": "Linux VM",
-        "LinuxContainer": "Linux Container",
-        "LinuxOS": "Linux OS",
-        "MacOS": "Mac OS",
-        "plesk": "Plesk",
-        "K8S": "K8S pod",
-        "ios": "iOS Devices",
-        "vmware appliance": "VMWare Appliance",
-        "android": "Android Devices",
-        "-": "Not Applicable",
-        "N/A": "Not Applicable",
-        "TBD": "TBD"
-    }
+    depl_envs = {"-": "Not Applicable", "K8S": "K8S pod"}
 
     # We could have called this as deployment type. It basically tells where this component belongs
-    depl_locations = \
-        {'Cloud datacenter': {'order': 1, 'description': ''}, 'Cloud agent unit': {'order': 2, 'description': ''},
-         'On-prem centralized': {'order': 3, 'description': ''}, 'On-prem agent unit': {'order': 4, 'description': ''},
-         'Microsoft Azure': {'order': 5, 'description': 'https://azure.microsoft.com/en-us/'},
-         'Amazon Web Services': {'order': 6, 'description': 'https://aws.amazon.com/'},
-         'Plesk': {'order': 7, 'description': 'plesk.com Plesk is a commercial web hosting platform with a control '
-                                              'panel that allows a server administrator to set up new websites, '
-                                              'reseller accounts, e-mail accounts and DNS entries through a web-based '
-                                              'interface. Originally designed in Novosibirsk, Russia, the hosting '
-                                              'automation software was released by Plesk Inc..'},
-         'iOS Devices': {'order': 8, 'description': 'iOS devices.'},
-         'Android Devices': {'order': 9, 'description': 'Android devices.'},
-         "VMWare Appliance": {'order': 11, 'description': 'The Virtual Appliance Marketplace contains a variety of '
-                                                          'virtual appliances packaged in OVF format that you can '
-                                                          'download and deploy in your vSphere environment.'},
-         'TBD': {'order': 12, 'description': 'To be filled later by user.'}}
+    depl_locations = {
+        'aws': {'name': 'Amazon Web Services', 'description': 'https://aws.amazon.com/', 'order': 1},
+        'cloud-agent': {'name': 'Cloud agent unit', 'description': 'Agent application that works with cloud datacenter',
+                        'order': 2},
+        'cloud': {'name': 'Cloud datacenter', 'description': '', 'order': 3},
+        'azure': {'name': 'Microsoft Azure', 'description': 'https://azure.microsoft.com/en-us/', 'order': 4}
+    }
 
-    depl_location_mapping = \
-        {'cloud-only': 'Cloud datacenter',
-         'cloud': 'Cloud datacenter',
-         'PDS operator side': 'On-prem centralized',
-         'on-prem': 'On-prem centralized',
-         'on-prem-only': 'On-prem centralized',
-         'azure': 'Microsoft Azure',
-         'aws': 'Amazon Web Services',
-         'plesk': 'Plesk',
-         'ios': 'iOS Devices',
-         'android': 'Android Devices',
-         "vmware appliance": "VMWare Appliance",
-         'Agent': 'On-prem agent unit',
-         'TBD': 'TBD'
-         }
+    # depl_location_mapping = \
+    #     {'cloud-only': 'Cloud datacenter',
+    #      'cloud-agent': 'Cloud agent unit',
+    #      'cloud': 'Cloud datacenter',
+    #      'PDS operator side': 'On-prem Partner',
+    #      'on-prem': 'On-prem centralized',
+    #      'on-prem-only': 'On-prem centralized',
+    #      'azure': 'Microsoft Azure',
+    #      'aws': 'Amazon Web Services',
+    #      'plesk': 'Plesk',
+    #      'Agent': 'On-prem agent unit',
+    #      'TBD': 'TBD'
+    #      }
 
     langs = {'Go-lang', 'Python', 'C/C++', 'Javascript', 'Java', 'Ruby', 'Erlang', 'shellscript', 'Perl',
-              'Objective-C', 'Android', 'Powershell-script', '.Net', 'PHP'}
+             'Objective-C', 'Android', 'Powershell-script', '.Net', 'PHP'}
 
     app_vendors = {'Acronis', 'OpenSource', 'Percona', 'Google', 'Commerical'}
 
@@ -125,8 +106,9 @@ class Utility:
 
     # TBD: How to make sure these ones stay valid with respective seed values.
     default_depl_env = 'K8S pod'
-    default_location = 'Cloud datacenter'
-    default_prod_version = 'Company Cloud 1.0'
+    default_location_shortname = 'cloud'
+    default_location_name = 'Cloud datacenter'
+    default_prod_version = 'My Cloud Product 1.0'
     default_prod_family = 'Cloud Services'
     default_port = 'HTTPS-443'
     default_runtime = 'Component'
@@ -134,17 +116,19 @@ class Utility:
     default_dep_type = 'sync_rw'
     default_privacy = 'Application'
     default_comp_version = '1.0'
+    parser = None
+
+    @staticmethod
+    def register_parser(p):
+        Utility.parser = p
 
     @staticmethod
     def usage():
-        print(r"Usage: ", file=sys.stderr)
-        print (r"Application to import CSV data into DB.")
-        print(r"# python ./manage.py seed-importer.py /path/to/seeddata.csv /path/to/defaults.json", file=sys.stderr)
+        Utility.parser.print_help()
 
     @staticmethod
-    def alloc_obj_by_name(class_name, name: str, **kwargs):  # Returns object_instance, bool_new_obj
-        # fn_name = 'Utility::alloc_obj_by_name() -'
-        # logging.info('starts')
+    def alloc_obj_by_name(class_name, name: str, exception: Exception = None, **kwargs):
+        """ Creates record in DB if one doesn't exists. If all well, returns created object or raises an exception """
         name = name.strip()
         if name:
             try:
@@ -152,56 +136,44 @@ class Utility:
                 obj, created = \
                     class_name.objects \
                         .filter(name__iexact=name) \
-                        .get_or_create(name = name,
+                        .get_or_create(name=name,
                                        defaults=kwargs)
-
                 return obj
-            # except class_name.DoesNotExist:
-            #     obj = None
-            #     if len(kwargs) == 0:
-            #         obj = class_name(name=name)
-            #     else:
-            #         obj = class_name(name=name, **kwargs)
-            #     obj.save()
-            #     logging.info("%s created in model [%s] record - [%s]",
-            #                   class_name.__name__, serializers.serialize('json', [obj, ]))
-            #     return obj  # , True
+
             except MultipleObjectsReturned as e:
                 obj = list(class_name.objects.filter(name__iexact=name))[0]
-                logging.error('received 2 objects for class [%s] and name [%s]. Returning first object from the list',
+                logging.error('Received 2 objects for class [%s] and name [%s]. Returning first object from the list',
                               class_name,
                               name)
                 return obj
             except Exception as e:
                 logging.error('FATAL while creating object for class [%s], name [%s]. Exception message '
                               '- [%s]',
-                               class_name.__name__, name, e)
+                              class_name.__name__, name, e)
                 raise e
         else:
-            logging.error('Couldn\'t get object for class [%s] and name [%s]',  class_name, name)
-            return None  # , False
+            logging.error('Couldn\'t get object for class [%s] and name [%s]', class_name, name)
+            raise DataException('Couldn\'t get object for class {0} and name {1}'.format(class_name, name))
 
     @staticmethod
-    def get_comp_category(name, description='', order=1):  # Creates record in DB if doesn't exists.
+    def get_comp_category(name, description='', order=1):
         return Utility.alloc_obj_by_name(ComponentCategoryModel, name,
                                          description=description, order=order)
 
     @staticmethod
     def seed_comp_categories():
-        # fn_name = 'Utility::seed_comp_categories() -'
-        logging.info('starts')
         for (name, values) in Utility.comp_categories.items():
-            dbobj = Utility.get_comp_category(name, description=values['description'], order=values['order'])
-            if dbobj is None:
-                pass  # TODO: Exception
+            try:
+                Utility.get_comp_category(name, description=values['description'], order=values['order'])
+            except Exception as e:
+                logging.error("Ignoring exception [%s] for name [%s].", e, name)
 
     @staticmethod
-    def get_comp_subcategory(name, category_id, description=''):  # Creates record in DB if doesn't exists.
-        # fn_name = 'Utility::get_comp_subcategory() -'
+    def get_comp_subcategory(name, category_id, description=''):
         sub_category_obj = None
         created = False
         try:
-            sub_category_obj, created = ComponentSubcategoryModel.objects\
+            sub_category_obj, created = ComponentSubcategoryModel.objects \
                 .get_or_create(name=name,
                                category_id=category_id,
                                defaults={'description': description})
@@ -209,29 +181,22 @@ class Utility:
             logging.error('Ignoring exception %s', e)
 
         if created is True:  # We can now safely create the missing object
-            # sub_category_obj = ComponentSubcategoryModel(name=name, description=description,
-            #                                              category_id=category_id)
-            # sub_category_obj.save()
             logging.info("Created in model [%s] record - [%s]",
-                          ComponentSubcategoryModel.__name__,
+                         ComponentSubcategoryModel.__name__,
                          serializers.serialize('json', [sub_category_obj, ]))
         return sub_category_obj
 
     @staticmethod
     def seed_comp_subcategories():
-        # fn_name = 'Utility::seed_comp_subcategories() -'
-        logging.info('starts')
         Utility.seed_comp_categories()  # IMP: Required step for below code to work
         for comp_subcategory in Utility.comp_subcategories:
             name = comp_subcategory['name']
             category_name = comp_subcategory['category']
-            category_obj = Utility.get_comp_category(category_name)
-            # category_obj = obj[0]
-            if category_obj is None:
-                logging.info('Skipping Value! [%s] couldn\'t get from ComponentCategoryModel DB table.'
-                             , category_name)
-                continue  # TODO: raise exception and handle in caller code
-            Utility.get_comp_subcategory(name, category_obj.id, comp_subcategory['description'])
+            try:
+                category_obj = Utility.get_comp_category(category_name)
+                Utility.get_comp_subcategory(name, category_obj.id, comp_subcategory['description'])
+            except Exception as e:
+                logging.error("Ignoring exception [%s] for name [%s].", e, name)
 
     @staticmethod
     def get_comp_privacy(name, order=1):  # Creates record in DB if doesn't exists.
@@ -239,14 +204,11 @@ class Utility:
 
     @staticmethod
     def seed_comp_privacies():
-        # fn_name = 'Utility::seed_comp_privacies() -'
-        logging.info('starts')
         for (name, values) in Utility.comp_dataprivacies.items():
-            dbobj = Utility.get_comp_privacy(name, values['order'])
-            # dbobj = obj[0]
-            # new_obj = obj[1]
-            if dbobj is None:
-                pass  # TODO: Exception
+            try:
+                Utility.get_comp_privacy(name, values['order'])
+            except Exception as e:
+                logging.error("Ignoring exception [%s] for name [%s].", e, name)
 
     @staticmethod
     def get_comp_runtimetypes(name, order=1):  # Creates record in DB if doesn't exists.
@@ -254,12 +216,11 @@ class Utility:
 
     @staticmethod
     def seed_comp_runtimetypes():
-        # fn_name = 'Utility::seed_comp_runtimetypes() -'
-        logging.info('starts')
         for name in Utility.comp_runtimes:
-            dbobj = Utility.get_comp_runtimetypes(name, 1)
-            if dbobj is None:
-                pass  # TODO: Exception
+            try:
+                Utility.get_comp_runtimetypes(name, 1)
+            except Exception as e:
+                logging.error("Ignoring exception [%s] for name [%s].", e, name)
 
     @staticmethod
     def get_country(name):
@@ -267,13 +228,11 @@ class Utility:
 
     @staticmethod
     def seed_countries():
-        # fn_name = 'Utility::seed_countries() -'
-        logging.info('starts')
-
-        for name in Utility.countries:
-            dbobj = Utility.get_country(name)
-            if dbobj is None:
-                pass  # TODO: Exception
+        for name in countries:
+            try:
+                Utility.get_country(name.name)
+            except Exception as e:
+                logging.error("Ignoring exception [%s] for name [%s].", e, name)
 
     @staticmethod
     def get_datacenter(name, info, grafana, metrics):
@@ -282,18 +241,17 @@ class Utility:
     @staticmethod
     def seed_datacenters():  # TODO: Need to consider components_deployments field (M-M) data - we don't have seed
         # data yet.
-        # fn_name = 'Utility::seed_datacenters() -'
-        logging.info('starts')
         for (dc_name, dc_values) in Utility.data_centers.items():
-            dbobj = Utility.get_datacenter(dc_name, dc_values['info'], dc_values['grafana'], dc_values['metrics'])
-            if dbobj is None:
-                pass  # TODO: Exception
-            elif dbobj.grafana != dc_values['grafana'] or dbobj.metrics != dc_values['metrics'] or dbobj.info != \
-                    dc_values['info']:
-                logging.info(
-                    'Ignoring seed value! [%s] exists in DB with different grafana or metrics value. Seed '
-                    'info value [%s], grafana value [%s], metrics value [%s].',
-                     dc_name, dc_values['info'], dc_values['grafana'], dc_values['metrics'])
+            try:
+                dbobj = Utility.get_datacenter(dc_name, dc_values['info'], dc_values['grafana'], dc_values['metrics'])
+                if dbobj.grafana != dc_values['grafana'] or dbobj.metrics != dc_values['metrics'] or dbobj.info != \
+                        dc_values['info']:
+                    logging.info(
+                        'Ignoring seed value! [%s] exists in DB with different grafana or metrics value. Seed '
+                        'info value [%s], grafana value [%s], metrics value [%s].',
+                        dc_name, dc_values['info'], dc_values['grafana'], dc_values['metrics'])
+            except Exception as e:
+                logging.error("Ignoring exception [%s] for name [%s].", e, dc_name)
 
     @staticmethod
     def get_db_vendor(name):
@@ -301,15 +259,11 @@ class Utility:
 
     @staticmethod
     def seed_db_vendors():
-        # fn_name = 'Utility::seed_db_vendors() -'
-        logging.info('starts')
-
         for name in Utility.db_vendors:
-            dbobj = Utility.get_db_vendor(name)
-            # dbobj = obj[0]
-            # new_obj= obj[1]
-            if dbobj is None:
-                pass  # TODO: Exception
+            try:
+                Utility.get_db_vendor(name)
+            except Exception as e:
+                logging.error("Ignoring exception [%s] for name [%s].", e, name)
 
     @staticmethod
     def get_depl_env(name):
@@ -317,51 +271,53 @@ class Utility:
 
     @staticmethod
     def seed_depl_envs():
-        # fn_name = 'Utility::seed_depl_envs() -'
-        logging.info('starts')
-
         for name, value in Utility.depl_envs.items():
-            dbobj = Utility.get_depl_env(value)
-            if dbobj is None:
-                pass  # TODO: Exception
+            try:
+                Utility.get_depl_env(value)
+            except Exception as e:
+                logging.error("Ignoring exception [%s] for name [%s].", e, name)
 
     @staticmethod
-    def get_depl_location(dep_location, order=1, description=''):
-        return Utility.alloc_obj_by_name(DeploymentLocationClassModel, dep_location,
-                                         order=order, description=description)
+    def get_depl_location(shortname, name = default_location_name, order=1, description=''):
+        obj, created = \
+                    DeploymentLocationClassModel.objects \
+                        .filter(shortname__iexact=shortname.strip()) \
+                        .get_or_create(defaults={
+                                        'shortname': shortname.strip(),
+                                        'name':name.strip(),
+                                        'order':order,
+                                        'description':description}
+                        )
+        if created is True:
+            logging.debug("Location record created for shortname [%s]", shortname)
+        return obj
 
     @staticmethod
     def seed_depl_locations():
-        # fn_name = 'Utility::seed_depl_locations() -'
-        logging.info('starts')
-
-        for (dep_location, dep_values) in Utility.depl_locations.items():
-            dbobj = Utility.get_depl_location(dep_location,
-                                              order=dep_values['order'], description=dep_values['description'])
-            if dbobj is None:
-                pass
-            elif dbobj.order != dep_values['order']:
-                logging.info('Ignoring seed value! [%s] exists in DB with different order. Seed order value [%d], '
-                             'DB order value [%d].', dep_location, dep_values['order'], dbobj.order)
-            else:
-                pass  # TODO: Exception
+        for (shortname, dep_values) in Utility.depl_locations.items():
+            try:
+                dbobj = Utility.get_depl_location(shortname, name = dep_values['name'],
+                                                  order=dep_values['order'], description=dep_values['description'])
+                if dbobj.order != dep_values['order']:
+                    logging.error('Ignoring seed value! [%s] exists in DB with different order. Seed order value [%d], '
+                                 'DB order value [%d].', dep_values['name'], dep_values['order'], dbobj.order)
+            except Exception as e:
+                logging.error("Ignoring exception [%s] for shortname [%s], name [%s].", e, shortname, dep_values['name'])
 
     @staticmethod
     def get_logger(name):
-        return Utility.alloc_obj_by_name(LoggerModel, name)  # will create record if doesn't exist
+        return Utility.alloc_obj_by_name(LoggerModel, name)
 
     @staticmethod
     def seed_loggers():
-        # fn_name = 'Utility::seed_loggers() -'
-        logging.info('starts')
-
         for name in Utility.loggers:
-            dbobj = Utility.get_logger(name)
-            if dbobj is None:
-                pass  # TODO: Exception
+            try:
+                Utility.get_logger(name)
+            except Exception as e:
+                logging.error("Ignoring exception [%s] for name [%s].", e, name)
 
     @staticmethod
-    def get_lang(lang):  # will create record if doesn't exist
+    def get_lang(lang):
         return Utility.alloc_obj_by_name(ProgrammingLanguageModel, lang)
 
     @staticmethod
@@ -370,45 +326,41 @@ class Utility:
                                          language_id=Utility.get_lang(lang).id)
 
     @staticmethod
-    def seed_app_frameworks_n_langs():
-        # fn_name = 'Utility::seed_app_frameworks_n_langs() -'
-        logging.info('starts')
-        for lang in Utility.langs:  # NOTE: Probably this loop is not required. However keeping it here since
-            # we already have defined good seed data for it.
-            dbobj = Utility.alloc_obj_by_name(ProgrammingLanguageModel, lang)  # will create record if doesn't exist
-            if dbobj is None:
-                pass  # TODO: Exception
+    def seed_languages():
+        for lang in Utility.langs:
+            try:
+                Utility.alloc_obj_by_name(ProgrammingLanguageModel, lang)
+            except Exception as e:
+                logging.error("Ignoring exception [%s] for name [%s].", e, lang)
+
+    @staticmethod
+    def seed_app_frameworks():
         for (framework, lang) in Utility.app_frameworks.items():
-            lang_obj = Utility.get_lang(lang)
-            if lang_obj is None:
-                logging.error('Could\'t get language object. Will skip framework [%s]', framework)
-            else:  # TODO: Error here....
+            try:
+                lang_obj = Utility.get_lang(lang)
                 frame_obj = Utility.alloc_obj_by_name(FrameworkModel, framework,
-                                                      language_id=lang_obj.id)  # will create record if doesn't exist
-                if frame_obj is None:
-                    pass
-                elif frame_obj.language_id != lang_obj.id:
-                    # if not new_obj:
+                                                      language_id=lang_obj.id)
+                if frame_obj.language_id != lang_obj.id:
                     logging.info(
                         'Ignoring seed value! [%s] exists in DB with different language value. '
                         'Seed value [%d], DB value [%d].', frame_obj.name, lang_obj.id, frame_obj.language_id)
+            except Exception as e:
+                logging.error("Ignoring exception [%s] for name [%s].", e, framework)
 
     @staticmethod
     def seed_prod_families():
-        # fn_name = 'Utility::seed_prod_families() -'
-        logging.info('starts')
         for prod_family in Utility.prod_families:
-            dbobj = Utility.alloc_obj_by_name(ProductFamilyModel, prod_family)  # will create record if doesn't exist
-            if dbobj is None:
-                pass  # TBD: This is serious error. Need to throw exception and handle it at caller level
+            try:
+                Utility.alloc_obj_by_name(ProductFamilyModel, prod_family)
+            except Exception as e:
+                logging.error("Ignoring exception [%s] for name [%s].", e, prod_family)
 
     @staticmethod
-    def get_prod_family(family):  # will create record if doesn't exist
+    def get_prod_family(family):
         return Utility.alloc_obj_by_name(ProductFamilyModel, family)
 
     @staticmethod
     def get_prod_version(prod_name, prod_shortname, family, order=1):
-        # fn_name = 'Utility::get_prod_version() -'
         product_family_obj = Utility.get_prod_family(family)
         if product_family_obj is None:
             logging.error('Could\'t get product family object. Will skip productversion [%s]',
@@ -418,54 +370,40 @@ class Utility:
                                              prod_name,
                                              shortname=prod_shortname,
                                              order=order,
-                                             family_id=product_family_obj.id)  # will create record if doesn't exist
+                                             family_id=product_family_obj.id)
 
     @staticmethod
-    def seed_prod_versions():  # TODO: AA - productversionmodel could be further Normalized by getting
-        # name and shortname in different table.
-        # fn_name = 'Utility::seed_prod_versions() -'
-        logging.info('starts')
+    def seed_prod_versions():
         for (product_version_name, version_details) in Utility.prod_versions.items():
             try:
-                family = version_details['family']
-                if family == '':
-                    family = Utility.default_prod_family
+                family = version_details['family'] if version_details['family'] != '' else Utility.default_prod_family
             except KeyError:
                 family = Utility.default_prod_family
 
             try:
-                order = version_details['order']
-                if order == '':
-                    order = 1
+                order = version_details['order'] if version_details['order'] != '' else 1
             except KeyError:
                 order = 1
 
             try:
-                product_obj = Utility.get_prod_version(product_version_name,
-                                                       prod_shortname=version_details['shortname'],
-                                                       order=order,
-                                                       family=family)
-                if product_obj is None:
-                    pass  # TODO: Raise Exception
-            except KeyError as e:
-                logging.error('cannot create product version for %s due to exception - [%s]',
-                              
-                              product_version_name,
-                              e)
+                Utility.get_prod_version(product_version_name,
+                                         prod_shortname=version_details['shortname'],
+                                         order=order,
+                                         family=family)
+            except Exception as e:
+                logging.error("Ignoring exception [%s] for name [%s].", e, product_version_name)
 
     @staticmethod
     def get_app_vendor(name):
-        return Utility.alloc_obj_by_name(SoftwareVendorModel, name)  # will create record if doesn't exist
+        return Utility.alloc_obj_by_name(SoftwareVendorModel, name)
 
     @staticmethod
     def seed_app_vendors():
-        # fn_name = 'Utility::seed_app_vendors() -'
-        logging.info('starts')
-
         for name in Utility.app_vendors:
-            dbobj = Utility.get_app_vendor(name)
-            if dbobj is None:
-                pass  # TODO: Raise Exception
+            try:
+                Utility.get_app_vendor(name)
+            except Exception as e:
+                logging.error("Ignoring exception [%s] for name [%s].", e, name)
 
     @staticmethod
     def get_port(port_name, port_value):
@@ -473,16 +411,15 @@ class Utility:
 
     @staticmethod
     def seed_ports():
-        # fn_name = 'Utility::seed_ports() -'
-        logging.info('begins')
         for (port_name, port_value) in Utility.ports.items():
-            port_obj = Utility.get_port(port_name, port_value['port'])
-            if port_obj is None:
-                pass  # TODO: Raise Exception
-            elif port_obj.port != port_value['port']:
-                logging.info(
-                    'Ignoring seed value! [%s] exists in DB with different port value. DB value [%d] vs Seed '
-                    'value [%d].',  port_name.name, port_obj.port, port_value['port'])
+            try:
+                port_obj = Utility.get_port(port_name, port_value['port'])
+                if port_obj.port != port_value['port']:
+                    logging.info(
+                        'Ignoring seed value! [%s] exists in DB with different port value. DB value [%d] vs Seed '
+                        'value [%d].', port_name.name, port_obj.port, port_value['port'])
+            except Exception as e:
+                logging.error("Ignoring exception [%s] for name [%s].", e, port_name)
 
     @staticmethod
     def get_comp(name, description, category_obj, privacy_obj, sub_category_obj,
@@ -499,33 +436,25 @@ class Utility:
     @staticmethod
     def seed_comp(comp_name, description, category, subcategory, privacy, vendor, runtime_type,
                   life_status):
-        # Get or create category object
-        # fn_name = 'Utility::seed_comp() -'
-        logging.info('begin for name [%s]',  comp_name)
+        logging.info('begin for name [%s]', comp_name)
         category_obj = Utility.get_comp_category(category)
-        if category_obj is None:
-            return  # TODO: Exception
-        # Get or create sub-category object
         sub_category_obj = Utility.get_comp_subcategory(subcategory, category_obj.id)
-        if sub_category_obj is None:
-            pass  # TODO: Exception
         privacy_obj = Utility.get_comp_privacy(privacy, 1)
-        if privacy_obj is None:
-            pass  # TODO: Exception
         vendor_obj = Utility.get_app_vendor(vendor)
-        if vendor_obj is None:
-            pass  # TODO: Exception
         runtime_obj = Utility.get_comp_runtimetypes(runtime_type)
-        if runtime_obj is None:
-            pass  # TODO: Exception
 
-        # Now we have all the supporting objects ready, we can create DB record
-        comp_obj = Utility.get_comp(comp_name, description, category_obj, privacy_obj, sub_category_obj,
-                                    vendor_obj, runtime_obj, life_status)
-        if comp_obj is None:
-            pass  # TODO: Exception
-        else:
-            if comp_obj.category.name == 'SEED':  # This was created earlier by seed_componentversion() function.
+        try:
+            # Now we have all the supporting objects ready, we can create DB record
+            comp_obj = Utility.get_comp(comp_name,
+                                        description,
+                                        category_obj,
+                                        privacy_obj,
+                                        sub_category_obj,
+                                        vendor_obj,
+                                        runtime_obj,
+                                        life_status)
+            if comp_obj.category.name == 'SEED':
+                # Update record with provided values since it was created with default values earlier.
                 # TODO: This can be optimized - see seed_comp_versions() function
                 comp_obj.description = description
                 comp_obj.category = category_obj
@@ -535,44 +464,44 @@ class Utility:
                 comp_obj.runtime_type = runtime_obj
                 comp_obj.life_status = life_status
                 comp_obj.save()
-        return comp_obj
+
+            return comp_obj
+        except Exception as e:
+            logging.error("Ignoring exception [%s] for name [%s].", e, comp_name)
 
     @staticmethod
     def get_comp_dependency(dep_comp_obj: ComponentModel, comp_version_obj: ComponentVersionModel,
                             comp_type, notes=''):
-        # fn_name = 'Utility::get_comp_dependency() -'
-        logging.info('begins for component [%s - %s] and dependent_comp - [%s]', 
+        logging.debug('component version [%s - %s] and dependent_comp - [%s]',
                      comp_version_obj.component_id.name,
                      comp_version_obj.version,
                      dep_comp_obj.name,
                      )
-        # We cannot use Utility.alloc* function since we are trying to find using ids.
-
         dep_obj, created = \
-            ComponentDependencyModel.objects\
-                .filter(component_id=dep_comp_obj.id, version_id=comp_version_obj.id)\
+            ComponentDependencyModel.objects \
+                .filter(component_id=dep_comp_obj.id, version_id=comp_version_obj.id) \
                 .get_or_create(defaults=
-                                           {
-                                               'component_id': dep_comp_obj.id,
-                                               'version_id': comp_version_obj.id,
-                                               'type': comp_type,
-                                               'notes': notes
-                                           })
+            {
+                'component_id': dep_comp_obj.id,
+                'version_id': comp_version_obj.id,
+                'type': comp_type,
+                'notes': notes
+            })
+        # We CANNOT use Utility.alloc* function since we are trying to find using ids.
         if created is True:
             # dep_obj.save()
-            logging.info("created Record [%s]",  serializers.serialize('json', [dep_obj, ]))
+            logging.info("created Record [%s]", serializers.serialize('json', [dep_obj, ]))
         return dep_obj
 
     @staticmethod
-    def seed_comp_versions(version, comp_obj, **kwargs):
-        # fn_name = 'Utility::seed_comp_versions() -'
-        logging.info('begins for component [%s - %s]',
+    def seed_comp_versions(version, comp_obj, **kwargs) -> Status:
+        logging.debug('component version [%s - %s]',
                      comp_obj.name,
                      version)
         update_record = False
         try:
             comp_ver_obj, created = \
-                ComponentVersionModel.objects\
+                ComponentVersionModel.objects \
                     .get_or_create(version=version,
                                    component_id=comp_obj.id,
                                    defaults={
@@ -580,126 +509,80 @@ class Utility:
                                        'dev_jira_component': '',
                                        'dev_build_jenkins_job': '',
                                        'meta_deleted': False,
-                                       'dev_commit_link': ''  # TBD: Add all the defaults here and remove below if
-                                       # update_record
-
+                                       'dev_commit_link': ''
                                    })
-            if created is True or comp_ver_obj.comments is None or comp_ver_obj.comments == 'SEED':
-                update_record = True
+            if comp_ver_obj.comments is None or comp_ver_obj.comments == 'SEED':
+                update = True
         except ComponentVersionModel.DoesNotExist:
             comp_ver_obj = ComponentVersionModel.objects.create(version=version, component_id=comp_obj.id)
-            update_record = True
+            created = True
 
-        if update_record is True:
+        if update is True or created is True:
             try:
-                # Check if component entry already exists
                 comp_ver_obj.comments = 'SEED'
-                # comp_ver_obj.owner_responsible_qa = None  # dont have info
-                # comp_ver_obj.owner_program_manager = None  # dont have info
-                # comp_ver_obj.owner_escalation_list = None  # dont have info
-                # comp_ver_obj.owner_expert = None  # dont have info
-                # comp_ver_obj.dev_orm = None  # dont have info
                 comp_ver_obj.dev_jira_component = ''  # dont have info
                 comp_ver_obj.dev_build_jenkins_job = ''  # dont have info
                 comp_ver_obj.dev_commit_link = ''  # dont have info
                 comp_ver_obj.dev_api_is_public = ''  # dont have info
-                # comp_ver_obj.compliance_applicable =   # dont have info
-                # compliance_fips_status = 'unknown'  # dont have info
                 comp_ver_obj.compliance_fips_notes = ''  # dont have info
-                # comp_version.compliance_fips_signoff = None  # dont have info
-                # comp_version.compliance_gdpr_status = ''  # dont have info
                 comp_ver_obj.compliance_gdpr_notes = ''  # dont have info
-                # comp_version.compliance_gdpr_signoff = None  # dont have info
-                # comp_version.compliance_api_status = ''  # dont have info
                 comp_ver_obj.compliance_api_notes = ''  # dont have info
-                # comp_version.compliance_api_signoff = None  # dont have info
 
                 # operational readiness fields
                 comp_ver_obj.op_applicable = False  # dont have info
                 comp_ver_obj.op_guide_status = 'unknown'  # dont have info
                 comp_ver_obj.op_guide_notes = ''  # dont have info
-                # comp_version.op_guide_signoff = ''  # dont have info
                 comp_ver_obj.op_failover_status = 'unknown'  # dont have info
                 comp_ver_obj.op_failover_notes = ''  # dont have info
-                # comp_version.op_failover_signoff = ''  # dont have info
                 comp_ver_obj.op_horizontal_scalability_status = 'unknown'  # dont have info
                 comp_ver_obj.op_horizontal_scalability_notes = ''  # dont have info
-                # comp_version.op_horizontal_scalability_signoff = ''  # dont have info
                 comp_ver_obj.op_scaling_guide_status = 'unknown'  # dont have info
                 comp_ver_obj.op_scaling_guide_notes = ''  # dont have info
-                # comp_version.op_scaling_guide_signoff = ''  # dont have info
                 comp_ver_obj.op_sla_guide_status = 'unknown'  # dont have info
                 comp_ver_obj.op_sla_guide_notes = ''  # dont have info
-                # comp_version.op_sla_guide_signoff = ''  # dont have info
                 comp_ver_obj.op_metrics_status = 'unknown'  # dont have info
                 comp_ver_obj.op_metrics_notes = ''  # dont have info
-                # comp_version.op_metrics_signoff = ''  # dont have info
                 comp_ver_obj.op_alerts_status = 'unknown'  # dont have info
                 comp_ver_obj.op_alerts_notes = ''  # dont have info
-                # comp_version.op_alerts_signoff = ''  # dont have info
                 comp_ver_obj.op_zero_downtime_status = 'unknown'  # dont have info
                 comp_ver_obj.op_zero_downtime_notes = ''  # dont have info
-                # comp_version.op_zero_downtime_signoff = ''  # dont have info
                 comp_ver_obj.op_backup_status = 'unknown'  # dont have info
                 comp_ver_obj.op_backup_notes = ''  # dont have info
-                # comp_version.op_backup_signoff = ''  # dont have info
                 comp_ver_obj.op_safe_restart = False  # dont have info
                 comp_ver_obj.op_safe_delete = False  # dont have info
                 comp_ver_obj.op_safe_redeploy = False  # dont have info
                 # maintainability
-                # comp_version.mt_applicable = True  # dont have info
                 comp_ver_obj.mt_http_tracing_status = 'unknown'  # dont have info
                 comp_ver_obj.mt_http_tracing_notes = ''  # dont have info
-                # comp_version.mt_http_tracing_signoff = None  # dont have info
                 comp_ver_obj.mt_logging_completeness_status = 'unknown'  # dont have info
                 comp_ver_obj.mt_logging_completeness_notes = ''  # dont have info
-                # comp_version.mt_logging_completeness_signoff = None  # dont have info
                 comp_ver_obj.mt_logging_format_status = 'unknown'  # dont have info
                 comp_ver_obj.mt_logging_format_notes = ''  # dont have info
-                # comp_version.mt_logging_format_signoff = None  # dont have info
                 comp_ver_obj.mt_logging_storage_status = 'unknown'  # dont have info
                 comp_ver_obj.mt_logging_storage_notes = ''  # dont have info
-                # comp_version.mt_logging_storage_signoff = ''  # dont have info
                 comp_ver_obj.mt_logging_sanitization_status = 'unknown'  # dont have info
                 comp_ver_obj.mt_logging_sanitization_notes = ''  # dont have info
-                # comp_version.mt_logging_sanitization_signoff = ''  # dont have info
                 comp_ver_obj.mt_db_anonymisation_status = 'unknown'  # dont have info
                 comp_ver_obj.mt_db_anonymisation_notes = ''  # dont have info
-                # comp_version.mt_db_anonymisation_signoff = ''  # dont have info
                 comp_ver_obj.qa_manual_tests_status = 'unknown'  # dont have info
                 comp_ver_obj.qa_manual_tests_notes = ''  # dont have info
-                # comp_version.qa_manual_tests_signoff = ''  # dont have info
                 comp_ver_obj.qa_unit_tests_status = 'unknown'  # dont have info
                 comp_ver_obj.qa_unit_tests_notes = ''  # dont have info
-                # comp_version.qa_unit_tests_signoff = ''  # dont have info
                 comp_ver_obj.qa_e2e_tests_status = 'unknown'  # dont have info
                 comp_ver_obj.qa_e2e_tests_notes = ''  # dont have info
-                # comp_version.qa_e2e_tests_signoff = ''  # dont have info
                 comp_ver_obj.qa_perf_tests_status = 'unknown'  # dont have info
                 comp_ver_obj.qa_perf_tests_notes = ''  # dont have info
-                # comp_version.qa_perf_tests_signoff = ''  # dont have info
                 comp_ver_obj.qa_longhaul_tests_status = 'unknown'  # dont have info
                 comp_ver_obj.qa_longhaul_tests_notes = ''  # dont have info
-                # comp_version.qa_longhaul_tests_signoff = ''  # dont have info
                 comp_ver_obj.qa_security_tests_status = 'unknown'  # dont have info
                 comp_ver_obj.qa_security_tests_notes = ''  # dont have info
-                # comp_version.qa_security_tests_signoff = ''  # dont have info
                 comp_ver_obj.qa_api_tests_status = 'unknown'  # dont have info
                 comp_ver_obj.qa_api_tests_notes = ''  # dont have info
-                # comp_version.qa_api_tests_signoff = ''  # dont have info
                 comp_ver_obj.qa_anonymisation_tests_status = 'unknown'  # dont have info
                 comp_ver_obj.qa_anonymisation_tests_notes = ''  # dont have info
-                # comp_version.qa_anonymisation_tests_signoff = ''  # dont have info
                 comp_ver_obj.qa_upgrade_tests_status = 'unknown'  # dont have info
                 comp_ver_obj.qa_upgrade_tests_notes = ''  # dont have info
-                # comp_version.qa_upgrade_tests_signoff = ''  # dont have info
-                # comp_version.meta_update_by = ''  # dont have info
-                # comp_version.meta_update_date = ''  # dont have info
                 comp_ver_obj.meta_deleted = False  # dont have info
-                # comp_ver_obj.meta_product_versions # Not filling this as we dont have information
-                # comp_ver_obj.meta_searchstr_locations # Not filling this as we dont have information
-
-                # Now we will fill details fetched from CSV
                 comp_ver_obj.component_id = comp_obj
 
                 maintainers = Utility.get_users_by_emailid(kwargs['owners'])
@@ -717,30 +600,27 @@ class Utility:
                 for a in architects if architects is not None else []:
                     comp_ver_obj.owner_architect.add(a)
 
-                # TODO: Check with AA how to get Program Manager list, escalation list.
-
                 languages = kwargs['dev_language'].split(',')
                 for lang in languages:
                     if lang.strip() not in ('', 'TBD', '?', '-'):
-                        tmp_obj = Utility.get_lang(lang.strip())
-                        comp_ver_obj.dev_language.add(tmp_obj)  # TODO: Check for None
+                        comp_ver_obj.dev_language.add(
+                            Utility.get_lang(lang.strip()))
 
                 frameworks = kwargs.pop('dev_framework').split(',')
                 for framework in frameworks:
                     if framework.strip() not in ('', 'TBD', '?', '-'):
                         comp_ver_obj.dev_framework.add(
-                            Utility.get_framework(framework.strip(), 'TBD'))  # TODO: Check for None
+                            Utility.get_framework(framework.strip(), 'TBD'))
 
                 dbs = kwargs['dev_database'].split(',')
                 for db in dbs:
                     if db.strip() not in ('', 'TBD', '?', '-'):
-                        comp_ver_obj.dev_database.add(
-                            Utility.get_db_vendor(db.strip()))  # TODO: Check for None
+                        comp_ver_obj.dev_database.add(Utility.get_db_vendor(db.strip()))
 
                 loggers = kwargs['dev_logging'].split(',')
                 for logger in loggers:
                     if logger.strip() not in ('', 'TBD', '?', '-'):
-                        comp_ver_obj.dev_logging.add(Utility.get_logger(logger.strip()))  # TODO: Check for None
+                        comp_ver_obj.dev_logging.add(Utility.get_logger(logger.strip()))
 
                 comp_ver_obj.dev_raml = kwargs['dev_raml']
                 comp_ver_obj.dev_repo = kwargs['dev_repo']
@@ -754,29 +634,27 @@ class Utility:
                 # We now fill the dependencies
                 for dep_name in re.sub('\*|N/A|-$', '', kwargs['dependents']).splitlines():
                     category_obj = Utility.get_comp_category('SEED')
-                    # IMP: TBD: Use QuerySet and use regex to find the component.
+                    # IMP: TODO: Use QuerySet and use regex to find the component.
                     # RISK with below approach is we won't find component if names are not exact.
-
                     # IMP: Chances are very high we create default component record in DB which may have appear
                     # later in CSV. This can be optimized by getting component record from CSV and create it first
-                    dependent_comp_obj = Utility.get_comp(dep_name.strip(), 'SEED',
-                                                          category_obj,
-                                                          Utility.get_comp_privacy('SEED'),
-                                                          Utility.get_comp_subcategory('SEED', category_obj.id),
-                                                          Utility.get_app_vendor(
-                                                              Utility.default_app_vendor),
-                                                          Utility.get_comp_runtimetypes(
-                                                              Utility.default_runtime),
-                                                          'unknown')
-                    if dependent_comp_obj is None:
-                        logging.error('Error but ignoring! Couldn\'t get [%s] component',
-                                      dep_name.strip())
-                    else:
-                        # We have to fill table ComponentDependencyModel
+                    try:
+                        dependent_comp_obj = Utility.get_comp(dep_name.strip(),
+                                                              'SEED',
+                                                              category_obj,
+                                                              Utility.get_comp_privacy('SEED'),
+                                                              Utility.get_comp_subcategory('SEED', category_obj.id),
+                                                              Utility.get_app_vendor(
+                                                                  Utility.default_app_vendor),
+                                                              Utility.get_comp_runtimetypes(
+                                                                  Utility.default_runtime),
+                                                              'unknown')
+
                         Utility.get_comp_dependency(dependent_comp_obj,
                                                     comp_ver_obj,
                                                     Utility.default_dep_type)
-
+                    except Exception as e:
+                        logging.error("Ignoring exception [%s] for name [%s].", e, dep_name.strip())
 
                 # We now create Component Deployment Model.
                 Utility.get_comp_deployment(kwargs['deployment_name'],  # name
@@ -788,18 +666,16 @@ class Utility:
                                             kwargs['location_cls'],  # deployment location class
                                             kwargs['open_ports']
                                             )
-            # except KeyError as e:
-            #     logging.error('FATAL Couldn\'t find key [%s]',  e)
-            #     logging.error('make sure you have passed valid CSV. Please check for CSV format')
+                return Status.UPDATED if update is True else Status.CREATED
             except Exception as e:
-                logging.error('FATAL Exception - [%s]',  e)
+                logging.error('FATAL Exception - [%s]', e)
                 print(traceback.format_exc())
+                return Status.FAILED
 
     @staticmethod
     def get_comp_deployment(name, service_name, binary_name, comp_version_obj, environment, product_version,
                             location_cls, open_ports, notes=''):
-        # fn_name = 'Utility::get_comp_deployment() -'
-        logging.info('begins for component [%s] with service_name [%s]',
+        logging.debug('component [%s] with service_name [%s]',
                      name,
                      service_name)
         prod_ver_obj = \
@@ -837,19 +713,34 @@ class Utility:
         # location_cls can have values like - cloud,on-prem
         locations = location_cls.split(
             ',')  # TODO: Below code should be along with other code where we are parsing CSV data.
-        for location in locations:
-            if location.strip() not in ('', '-', '?'):
+        for location_shortnm in locations:
+            if location_shortnm.strip() not in ('', '-', '?'):
+                for x in Utility.depl_locations.keys():
+                    # Unfortunately we can have case mismatch. Alternate way is
+                    # to have Case-insensitive dict but costly to perfect and maintain.
+                    if x.strip().upper() == location_shortnm.strip().upper():
+                        location_shortnm = x
+                        break
+                tmp = Utility.depl_locations.get(location_shortnm.strip()) if location_shortnm.strip() in Utility.depl_locations.keys() else None
+                if tmp is None:
+                    tmp = {
+                        "name" : Utility.default_location_name,
+                        "order": 1,
+                        "description": ""
+                    }
+                    location_shortnm = Utility.default_location_shortname
                 # Check if component exists in DB
-                # try:
                 comp_depl_obj, created = ComponentDeploymentModel.objects \
                     .get_or_create(name=name,
                                    service_name=service_name,
                                    component_version_id=comp_version_obj.id,
                                    environment_id=dep_env_obj.id,
                                    location_class=Utility.get_depl_location(
-                                       Utility.depl_location_mapping[location.strip()]
-                                           if location.strip() in Utility.depl_location_mapping.keys()
-                                           else Utility.default_location),
+                                       location_shortnm,
+                                       tmp['name'],
+                                       tmp['order'],
+                                       tmp['description']
+                                   ),
                                    defaults={'service_name': service_name,
                                              'binary_name': binary_name,
                                              'notes': notes,
@@ -860,14 +751,9 @@ class Utility:
                         comp_depl_obj.open_ports.add(port_objs)
                     comp_depl_obj.save()
 
-        #  TBD: We may make use of ADC7.8, ADC7.7 as a hint to find out product version
-
     @staticmethod
     def get_str_data_from_list(row, name):
-        val = row[name].strip()
-        if val == '':
-            val = 'TBD'
-        return val
+        return row[name].strip() if row[name].strip() != '' else 'TBD'
 
     @staticmethod
     def parse_defaults(defaults):
@@ -878,13 +764,13 @@ class Utility:
             Utility.comp_dataprivacies = jsondata['ComponentDataPrivacies']
             Utility.comp_runtimes = jsondata['ComponentRuntimes']
             Utility.loggers = jsondata['Loggers']
-            Utility.countries = jsondata['Countries']
+            # Utility.countries = jsondata['Countries']
             Utility.data_centers = jsondata['DataCenters']
             Utility.db_vendors = jsondata['DBVendors']
             Utility.depl_envs = jsondata['DeploymentEnvironments']
             # Utility.depl_env_mapping = jsondata['DeploymentEnvironmentMapping']
             Utility.depl_locations = jsondata['DeploymentLocations']
-            Utility.depl_location_mapping = jsondata['DeploymentLocationMapping']
+            # Utility.depl_location_mapping = jsondata['DeploymentLocationMapping']
             Utility.langs = jsondata['ProgrammingLanguages']
             Utility.app_vendors = jsondata['ApplicationVendors']
             Utility.app_frameworks = jsondata['ApplicationFrameworks']
@@ -892,7 +778,8 @@ class Utility:
             Utility.prod_families = jsondata['ProductFamilies']
             Utility.ports = jsondata['Ports']
             Utility.default_depl_env = jsondata['Defaults']['DeploymentEnvironment']
-            Utility.default_location = jsondata['Defaults']['DeploymentLocation']
+            Utility.default_location_shortname = jsondata['Defaults']['DeploymentLocationShortName']
+            Utility.default_location_name = jsondata['Defaults']['DeploymentLocationName']
             Utility.default_prod_family = jsondata['Defaults']['ProductFamily']
             Utility.default_prod_version = jsondata['Defaults']['ProductVersion']
             Utility.default_port = jsondata['Defaults']['Port']
@@ -945,15 +832,14 @@ class SeedDataImporter:
         Utility.seed_depl_envs()
         Utility.seed_depl_locations()
         Utility.seed_loggers()
-        Utility.seed_app_frameworks_n_langs()  # seeds 2 tables
+        Utility.seed_languages()
+        Utility.seed_app_frameworks()
         Utility.seed_prod_families()
         Utility.seed_prod_versions()
         Utility.seed_app_vendors()
         Utility.seed_ports()
 
     def parse_csv(self):
-        fn_name = 'SeedDataImporter::parse_csv() -'
-        # logging.info('started')
         if self._csv_file is None:
             Utility.usage()
             return False
@@ -966,7 +852,10 @@ class SeedDataImporter:
             Utility.usage()
             exit(1)
 
-        count: int = 1
+        total_count: int = 0
+        failed_count: int = 0
+        created_count: int = 0
+        updated_count: int = 0
 
         with open(self._csv_file, newline='') as csv_content:
             try:
@@ -1025,7 +914,7 @@ class SeedDataImporter:
                                                       runtime_type=runtime_type,
                                                       life_status=life_status)
 
-                    Utility.seed_comp_versions(Utility.default_comp_version,
+                    status = Utility.seed_comp_versions(Utility.default_comp_version,
                                                component_obj,
                                                dependents=dep_str,
                                                dev_language=lang_str,
@@ -1044,25 +933,40 @@ class SeedDataImporter:
                                                product_managers=pm_str,
                                                owners=owner_str,
                                                architects=architect_str)
-                    count += 1
+                    if status == Status.FAILED:
+                        failed_count += 1
+                    elif status == Status.CREATED:
+                        created_count += 1
+                    elif status == Status.UPDATED:
+                        updated_count += 1
+
+                    total_count += 1
             except KeyError as e:
-                logging.error('FATAL Couldn\'t find key [%s]',  e)
-                logging.error('make sure you have passed valid CSV. Please check for CSV format')
+                logging.error('FATAL Couldn\'t find key [%s]', e)
+                logging.error('Make sure you have passed valid CSV. Please check for CSV format')
+                print(traceback.format_exc())
+                sys.exit(-1)
             except Exception as e:
-                logging.error('FATAL Exception - [%s]',  e)
+                logging.error('FATAL Exception - [%s]', e)
                 print(traceback.format_exc())
                 sys.exit(-1)
 
             # TODO: Have more stats printed like how many components created, updated, errors etc.
-            print("%s Completed processing total records - %d" % (fn_name, count))
+            print("*** Component Version record Report *** \nProcessed total [%d] record(s)\nCreated total [%d] record(s)\nUpdated total [%d] record(s)\nFailed total [%d] record(s)"
+                  % (total_count,
+                     created_count,
+                     updated_count,
+                     failed_count))
 
 
 class Command(BaseCommand):
     def handle(self, *args, **options):
         print(options)
-        logging.basicConfig(format='%(asctime)s,%(msecs)d %(levelname)-8s [%(filename)s:%(funcName)s():%(lineno)d] %(message)s',
-                            datefmt='%Y-%m-%d:%H:%M:%S',
-                            level=logging.INFO)
+        logging.basicConfig(
+            format='%(asctime)s,%(msecs)d %(levelname)-8s [%(filename)s:%(funcName)s():%(lineno)d] %(message)s',
+            datefmt='%Y-%m-%d:%H:%M:%S',
+            level=logging.INFO)
+
         if not Utility.parse_defaults(options['defaults']):
             print("[%s] cannot proceed without valid data from default.json" % args[0])
             sys.exit(-1)
@@ -1083,3 +987,5 @@ class Command(BaseCommand):
                             nargs='+',
                             help='path to default.json file that provides required defaults which also provides '
                                  'initial seeddata.')
+
+        Utility.register_parser(parser)

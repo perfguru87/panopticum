@@ -1,23 +1,20 @@
 Category,Sub-Category,Vendor,Deployment Container,Deployment Environment,Binary name,Runtime Type,Name,Description,Dependency,Wiki,Repo,Deployment Location,Language,Framework,DB,Logging,REST API RAML,Ports,Additional Comments,KLOC,Is legacy?,Is duplicated?,PM,Owner,Architect,release1,release2
-Platform,Services,MyCompany,iam,K8S,iamsrv,Component,IAM,"Identity Access Management component. Central piece to store the identity information of users, admins and also maintains association with access to resources","* Percona
+Platform,Services,MyCompany,account-srv,K8S,account-srv,Component,Account Manager,"* Account Manager (Identity Access Management). Central piece that owns details of users, admins, resources within the system and manages the access per user of the system.","* Percona
 * RabbitMQ
 * NGINX",https://wiki.mycompany.com/comcloud/iam.html,https://github.com/mycompany/ComCloud/tree/master/iam,AWS,Python,"tornado,sqlalchemy, aiohttp",Percona,TBD,https://git.company.com/projects/RAML/repos/iam,HTTP: 8080,,TBD,TBD,partial,Sergey.S@company.com,Hiten@company.com,"at@company.com,vlads@company.com",yes,yes
-Backup Services,Agent,MyCompany,bckp_fileagent,agent,bckp-fileagent,Component,File Backup,Agent component that provides agent machine data in streamed manner.,"* IAM
+Backup Services,Agent,MyCompany,bckp_fileagent,agent,bckp-fileagent,Component,File Backup,Agent component that provides agent machine data in streamed manner.,"* Account Manager
 * Storage Service
 * RabbitMQ
 * File Service",https://wiki.mycompany.com/comcloud/backup/filesystem.html,https://github.com/mycompany/ComCloud/tree/master/agent-filesystem,"cloud,on-prem",Go-lang,go-std, -,TBD,-,"HTTP: 8080  # container_HTTP
 HTTP: 80",,TBD,TBD,TBD,"RY@company.com,MM@company.com",kim@company.com,"alex@company.com,hiten@company.com",,yes
-Infrastructure,Storage,MyCompany,infra_storage,K8S,storage-manager,Component,Storage Service,Manages underlying storage and supports various file transfer protocols.,"* IAM
+Infrastructure,Storage,MyCompany,infra_storage,K8S,storage-manager,Component,Storage Service,Manages underlying storage and supports various file transfer protocols.,"* Account Manager
 * Percona",https://wiki.mycompany.com/comcloud/infra/storage-services.html,https://github.com/mycompany/ComCloud/tree/master/storage-services,cloud-only,C++,boost,Percona,,,,,,,,,,,,
-Backup Services,Services,MyCompany,bckp_fileservice,K8S,bckp-fileservice,Component,File Service,Agent component that provides agent machine data in streamed manner.,"* IAM
+Backup Services,Services,MyCompany,order_management,K8S,order-manager,Component,Order Manager,Order Management,"* Account Manager
 * Storage Service
 * RabbitMQ
-* File Service",https://wiki.mycompany.com/comcloud/backup/filesystem.html,https://github.com/mycompany/ComCloud/tree/master/service-filesystem,"cloud,on-prem",Go-lang,go-std, -,TBD,-,"HTTP: 8080  # container_HTTP
+* File Service",https://wiki.mycompany.com/comcloud/backup/order-manager.html,https://github.com/mycompany/ComCloud/tree/master/service-order-manager,"cloud,on-prem",Go-lang,go-std,Percona,TBD,https://git.company.com/projects/RAML/repos/order-manager,"HTTP: 8080  # container_HTTP
 HTTP: 80",,TBD,TBD,TBD,"RY@company.com,MM@company.com",kim@company.com,"alex@company.com,hiten@company.com",,yes
-Backup Services,Agent,MyCompany,bckp_email_archiver,K8S,bckp-email-archiver,Component,Email Archive,"It has agent + server part implemented together and sits in Cloud infrastructure. It can be deployed in AWS, MS Azure, private cloud, onpremise","
-* RabbitMQ
-* HashiCorp Vault
-* IAM","Requirements: https://adn.company.com/display/ABRWC/Mail+archiving
+Backup Services,Agent,MyCompany,bckp_email_archiver,K8S,bckp-email-archiver,Component,Email Archive,"It has agent + server part implemented together and sits in Cloud infrastructure. It can be deployed in AWS, MS Azure, private cloud, onpremise",* Account Manager,"Requirements: https://adn.company.com/display/ABRWC/Mail+archiving
 
 TBD: Component details page.",https://github.com/mycompany/ComCloud/tree/master/email-archiver,cloud-only,python,TBD,TBD,TBD,https://git.company.com/projects/RAML/repos/email-archiver,"SMTP-CONTAINER: 10
 SMTP: 25

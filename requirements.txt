@@ -12,3 +12,4 @@ jira-python
 scalpl
 gunicorn
 gevent
+iso3166
