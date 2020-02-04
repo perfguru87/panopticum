@@ -12,6 +12,10 @@ import datetime
 import panopticum.fields
 from panopticum.models import *
 
+SIGNEE_STATUS_TYPE = 2 # Requirement status type with name = "approver person". Check init.json
+OWNER_STATUS_TYPE = 1
+UNKNOWN_REQUIREMENT_STATUS = 1 # it's unknown status. Check init.json fixture
+
 formfields_large = {models.ForeignKey: {'widget': Select(attrs={'width': '300px', 'style': 'width:300px'})},
                     models.ManyToManyField: {'widget': SelectMultiple(attrs={'size': '7', 'width': '300px', 'style': 'width:300px'})},
                     models.IntegerField: {'widget': NumberInput(attrs={'width': '300px', 'style': 'width:300px'})},
@@ -80,13 +84,13 @@ class RequirementInlineAdmin(admin.TabularInline):
 
 class RequirementForm(django.forms.ModelForm):
     """ Custom admin form for Requirement row. We merge 2 requirement statuses to Requirement row.
-    Pay attention: we does not have model for Requirement row. We does not need at until we can calculate it
-    from requirement statues by django admin from and frontend """
+    Pay attention: we does not have model for Requirement row. We do not need it until we can calculate it
+    from requirement statues by django admin form and frontend """
     owner_status = panopticum.fields.RequirementStatusChoiceField(queryset=RequirementStatus.objects.all(),
                                                            label='Readiness')
     owner_notes = django.forms.CharField(label='notes',
                                          widget=django.forms.Textarea({'rows': '2'}),
-                                         max_length=1024,
+                                         max_length=16* pow(2, 10),
                                          required=False,
                                          )
     approve_status = panopticum.fields.RequirementStatusChoiceField(
@@ -95,12 +99,12 @@ class RequirementForm(django.forms.ModelForm):
     )
     approve_notes = django.forms.CharField(label='Sign off notes',
                                            widget=django.forms.Textarea({'rows': '2'}),
-                                           max_length=1024,
+                                           max_length=16* pow(2, 10),
                                            required=False)
 
     def __init__(self, *args, **kwargs):
 
-        unknown_status = RequirementStatus.objects.get(pk=1) # pk =1 it's unknown status. Check init.json fixture
+        unknown_status = RequirementStatus.objects.get(pk=UNKNOWN_REQUIREMENT_STATUS)
 
         # define initial fields values
         self.base_fields['owner_status'].initial = unknown_status
@@ -115,7 +119,7 @@ class RequirementForm(django.forms.ModelForm):
             try:
                 signee_status_obj = RequirementStatusEntry.objects.get(
                     requirement=kwargs['instance'].requirement,
-                    type=2,  # approve person
+                    type=SIGNEE_STATUS_TYPE,
                     component_version=kwargs['instance'].component_version
                 )
                 initial['approve_status'] = signee_status_obj.status
@@ -155,12 +159,12 @@ class RequirementForm(django.forms.ModelForm):
     def save(self, commit=True, *args, **kwargs):
         if 'requirement' in self.cleaned_data:
             if 'approve_status' in self.changed_data or 'approve_notes' in self.changed_data:
-                self._save_status('approve', 2) # 2 - is pk of approve reviewer status type
+                self._save_status('approve', SIGNEE_STATUS_TYPE)
 
             elif 'owner_status' in self.changed_data:  # reset sign off if readiness is changed
-                self.cleaned_data['approve_status'] = RequirementStatus.objects.get(pk=1)  # unknown status
-                self._save_status('approve', 2)
-            return self._save_status('owner', 1)
+                self.cleaned_data['approve_status'] = RequirementStatus.objects.get(pk=UNKNOWN_REQUIREMENT_STATUS)
+                self._save_status('approve', SIGNEE_STATUS_TYPE)
+            return self._save_status('owner', OWNER_STATUS_TYPE)
 
 
 class RequirementStatusEntryAdmin(admin.TabularInline):
@@ -185,7 +189,7 @@ class RequirementStatusEntryAdmin(admin.TabularInline):
         if db_field.name in field_map:
             return field_map[db_field.name]
         else:
-             return super().formfield_for_foreignkey(db_field, request, **kwargs)
+            return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
 class RequirementAdmin(admin.ModelAdmin):
     list_display = ['title']

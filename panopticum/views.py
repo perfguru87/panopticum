@@ -137,6 +137,22 @@ def dashboard_components(request):
     return render(request, 'dashboard/components.html')
 
 
+def dashboard_operations(request):
+    return render(request, 'dashboard/operations.html')
+
+
+def dashboard_quality_assurance(request):
+    return render(request, 'dashboard/quality_assurance.html')
+
+
+def dashboard_maintenance(request):
+    return render(request, 'dashboard/maintenance.html')
+
+
+def dashboard_compliance(request):
+    return render(request, 'dashboard/compliance.html')
+
+
 class JiraIssueView(views.APIView):
 
     def validate(self, request):
