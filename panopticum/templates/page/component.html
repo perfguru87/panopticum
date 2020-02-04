@@ -194,6 +194,7 @@ function update_component_page_elements(component) {
     pa_replace_urls();
 
     $(".pa-quality").each(function(index, el) {
+        $(el).html(pa_star_rating($(el).html()));
         var val = $(el).html();
         if (val == "unknown") {
             $(el).html("<i class='unknown fa fa-question-circle'></i>");
@@ -205,6 +206,19 @@ function update_component_page_elements(component) {
             $(el).html("<i class='fa fa-star'></i><i class='fa fa-star'></i><i class='fa fa-star-o'></i>");
         } else if (val == "high") {
             $(el).html("<i class='fa fa-star'></i><i class='fa fa-star'></i><i class='fa fa-star'></i>");
+        }
+    });
+
+    $(".pa-status").each(function(index, el) {
+        var val = $(el).html();
+        if (val == "unknown") {
+            $(el).html("<i class='unknown fa fa-question-circle'></i>");
+        } else if (val == "no") {
+            $(el).html("<span class='no'>NO</span>");
+        } else if (val == "partial") {
+            $(el).html("<span class='some'>Some</span>");
+        } else if (val == "yes") {
+            $(el).html("<span class='yes'>YES</span>");
         }
     });
 
@@ -295,6 +309,8 @@ function vue_component_init() {
         },
     });
 }
-vue_component_init();
+$(document).ready(function() {
+    vue_component_init();
+});
 </script>
 {% endblock %}

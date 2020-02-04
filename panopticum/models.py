@@ -6,7 +6,7 @@ import datetime
 from django.contrib.auth.models import AbstractUser
 from simple_history.models import HistoricalRecords
 
-
+import panopticum.fields
 
 class User(AbstractUser):
     dn = models.CharField(max_length=255, null=True)
@@ -31,8 +31,6 @@ class User(AbstractUser):
         if self.photo and hasattr(self.photo, 'url'):
             return self.photo.url
 
-
-import panopticum.fields
 
 ##################################################################################################
 # People, Org chart
