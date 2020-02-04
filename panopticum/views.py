@@ -51,6 +51,7 @@ class DeploymentLocationClassViewSet(viewsets.ModelViewSet):
 class ComponentVersionViewSet(viewsets.ModelViewSet):
     queryset = ComponentVersionModel.objects.all()
     serializer_class = ComponentVersionSerializer
+    filterset_fileds = "__all__"
 
 
 class ComponentRuntimeTypeViewSet(viewsets.ModelViewSet):

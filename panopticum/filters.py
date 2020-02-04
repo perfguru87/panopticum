@@ -9,11 +9,18 @@ class RequirementFilter(filters.FilterSet):
         model = models.Requirement
         fields = '__all__'
 
+class ComponentVersionFilter(filters.FilterSet):
+    class Meta:
+        model = models.ComponentVersionModel
+        fields = '__all__'
 
 class RequirementStatusFilter(filters.FilterSet):
     requirement = filters.RelatedFilter(RequirementFilter,
                                         field_name='requirement',
                                         queryset=models.Requirement.objects.all())
+    component_version = filters.RelatedFilter(ComponentVersionFilter,
+                                        field_name='component_version',
+                                        queryset=models.ComponentVersionModel.objects.all())
 
     class Meta:
         model = models.RequirementStatusEntry

@@ -252,6 +252,12 @@ python3.6 ./manage.py migrate
 python3.6 ./manage.py createsuperuser
 ```
 
+### Load initial fixtures
+
+```
+DJANGO_SETTINGS_MODULE=panopticum_django.settings PYTHONPATH=. django-admin loaddata init.json
+```
+
 ### Authenticate via Active Directory
 In order to use AD `settings_local.py` should contain the following:
 ```python

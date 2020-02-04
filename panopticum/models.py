@@ -255,7 +255,7 @@ class RequirementStatusEntry(models.Model):
     status = models.ForeignKey(RequirementStatus, on_delete=models.CASCADE)
     type = models.ForeignKey(RequirementStatusType, on_delete=models.CASCADE) # component owner or signee
     requirement = models.ForeignKey('Requirement', related_name='statuses', on_delete=models.CASCADE)
-    notes = models.TextField(null=True, blank=True, max_length=255)
+    notes = models.TextField(null=True, blank=True, max_length=16*pow(2, 10))
     component_version = models.ForeignKey('ComponentVersionModel', related_name='statuses', on_delete=models.CASCADE)
 
     class Meta:
