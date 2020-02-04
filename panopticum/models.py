@@ -4,8 +4,9 @@ from datatableview import helpers
 from django.forms.models import model_to_dict
 import datetime
 from django.contrib.auth.models import AbstractUser
-from django.utils.safestring import mark_safe
+from simple_history.models import HistoricalRecords
 
+import panopticum.fields
 
 class User(AbstractUser):
     dn = models.CharField(max_length=255, null=True)
@@ -30,8 +31,6 @@ class User(AbstractUser):
         if self.photo and hasattr(self.photo, 'url'):
             return self.photo.url
 
-
-import panopticum.fields
 
 ##################################################################################################
 # People, Org chart
@@ -238,12 +237,67 @@ class ComponentModel(models.Model):
         return "%s" % self.name
 
 
+class RequirementStatusType(models.Model):
+    """ Who owner of that status? Component owner or signee or somebody else """
+    owner = models.CharField(max_length=24)
+
+
+class RequirementStatus(models.Model):
+    """ Base model for Requirement status. That model describe only various statuses. """
+    name = models.CharField(max_length=20, unique=True)  # yes, no, ready ...
+    description = models.TextField(null=True, blank=True, max_length=255) # ready status is mean ...
+    allow_for = models.ManyToManyField('RequirementStatusType') # restrict access for status by owner
+                                                                # for example singee doesn't permitted to set status 'n/a'
+
+
+class RequirementStatusEntry(models.Model):
+    """ instance of status with value and owner type equal cell in widget at frontend side """
+    status = models.ForeignKey(RequirementStatus, on_delete=models.CASCADE)
+    type = models.ForeignKey(RequirementStatusType, on_delete=models.CASCADE) # component owner or signee
+    requirement = models.ForeignKey('Requirement', related_name='statuses', on_delete=models.CASCADE)
+    notes = models.TextField(null=True, blank=True, max_length=255)
+    component_version = models.ForeignKey('ComponentVersionModel', related_name='statuses', on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = ['status', 'type', 'component_version', 'requirement']
+
+    def __unicode__(self):
+        return f"{self.__class__.__name__}: {self.status.name} ({self.status.type.name})"
+
+
+class Requirement(models.Model):
+    """ base model for requirement equal requirement header in widget """
+    title = models.CharField(max_length=30, unique=True)  # backup, logging storage
+    description = models.TextField(max_length=1024)  # that requirements about ...
+
+
+    def __unicode__(self):
+        return f"{self.__class__.__name__}: {self.title}"
+
+    def __str__(self):
+        return self.__unicode__()
+
+
+class RequirementSet(models.Model):
+    """ Container for requirements. Example of usage: various requirement widgets at frontend """
+    name = models.CharField(max_length=30, unique=True)
+    requirements = models.ManyToManyField(Requirement, related_name='requirements+')
+    description = models.TextField(null=True, blank=True)
+
+    def __unicode__(self):
+        return f"{self.__class__.__name__}: {self.name}"
+
+    def __str__(self):
+        return self.__unicode__()
+
+
 class ComponentVersionModel(models.Model):
     component = models.ForeignKey(ComponentModel, on_delete=models.PROTECT, related_name='component_version')
 
     version = models.CharField(max_length=64, verbose_name="Version or build",
                                help_text="note: component version instance will be cloned if you change version!")
     comments = models.TextField(blank=True, null=True)
+    history = HistoricalRecords()
 
     # dependencies
 
@@ -279,6 +333,7 @@ class ComponentVersionModel(models.Model):
 
     dev_api_is_public = panopticum.fields.NoPartialYesField("API is public")
 
+    # TODO: deprecated. Let's remove
     # compliance
 
     compliance_applicable = models.BooleanField(verbose_name="Compliance requirements are applicable", default=True)
@@ -295,6 +350,7 @@ class ComponentVersionModel(models.Model):
     compliance_api_notes = panopticum.fields.SmartTextField("API guideline compliance notes")
     compliance_api_signoff = panopticum.fields.SigneeField(related_name='signed_api_guideline')
 
+    # TODO: deprecated. Let's remove
     # operational readiness information
 
     op_applicable = models.BooleanField(verbose_name="Operational requirements are applicable", default=True)
@@ -339,6 +395,7 @@ class ComponentVersionModel(models.Model):
     op_safe_delete = models.BooleanField(help_text="Is it safe to delete?", blank=True, null=True)
     op_safe_redeploy = models.BooleanField(help_text="Is it safe to redeploy?", blank=True, null=True)
 
+    # TODO: deprecated. Let's remove
     # maintainability
 
     mt_applicable = models.BooleanField(verbose_name="Maintainability requirements are applicable", default=True)
@@ -411,7 +468,7 @@ class ComponentVersionModel(models.Model):
 
     meta_update_by = models.ForeignKey(User, on_delete=models.PROTECT, blank=True, null=True, related_name='updater_of')
     meta_update_date = models.DateTimeField(db_index=True)
-    meta_deleted = models.BooleanField()
+    meta_deleted = models.BooleanField(default=False)
 
     meta_compliance_rating = models.IntegerField(default=0)
     meta_mt_rating = models.IntegerField(default=0)

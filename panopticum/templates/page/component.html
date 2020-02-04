@@ -2,7 +2,13 @@
 
 {% block title %} [[ component.name ]] {% endblock title %}
 
+{% block scripts %}
+  {{ block.super }}
+ <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+{% endblock %}
+
 {% block stylesheets %}
+  <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
   {{ block.super }}
 {% endblock stylesheets %}
 
@@ -152,6 +158,7 @@ function init_profile_completeness_gauge(component) {
     };
 
     $('#profile-completeness-gauge-text').each(function(index, el) {
+
         if (component.latest_version.meta_profile_not_filled_fields == "")
             $(el).attr('title', 'Good job!');
         else if (component.latest_version.meta_profile_not_filled_fields)
@@ -184,20 +191,39 @@ function init_profile_completeness_gauge(component) {
 }
 
 function update_component_page_elements(component) {
-
     pa_replace_urls();
 
     $(".pa-quality").each(function(index, el) {
         $(el).html(pa_star_rating($(el).html()));
+        var val = $(el).html();
+        if (val == "unknown") {
+            $(el).html("<i class='unknown fa fa-question-circle'></i>");
+        } else if (val == "none") {
+            $(el).html("<i class='fa fa-star-o'></i><i class='fa fa-star-o'></i><i class='fa fa-star-o'></i>");
+        } else if (val == "low") {
+            $(el).html("<i class='fa fa-star'></i><i class='fa fa-star-o'></i><i class='fa fa-star-o'></i>");
+        } else if (val == "med") {
+            $(el).html("<i class='fa fa-star'></i><i class='fa fa-star'></i><i class='fa fa-star-o'></i>");
+        } else if (val == "high") {
+            $(el).html("<i class='fa fa-star'></i><i class='fa fa-star'></i><i class='fa fa-star'></i>");
+        }
     });
 
     $(".pa-status").each(function(index, el) {
-        $(el).html(pa_no_partial_yes($(el).html()));
+        var val = $(el).html();
+        if (val == "unknown") {
+            $(el).html("<i class='unknown fa fa-question-circle'></i>");
+        } else if (val == "no") {
+            $(el).html("<span class='no'>NO</span>");
+        } else if (val == "partial") {
+            $(el).html("<span class='some'>Some</span>");
+        } else if (val == "yes") {
+            $(el).html("<span class='yes'>YES</span>");
+        }
     });
 
     $(".pa-component-stars").each(function(index, el) {
-        var val = parseInt($(el).html());
-        console.log($(el), val);
+        var val = parseInt($(el).html());;
         var new_val = "";
         var on = "<i class='fa fa-star'></i>";
         var off = "<i class='fa fa-star-o'></i>";
@@ -206,8 +232,7 @@ function update_component_page_elements(component) {
         new_val += (val >= 40) ? on : off;
         new_val += (val >= 60) ? on : off;
         new_val += (val >= 80) ? on : off;
-        new_val += (val >= 95) ? on : off;
-        console.log(new_val);
+        new_val += (val >= 95) ? on : off;;
 
         $(el).html(new_val);
     });
@@ -229,9 +254,10 @@ function update_component_page_elements(component) {
 }
 
 function vue_component_init() {
-    console.log("vue_component_init()");
 
-    var url = '/api' + window.location.pathname + '/?format=json'
+    var url = `/api${window.location.pathname}/?format=json`
+    {% include "vue/widget-requirements.js" %}
+    {% include "vue/widget-signoff.js" %}
 
     const app = new Vue({
         el: "#vue-component",
@@ -248,23 +274,38 @@ function vue_component_init() {
             erroed: false
         },
         created: function() {
-           axios
-               .get(url)
-               .then(response => {
-                   this.component = response.data;
-                   if (this.component.latest_version == undefined)
-                       this.component.latest_version = default_latest_version;
-                   this.$nextTick(function () {
-                       update_component_page_elements(this.component);
-                   });
-               })
-               .catch(error => {
+          let component;
+          let latest_version = default_latest_version;
+          let requests = [
+              axios.get(url)
+                .then(response => {
+                   // we can't assign response.data directly to this.component, because it will trigger
+                   // rerender. We doesn't have component.latest_version at this moment and it will raise error at render.
+                   // We will get it component.latest_version later. Also if next request will be finished
+                   // first we will overwrite component.latest_version.
+                   component = response.data;
+                })
+                .catch(error => {
                    console.log(error);
                    this.errored = true
-               })
-               .finally(res => {
-                   this.loading = false;
+                }),
+              axios.get(`/api${window.location.pathname}/latest_version/?format=json`)
+                .then(response => {
+                    latest_version = response.data;
+                })
+                .catch(error => {
+                })
+          ];
+          // make parallel requests
+          axios.all(requests).then(_ => {
+               // when all requests is finished and all required data obtained, we can trigger rerender
+               component.latest_version = latest_version;
+               this.component = component;
+               this.loading = false;
+               this.$nextTick(function () {
+                    update_component_page_elements(this.component);
                });
+          });
         },
     });
 }

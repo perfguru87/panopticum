@@ -13,5 +13,5 @@ COPY ./requirements.txt .
 RUN apk add openldap jpeg zlib libpq
 RUN pip install /whl/*.whl && pip install -r requirements.txt
 COPY . .
-RUN python manage.py makemigrations
+RUN python manage.py makemigrations panopticum
 CMD gunicorn panopticum_django.wsgi:application --bind 0.0.0.0:8000 -k gevent

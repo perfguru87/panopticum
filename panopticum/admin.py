@@ -1,12 +1,20 @@
+import django.forms
 from django.contrib import admin
 from django.forms.widgets import SelectMultiple, NumberInput, TextInput, Textarea, Select
 import django.contrib.auth.admin
+from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
+import django.core.exceptions
 
 import datetime
 
 # Register your models here.
+import panopticum.fields
 from panopticum.models import *
+
+SIGNEE_STATUS_TYPE = 2 # Requirement status type with name = "approver person". Check init.json
+OWNER_STATUS_TYPE = 1
+UNKNOWN_REQUIREMENT_STATUS = 1 # it's unknown status. Check init.json fixture
 
 formfields_large = {models.ForeignKey: {'widget': Select(attrs={'width': '300px', 'style': 'width:300px'})},
                     models.ManyToManyField: {'widget': SelectMultiple(attrs={'size': '7', 'width': '300px', 'style': 'width:300px'})},
@@ -70,12 +78,134 @@ class ComponentDeploymentAdmin(admin.TabularInline):
     verbose_name_plural = "Component Deployments"
 
 
+class RequirementInlineAdmin(admin.TabularInline):
+    model = Requirement
+
+
+class RequirementForm(django.forms.ModelForm):
+    """ Custom admin form for Requirement row. We merge 2 requirement statuses to Requirement row.
+    Pay attention: we does not have model for Requirement row. We do not need it until we can calculate it
+    from requirement statues by django admin form and frontend """
+    owner_status = panopticum.fields.RequirementStatusChoiceField(queryset=RequirementStatus.objects.all(),
+                                                           label='Readiness')
+    owner_notes = django.forms.CharField(label='notes',
+                                         widget=django.forms.Textarea({'rows': '2'}),
+                                         max_length=16* pow(2, 10),
+                                         required=False,
+                                         )
+    approve_status = panopticum.fields.RequirementStatusChoiceField(
+        queryset=RequirementStatus.objects.filter(allow_for=2),  # signee status
+        label='Sign off'
+    )
+    approve_notes = django.forms.CharField(label='Sign off notes',
+                                           widget=django.forms.Textarea({'rows': '2'}),
+                                           max_length=16* pow(2, 10),
+                                           required=False)
+
+    def __init__(self, *args, **kwargs):
+
+        unknown_status = RequirementStatus.objects.get(pk=UNKNOWN_REQUIREMENT_STATUS)
+
+        # define initial fields values
+        self.base_fields['owner_status'].initial = unknown_status
+        self.base_fields['approve_status'].initial = unknown_status
+
+        if kwargs.get('instance'):
+            # read and set field values from status models
+            initial = {
+                'owner_status': kwargs['instance'].status,
+                'owner_notes': kwargs['instance'].notes
+            }
+            try:
+                signee_status_obj = RequirementStatusEntry.objects.get(
+                    requirement=kwargs['instance'].requirement,
+                    type=SIGNEE_STATUS_TYPE,
+                    component_version=kwargs['instance'].component_version
+                )
+                initial['approve_status'] = signee_status_obj.status
+                initial['approve_notes'] = signee_status_obj.notes
+            except django.core.exceptions.ObjectDoesNotExist:
+                # set default values for signee
+                initial['approve_status'] = RequirementStatus.objects.get(pk=1)  # unknown
+
+            kwargs.update(initial=initial)
+        super().__init__(*args, **kwargs)
+
+
+    def is_valid(self):
+        # skip validation for 3 empty requirement rows that added bellow
+        if 'requirement' not in self.cleaned_data:
+            return True
+        return super().is_valid()
+
+    def _save_status(self, field_prefix, type_pk):
+        status = self.cleaned_data[f'{field_prefix}_status']
+        notes = self.cleaned_data[field_prefix + "_notes"]
+        status_obj, created = RequirementStatusEntry.objects.get_or_create(
+            component_version=self.instance.component_version,
+            requirement=self.instance.requirement,
+            type=RequirementStatusType.objects.get(pk=type_pk),
+            defaults={
+                "status": status,
+                "notes": notes
+            }
+        )
+        if not created:
+            status_obj.status = status
+            status_obj.notes = notes
+            status_obj.save()
+        return status_obj
+
+    def save(self, commit=True, *args, **kwargs):
+        if 'requirement' in self.cleaned_data:
+            if 'approve_status' in self.changed_data or 'approve_notes' in self.changed_data:
+                self._save_status('approve', SIGNEE_STATUS_TYPE)
+
+            elif 'owner_status' in self.changed_data:  # reset sign off if readiness is changed
+                self.cleaned_data['approve_status'] = RequirementStatus.objects.get(pk=UNKNOWN_REQUIREMENT_STATUS)
+                self._save_status('approve', SIGNEE_STATUS_TYPE)
+            return self._save_status('owner', OWNER_STATUS_TYPE)
+
+
+class RequirementStatusEntryAdmin(admin.TabularInline):
+    model = RequirementStatusEntry
+    inlines = (RequirementInlineAdmin, )
+    form = RequirementForm
+    fields = ('requirement', 'owner_status', 'owner_notes','approve_status',  'approve_notes')
+
+    def get_queryset(self, request):
+        qs =super().get_queryset(request)
+        return qs.filter(type=1) # component owner
+
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+
+        field_map = {
+            "requirement": panopticum.fields.RequirementChoiceField(
+                queryset=Requirement.objects.all()
+            ),
+        }
+
+        if db_field.name in field_map:
+            return field_map[db_field.name]
+        else:
+            return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+class RequirementAdmin(admin.ModelAdmin):
+    list_display = ['title']
+    model = Requirement
+
+class RequirementSetAdmin(admin.ModelAdmin):
+    filter_horizontal = ['requirements', ]
+    list_display = ['name']
+    model = RequirementSet
+
 class ComponentVersionAdmin(admin.ModelAdmin):
     formfield_overrides = formfields_large
 
-    inlines = (ComponentDependencyAdmin, ComponentDeploymentAdmin)
+    inlines = (ComponentDependencyAdmin, ComponentDeploymentAdmin, RequirementStatusEntryAdmin)
 
-    fieldsets = (
+    fieldsets = [
         (None, {'fields': ('component', 'version', 'comments')}),
         ('Ownership', {'classes': ('collapse', 'select-200px'),
                        'fields': (
@@ -88,31 +218,7 @@ class ComponentVersionAdmin(admin.ModelAdmin):
                                      ('dev_repo', 'dev_public_repo'),
                                      ('dev_docs', 'dev_public_docs'),
                                      ('dev_build_jenkins_job', 'dev_api_is_public'))}),
-        ('Compliance', {'classes': ('collapse', 'show_hide_applicable'),
-                          'fields': ('compliance_applicable',
-                                     ('compliance_fips_status', 'compliance_fips_notes'),
-                                     ('compliance_gdpr_status', 'compliance_gdpr_notes'),
-                                     ('compliance_api_status', 'compliance_api_notes'))}),
-        ('Operations capabilities', {'classes': ('collapse', 'show_hide_applicable'),
-                          'fields': ('op_applicable',
-                                     ('op_guide_status', 'op_guide_notes'),
-                                     ('op_failover_status', 'op_failover_notes'),
-                                     ('op_horizontal_scalability_status', 'op_horizontal_scalability_notes'),
-                                     ('op_scaling_guide_status', 'op_scaling_guide_notes'),
-                                     ('op_sla_guide_status', 'op_sla_guide_notes'),
-                                     ('op_metrics_status', 'op_metrics_notes'),
-                                     ('op_alerts_status', 'op_alerts_notes'),
-                                     ('op_zero_downtime_status', 'op_zero_downtime_notes'),
-                                     ('op_backup_status', 'op_backup_notes'),
-                                      'op_safe_restart')}),
-        ('Maintenance capabilities', {'classes': ('collapse', 'show_hide_applicable'),
-                          'fields': ('mt_applicable',
-                                     ('mt_http_tracing_status', 'mt_http_tracing_notes'),
-                                     ('mt_logging_completeness_status', 'mt_logging_completeness_notes'),
-                                     ('mt_logging_format_status', 'mt_logging_format_notes'),
-                                     ('mt_logging_storage_status', 'mt_logging_storage_notes'),
-                                     ('mt_logging_sanitization_status', 'mt_logging_sanitization_notes'),
-                                     ('mt_db_anonymisation_status', 'mt_db_anonymisation_notes'))}),
+
         ('Quality Assurance', {'classes': ('collapse', 'show_hide_applicable'),
                           'fields': ('qa_applicable',
                                      ('qa_manual_tests_status', 'qa_manual_tests_notes'),
@@ -124,7 +230,7 @@ class ComponentVersionAdmin(admin.ModelAdmin):
                                      ('qa_api_tests_status', 'qa_api_tests_notes'),
                                      ('qa_anonymisation_tests_status', 'qa_anonymisation_tests_notes'),
                                      ('qa_upgrade_tests_status', 'qa_upgrade_tests_notes'))}),
-    )
+    ]
 
     def formfield_for_manytomany(self, db_field, request, **kwargs):
         # standard django method
@@ -193,3 +299,5 @@ admin.site.register(ComponentVersionModel, ComponentVersionAdmin)
 admin.site.register(DeploymentLocationClassModel)
 admin.site.register(DeploymentEnvironmentModel)
 admin.site.register(TCPPortModel)
+admin.site.register(RequirementSet, RequirementSetAdmin)
+admin.site.register(Requirement, RequirementAdmin)
