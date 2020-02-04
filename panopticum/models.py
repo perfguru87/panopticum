@@ -3,7 +3,7 @@ from datatableview.views import DatatableView
 from datatableview import helpers
 from django.forms.models import model_to_dict
 import datetime
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import AbstractUser, Group
 from simple_history.models import HistoricalRecords
 
 import panopticum.fields
@@ -285,8 +285,10 @@ class Requirement(models.Model):
 class RequirementSet(models.Model):
     """ Container for requirements. Example of usage: various requirement widgets at frontend """
     name = models.CharField(max_length=30, unique=True)
-    requirements = models.ManyToManyField(Requirement, related_name='requirements+')
+    requirements = models.ManyToManyField(Requirement, related_name='sets')
     description = models.TextField(null=True, blank=True)
+    #
+    owner_groups = models.ManyToManyField(Group, related_name='owner_groups', blank=True)
 
     def __unicode__(self):
         return f"{self.__class__.__name__}: {self.name}"

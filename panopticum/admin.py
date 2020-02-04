@@ -176,7 +176,6 @@ class RequirementForm(django.forms.ModelForm):
 
 class RequirementStatusEntryAdmin(admin.TabularInline):
     model = RequirementStatusEntry
-    inlines = (RequirementInlineAdmin, )
     form = RequirementForm
     fields = ('requirement', 'owner_status', 'owner_notes','approve_status',  'approve_notes')
 
@@ -186,14 +185,24 @@ class RequirementStatusEntryAdmin(admin.TabularInline):
 
     def get_queryset(self, request):
         qs =super().get_queryset(request)
-        return qs.filter(type=1) # component owner
+        # show requirements available for requirement set owners only
+        if not request.user.has_perm('panopticum.change_owner_status') and \
+                request.user.has_perm('panopticum.change_signee_status'):
+            return qs.filter(type=SIGNEE_STATUS_TYPE,
+                             requirement__sets__owner_groups__in=request.user.groups.all())
+        return qs.filter(type=OWNER_STATUS_TYPE)
 
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        requirement_qs = Requirement.objects.all()
+        # choice list must contain only requirements available for requirement set owners
+        if not request.user.has_perm('panopticum.change_owner_status') and \
+                request.user.has_perm('panopticum.change_signee_status'):
+            requirement_qs = requirement_qs.filter(sets__owner_groups__in=request.user.groups.all())
 
         field_map = {
             "requirement": panopticum.fields.RequirementChoiceField(
-                queryset=Requirement.objects.all()
+                queryset=requirement_qs
             ),
         }
 
@@ -207,7 +216,7 @@ class RequirementAdmin(admin.ModelAdmin):
     model = Requirement
 
 class RequirementSetAdmin(admin.ModelAdmin):
-    filter_horizontal = ['requirements', ]
+    filter_horizontal = ['requirements', 'owner_groups']
     list_display = ['name']
     model = RequirementSet
 
