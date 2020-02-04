@@ -260,6 +260,10 @@ class RequirementStatusEntry(models.Model):
 
     class Meta:
         unique_together = ['status', 'type', 'component_version', 'requirement']
+        permissions = [
+            ("change_owner_status", "Can change component owner status"),
+            ("change_signee_status", "Can change signee status")
+        ]
 
     def __unicode__(self):
         return f"{self.__class__.__name__}: {self.status.name} ({self.status.type.name})"

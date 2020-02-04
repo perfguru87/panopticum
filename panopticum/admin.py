@@ -1,12 +1,10 @@
 import django.forms
 from django.contrib import admin
 from django.forms.widgets import SelectMultiple, NumberInput, TextInput, Textarea, Select
-import django.contrib.auth.admin
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 import django.core.exceptions
-
-import datetime
+from django.contrib.auth.models import AnonymousUser
 
 # Register your models here.
 import panopticum.fields
@@ -101,19 +99,19 @@ class RequirementForm(django.forms.ModelForm):
                                            widget=django.forms.Textarea({'rows': '2'}),
                                            max_length=16* pow(2, 10),
                                            required=False)
-
+    user = AnonymousUser()
     def __init__(self, *args, **kwargs):
 
         unknown_status = RequirementStatus.objects.get(pk=UNKNOWN_REQUIREMENT_STATUS)
 
         # define initial fields values
-        self.base_fields['owner_status'].initial = unknown_status
-        self.base_fields['approve_status'].initial = unknown_status
+        self.base_fields['owner_status'].initial = unknown_status.pk
+        self.base_fields['approve_status'].initial = unknown_status.pk
 
         if kwargs.get('instance'):
             # read and set field values from status models
             initial = {
-                'owner_status': kwargs['instance'].status,
+                'owner_status': kwargs['instance'].status.pk,
                 'owner_notes': kwargs['instance'].notes
             }
             try:
@@ -122,15 +120,24 @@ class RequirementForm(django.forms.ModelForm):
                     type=SIGNEE_STATUS_TYPE,
                     component_version=kwargs['instance'].component_version
                 )
-                initial['approve_status'] = signee_status_obj.status
+                initial['approve_status'] = signee_status_obj.status.pk
                 initial['approve_notes'] = signee_status_obj.notes
             except django.core.exceptions.ObjectDoesNotExist:
                 # set default values for signee
-                initial['approve_status'] = RequirementStatus.objects.get(pk=1)  # unknown
+                initial['approve_status'] = 1  # unknown
 
             kwargs.update(initial=initial)
+
         super().__init__(*args, **kwargs)
 
+        if 'instance' in kwargs: # disable defined requirement. We disallow to change requirement title after save
+            self.fields['requirement'].disabled = True
+        if not self.user.has_perm('panopticum.change_owner_status'):
+            self.fields['owner_status'].disabled = True
+            self.fields['owner_notes'].disabled = True
+        if not self.user.has_perm('panopticum.change_signee_status'):
+            self.fields['approve_status'].disabled = True
+            self.fields['approve_notes'].disabled = True
 
     def is_valid(self):
         # skip validation for 3 empty requirement rows that added bellow
@@ -172,6 +179,10 @@ class RequirementStatusEntryAdmin(admin.TabularInline):
     inlines = (RequirementInlineAdmin, )
     form = RequirementForm
     fields = ('requirement', 'owner_status', 'owner_notes','approve_status',  'approve_notes')
+
+    def get_formset(self, request, obj=None, **kwargs):
+        self.form.user = request.user
+        return super().get_formset(request, obj, **kwargs)
 
     def get_queryset(self, request):
         qs =super().get_queryset(request)
