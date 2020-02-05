@@ -1,3 +1,4 @@
+import django.forms
 from django.db import models
 from datatableview.views import DatatableView
 from datatableview import helpers
