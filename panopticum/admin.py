@@ -89,10 +89,10 @@ class RequirementForm(django.forms.ModelForm):
     Pay attention: we does not have model for Requirement row. We do not need it until we can calculate it
     from requirement statues by django admin form and frontend """
     owner_status = panopticum.fields.RequirementStatusChoiceField(queryset=RequirementStatus.objects.all(),
-                                                           label='Readiness')
+                                                                  label='Readiness')
     owner_notes = django.forms.CharField(label='notes',
                                          widget=django.forms.Textarea({'rows': '2'}),
-                                         max_length=16* pow(2, 10),
+                                         max_length=16 * pow(2, 10),
                                          required=False,
                                          )
     approve_status = panopticum.fields.RequirementStatusChoiceField(
@@ -101,7 +101,7 @@ class RequirementForm(django.forms.ModelForm):
     )
     approve_notes = django.forms.CharField(label='Sign off notes',
                                            widget=django.forms.Textarea({'rows': '2'}),
-                                           max_length=16* pow(2, 10),
+                                           max_length=16 * pow(2, 10),
                                            required=False)
     user = AnonymousUser()
 
@@ -128,11 +128,7 @@ class RequirementForm(django.forms.ModelForm):
                 'owner_notes': kwargs['instance'].notes
             }
             try:
-                signee_status_obj = RequirementStatusEntry.objects.get(
-                    requirement=kwargs['instance'].requirement,
-                    type=SIGNEE_STATUS_TYPE,
-                    component_version=kwargs['instance'].component_version
-                )
+                signee_status_obj = self.get_signee_status(kwargs['instance'])
                 initial['approve_status'] = signee_status_obj.status.pk
                 initial['approve_notes'] = signee_status_obj.notes
             except django.core.exceptions.ObjectDoesNotExist:
@@ -143,7 +139,7 @@ class RequirementForm(django.forms.ModelForm):
 
         super().__init__(*args, **kwargs)
 
-        if 'instance' in kwargs: # disable defined requirement. We disallow to change requirement title after save
+        if 'instance' in kwargs:  # disable defined requirement. We disallow to change requirement title after save
             self.fields['requirement'].disabled = True
         if not self.user.has_perm(OWNER_STATUS_PERMISSION):
             self.fields['owner_status'].disabled = True
@@ -151,6 +147,14 @@ class RequirementForm(django.forms.ModelForm):
         if not self.user.has_perm(SIGNEE_STATUS_PERMISSION):
             self.fields['approve_status'].disabled = True
             self.fields['approve_notes'].disabled = True
+
+    @staticmethod
+    def get_signee_status(obj):
+        return RequirementStatusEntry.objects.get(
+            requirement=obj.requirement,
+            type=SIGNEE_STATUS_TYPE,
+            component_version=obj.component_version
+        )
 
     def is_valid(self):
         # skip validation for 3 empty requirement rows that added bellow
@@ -190,7 +194,19 @@ class RequirementForm(django.forms.ModelForm):
 class RequirementStatusEntryAdmin(admin.TabularInline):
     model = RequirementStatusEntry
     form = RequirementForm
-    fields = ('requirement', 'owner_status', 'owner_notes','approve_status', 'approve_notes')
+    fields = ('requirement', 'owner_status', 'owner_notes', 'approve_status', 'approve_notes')
+
+    def owner_status(self, obj):
+        return obj.status.name
+
+    def owner_notes(self, obj):
+        return obj.notes
+
+    def approve_status(self, obj):
+        return self.form.get_signee_status(obj).status.name
+
+    def approve_notes(self, obj):
+        return self.form.get_signee_status(obj).notes
 
     def get_formset(self, request, obj=None, **kwargs):
         self.form.user = request.user
@@ -204,7 +220,6 @@ class RequirementStatusEntryAdmin(admin.TabularInline):
             return qs.filter(type=SIGNEE_STATUS_TYPE,
                              requirement__sets__owner_groups__in=request.user.groups.all())
         return qs.filter(type=OWNER_STATUS_TYPE)
-
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         requirement_qs = Requirement.objects.all()
@@ -238,10 +253,12 @@ class RequirementAdmin(admin.ModelAdmin):
     list_display = ['title']
     model = Requirement
 
+
 class RequirementSetAdmin(admin.ModelAdmin):
     filter_horizontal = ['requirements', 'owner_groups']
     list_display = ['name']
     model = RequirementSet
+
 
 class ComponentVersionAdmin(admin.ModelAdmin):
     formfield_overrides = formfields_large
