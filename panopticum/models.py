@@ -257,6 +257,7 @@ class RequirementStatusEntry(models.Model):
     requirement = models.ForeignKey('Requirement', related_name='statuses', on_delete=models.CASCADE)
     notes = models.TextField(null=True, blank=True, max_length=255)
     component_version = models.ForeignKey('ComponentVersionModel', related_name='statuses', on_delete=models.CASCADE)
+    history = HistoricalRecords()
 
     class Meta:
         unique_together = ['status', 'type', 'component_version', 'requirement']
