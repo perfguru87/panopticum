@@ -186,6 +186,14 @@
     }
   },
   {
+    "model": "panopticum.requirement",
+    "pk": 18,
+    "fields": {
+      "title": "GDPR compliance",
+      "description": ""
+    }
+  },
+  {
     "model": "panopticum.requirementset",
     "pk": 1,
     "fields": {
@@ -209,7 +217,7 @@
     "fields": {
       "name": "Compliance",
       "description": "",
-      "requirements": [16, 17]
+      "requirements": [16, 17, 18]
     }
   }
 ]
