@@ -346,7 +346,7 @@ i.yes, i.no, i.unknown {
     text-align: center;
 }
 i.yes { color: green; }
-i.no { color: rgb(209, 58, 58); }
+i.no { color: rgb(209, 58, 58);}
 i.unknown { color: #aaa; }
 
 .el-popper[x-placement^=top] .popper__arrow  {
@@ -441,4 +441,8 @@ span.pa-component-stars i {
 .jira-issue-resolved span {
     text-decoration: none;
     display: inline-block;
+}
+
+.pointer {
+    cursor: pointer;
 }
