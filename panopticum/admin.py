@@ -99,7 +99,7 @@ class RequirementForm(django.forms.ModelForm):
         queryset=RequirementStatus.objects.filter(allow_for=SIGNEE_STATUS_TYPE),
         label='Sign off'
     )
-    approve_notes = django.forms.CharField(label='Sign off notes',
+    approve_notes = django.forms.CharField(label='Signee notes',
                                            widget=django.forms.Textarea({'rows': '2'}),
                                            max_length=16 * pow(2, 10),
                                            required=False)
@@ -292,10 +292,16 @@ class ComponentVersionAdmin(admin.ModelAdmin):
                                      ('qa_upgrade_tests_status', 'qa_upgrade_tests_notes'))}),
     ]
 
-    def has_change_permission(self, request, obj: typing.Optional[ComponentVersionModel] =None):
+    def has_change_permission(self, request, obj: typing.Optional[ComponentVersionModel]=None):
         return request.user.is_superuser or \
-               (obj and request.user == obj.owner_maintainer)
+               (obj and request.user == obj.owner_maintainer) or request.user.has_perm(SIGNEE_STATUS_PERMISSION)
 
+    def get_readonly_fields(self, request, obj=None):
+        readonly_fields = set(super().get_readonly_fields(request, obj))
+        if request.user.has_perm(SIGNEE_STATUS_PERMISSION):
+            for title, definition  in self.get_fieldsets(request, obj):
+                readonly_fields.update(definition.get('fields', ()))
+        return tuple(readonly_fields)
 
     def formfield_for_manytomany(self, db_field, request, **kwargs):
         # standard django method
