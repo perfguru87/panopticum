@@ -14,17 +14,21 @@ Vue.component('widget-signoff', {
       return `${window.location.origin}/api`
     },
     popupEnabled: function() {
-      return this.status && (this.status.notes || this.history)
+      return this.status && (this.status.notes || this.history) && this.status.type == 'requirement reviewer' && this.status.status != 'unknown'
+    },
+    username: function() {
+      if (!this.user) return null;
+      if (this.user.first_name && this.user.last_name) {
+        return `${this.user.first_name} ${this.user.last_name}`
+      } else { 
+        return this.user.username;
+      }
     }
   },
   data: function() {
     return {
       'history': null,
-    }
-  },
-  watch: {
-    history: function() {
-      console.log(this.history.user);
+      'user': null 
     }
   },
   mounted: function() {
@@ -36,7 +40,7 @@ Vue.component('widget-signoff', {
       .then(resp => {
         if (resp.data.count > 0) {
           this.history = resp.data.results[0];
-          axios.get(this.history.history_user).then(resp => this.history.user = resp.data)
+          axios.get(this.history.history_user).then(resp => this.user = resp.data)
         }
       })
     },
@@ -57,10 +61,14 @@ Vue.component('widget-signoff', {
               trigger="click"
               popper-class="signoff-popover"
               v-bind:disabled = "!popupEnabled"
+              offset = -10
   >
-    <div v-if="history && history.user">Updated by {{ history.user }} <br/>
-    at {{ formatDate(history.history_date) }}</div>
-    <span slot="reference" >
+    <div v-if="history && user">
+      <div class="text item">Updated by <span style="font-weight: bold">{{ username }}</span></div>
+      <div class="text item">at {{ formatDate(history.history_date) }}</div>
+      <div class="text item" v-if="status.notes && status.type=='requirement reviewer'">by reason: {{ status.notes }}</div>
+    </div>
+    <span slot="reference">
       <i v-if="status && ['yes', 'no'].includes(status.status)" v-bind:class="classObject" style="font-size: 16px;"></i>
       <i v-else-if="status && ['n/a'].includes(status.status)" v-bind:class="classObject" style="font-size: 12px;">
       N/A

@@ -1,122 +1,115 @@
 {% load static %}
-        <div class="x_panel">
-          <div class="x_title">
-            <h2>Owners</h2>
-            <ul class="nav navbar-right panel_toolbox">
-              <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
-              <li><a class="close-link"><i class="fa fa-close"></i></a></li>
-            </ul>
-            <div class="clearfix"></div>
-          </div>
-          <div class="x_content">
-            <div class="owners-list">
+<el-card>
+  <div slot="header" class="clearfix">
+    <h2>Owners</h2>
+  </div>
+    <div class="owners-list">
 
-              <table style='width: 100%;' v-cloak>
-              <tr>
-                <td class='owner'>
-                  <div class='block'>
-                    <div class='image'>
-                      <img v-bind:src="component.latest_version.owner_maintainer.photo" v-if="component.latest_version.owner_maintainer">
-                      <img v-else src="{% static '/images/default_avatar.png' %}">
-                    </div>
-                    <div class='details'>
-                      <b v-if='component.latest_version.owner_maintainer'>
-                        [[ component.latest_version.owner_maintainer.name ]]</b> - Maintainer<br>
-                      <a v-if='component.latest_version.owner_maintainer'
-                         v-bind:href="`mailto:${component.latest_version.owner_maintainer.email}`">
-                        [[ component.latest_version.owner_maintainer.email ]], </a>
-                      <span v-if='component.latest_version.owner_maintainer'>
-                        [[ component.latest_version.owner_maintainer.mobile_phone ]]</span>
-                    </div>
-                  </div>
-                </td>
-              </tr>
-
-              <tr>
-                <td class='owner'>
-                  <div class='block'>
-                    <div class='image'>
-                      <img v-bind:src="component.latest_version.owner_responsible_qa.photo" v-if="component.latest_version.owner_responsible_qa">
-                      <img v-else src="{% static '/images/default_avatar.png' %}">
-                    </div>
-                    <div class='details'>
-                      <b v-if='component.latest_version.owner_responsible_qa'>
-                        [[ component.latest_version.owner_responsible_qa.name ]]</b> - Responsible QA<br>
-                      <a v-if='component.latest_version.owner_responsible_qa'
-                         v-bind:href="`mailto:${component.latest_version.owner_responsible_qa.email}`">
-                        [[ component.latest_version.owner_responsible_qa.email ]], </a>
-                      <span v-if='component.latest_version.owner_responsible_qa'>
-                        [[ component.latest_version.owner_responsible_qa.mobile_phone ]]</span>
-                    </div>
-                  </div>
-                </td>
-              </tr>
-
-              <tr v-for="p in component.latest_version.owner_product_manager">
-                <td class='owner'>
-                  <div class='block'>
-                    <div class='image'><img v-bind:src="p.photo"></div>
-                    <div class='details'>
-                      <b>[[ p.name ]]</b> - Product Manager<br>
-                      <a v-bind:href="`mailto:${p.email}`">[[ p.email ]]</a>, [[ p.mobile_phone ]]
-                    </div>
-                  </div>
-                </td>
-              </tr>
-
-              <tr v-for="p in component.latest_version.owner_program_manager">
-                <td class='owner'>
-                  <div class='block'>
-                    <div class='image'><img v-bind:src="p.photo"></div>
-                    <div class='details'>
-                      <b>[[ p.name ]]</b> - Program Manager<br>
-                      <a v-bind:href="`mailto:${p.email}`">[[ p.email ]]</a>, [[ p.mobile_phone ]]
-                    </div>
-                  </div>
-                </td>
-              </tr>
-
-              <tr v-for="p in component.latest_version.owner_architect">
-                <td class='owner'>
-                  <div class='block'>
-                    <div class='image'><img v-bind:src="p.photo"></div>
-                    <div class='details'>
-                      <b>[[ p.name ]]</b> - Architect<br>
-                      <a v-bind:href="`mailto:${p.email}`">[[ p.email ]]</a>, [[ p.mobile_phone ]]
-                    </div>
-                  </div>
-                </td>
-              </tr>
-
-              <tr>
-                <td class='owner'>
-                  <div class='block'>
-                    <div class='image'><i class='fa fa-phone'></i></div>
-                    <div class='details' style='min-height: 42px;'>
-                      <b>Escalation list:</b><br>
-                      <div v-for="p in component.latest_version.owner_escalation_list">
-                        <a v-bind:href="`mailto:${p.email}`">[[ p.email ]]</a>, [[ p.mobile_phone ]]
-                      </div>
-                    </div>
-                  </div>
-                </td>
-              </tr>
-
-              <tr>
-                <td class='owner'>
-                  <div class='block'>
-                    <div class='image'><i class='fa fa-question'></i></div>
-                    <div class='details' style='min-height: 42px;'>
-                      <b>Experts:</b><br>
-                      <div v-for="p in component.latest_version.owner_expert">
-                        <a v-bind:href="`mailto:${p.email}`">[[ p.email ]]</a>, [[ p.mobile_phone ]]
-                      </div>
-                    </div>
-                  </div>
-                </td>
-              </tr>
-
-              </table>
+      <table style='width: 100%;' v-cloak>
+      <tr>
+        <td class='owner'>
+          <div class='block'>
+            <div class='image'>
+              <img v-bind:src="component.latest_version.owner_maintainer.photo" v-if="component.latest_version.owner_maintainer">
+              <img v-else src="{% static '/images/default_avatar.png' %}">
+            </div>
+            <div class='details'>
+              <b v-if='component.latest_version.owner_maintainer'>
+                [[ component.latest_version.owner_maintainer.name ]]</b> - Maintainer<br>
+              <a v-if='component.latest_version.owner_maintainer'
+                  v-bind:href="`mailto:${component.latest_version.owner_maintainer.email}`">
+                [[ component.latest_version.owner_maintainer.email ]], </a>
+              <span v-if='component.latest_version.owner_maintainer'>
+                [[ component.latest_version.owner_maintainer.mobile_phone ]]</span>
             </div>
           </div>
-        </div>
+        </td>
+      </tr>
+
+      <tr>
+        <td class='owner'>
+          <div class='block'>
+            <div class='image'>
+              <img v-bind:src="component.latest_version.owner_responsible_qa.photo" v-if="component.latest_version.owner_responsible_qa">
+              <img v-else src="{% static '/images/default_avatar.png' %}">
+            </div>
+            <div class='details'>
+              <b v-if='component.latest_version.owner_responsible_qa'>
+                [[ component.latest_version.owner_responsible_qa.name ]]</b> - Responsible QA<br>
+              <a v-if='component.latest_version.owner_responsible_qa'
+                  v-bind:href="`mailto:${component.latest_version.owner_responsible_qa.email}`">
+                [[ component.latest_version.owner_responsible_qa.email ]], </a>
+              <span v-if='component.latest_version.owner_responsible_qa'>
+                [[ component.latest_version.owner_responsible_qa.mobile_phone ]]</span>
+            </div>
+          </div>
+        </td>
+      </tr>
+
+      <tr v-for="p in component.latest_version.owner_product_manager">
+        <td class='owner'>
+          <div class='block'>
+            <div class='image'><img v-bind:src="p.photo"></div>
+            <div class='details'>
+              <b>[[ p.name ]]</b> - Product Manager<br>
+              <a v-bind:href="`mailto:${p.email}`">[[ p.email ]]</a>, [[ p.mobile_phone ]]
+            </div>
+          </div>
+        </td>
+      </tr>
+
+      <tr v-for="p in component.latest_version.owner_program_manager">
+        <td class='owner'>
+          <div class='block'>
+            <div class='image'><img v-bind:src="p.photo"></div>
+            <div class='details'>
+              <b>[[ p.name ]]</b> - Program Manager<br>
+              <a v-bind:href="`mailto:${p.email}`">[[ p.email ]]</a>, [[ p.mobile_phone ]]
+            </div>
+          </div>
+        </td>
+      </tr>
+
+      <tr v-for="p in component.latest_version.owner_architect">
+        <td class='owner'>
+          <div class='block'>
+            <div class='image'><img v-bind:src="p.photo"></div>
+            <div class='details'>
+              <b>[[ p.name ]]</b> - Architect<br>
+              <a v-bind:href="`mailto:${p.email}`">[[ p.email ]]</a>, [[ p.mobile_phone ]]
+            </div>
+          </div>
+        </td>
+      </tr>
+
+      <tr>
+        <td class='owner'>
+          <div class='block'>
+            <div class='image'><i class='fa fa-phone'></i></div>
+            <div class='details' style='min-height: 42px;'>
+              <b>Escalation list:</b><br>
+              <div v-for="p in component.latest_version.owner_escalation_list">
+                <a v-bind:href="`mailto:${p.email}`">[[ p.email ]]</a>, [[ p.mobile_phone ]]
+              </div>
+            </div>
+          </div>
+        </td>
+      </tr>
+
+      <tr>
+        <td class='owner'>
+          <div class='block'>
+            <div class='image'><i class='fa fa-question'></i></div>
+            <div class='details' style='min-height: 42px;'>
+              <b>Experts:</b><br>
+              <div v-for="p in component.latest_version.owner_expert">
+                <a v-bind:href="`mailto:${p.email}`">[[ p.email ]]</a>, [[ p.mobile_phone ]]
+              </div>
+            </div>
+          </div>
+        </td>
+      </tr>
+
+      </table>
+    </div>
+</el-card>

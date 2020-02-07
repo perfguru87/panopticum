@@ -36,9 +36,6 @@
               {% include "widget/component_summary.html" %}
             </div>
             <div class="col-xs-12">
-              {% include "widget/component_activity.html" %}
-            </div>
-            <div class="col-xs-12">
               {% include "widget/component_dependency.html" %}
             </div>
           </div>
@@ -63,7 +60,6 @@
       </div>
 
     </div>
-  </div>
 
 {% endblock %}
 
@@ -85,40 +81,6 @@ var default_latest_version = {
     'owner_architect': {},
     'meta_profile_not_filled_fields': '',
 };
-
-function init_activity_chart() {
-    if ($('#activity-chart').length) {
-
-        var ctx = document.getElementById("activity-chart");
-        var chart = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul"],
-                datasets: [{
-                    label: 'Bugs in JIRA',
-                    backgroundColor: "#26B99A",
-                    data: [51, 30, 40, 28, 92, 50, 45]
-                }, {
-                    label: 'Commits in Git',
-                    backgroundColor: "#03586A",
-                    data: [41, 56, 25, 48, 72, 34, 12]
-                }]
-            },
-
-            options: {
-                scales: {
-                    yAxes: [{
-                        ticks: {
-                            stepSize: 20,
-                            beginAtZero: true
-                        }
-                    }]
-                }
-            }
-        });
-
-    }
-}
 
 function init_rating_chart() {
     $('.chart').easyPieChart({
@@ -250,7 +212,6 @@ function update_component_page_elements(component) {
 
     init_profile_completeness_gauge(component);
     init_rating_chart();
-    init_activity_chart();
 }
 
 function vue_component_init() {

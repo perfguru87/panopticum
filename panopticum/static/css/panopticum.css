@@ -446,3 +446,7 @@ span.pa-component-stars i {
 .pointer {
     cursor: pointer;
 }
+
+.el-card__header {
+    padding: 5px 20px;
+}

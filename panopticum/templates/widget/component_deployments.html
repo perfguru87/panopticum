@@ -1,67 +1,30 @@
-        <div class="x_panel">
-          <div class="x_title">
-            <h2>Deployments</h2>
-            <ul class="nav navbar-right panel_toolbox">
-              <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
-              <li><a class="close-link"><i class="fa fa-close"></i></a></li>
-            </ul>
-            <div class="clearfix"></div>
-          </div>
+<el-card v-if="component.latest_version.deployments && component.latest_version.deployments.length">
+  <div slot="header" class="clearfix">
+    <h2>Deployments</h2>
+  </div>
 
-          <div class="x_content">
+    <h4>Deployment Types</h4>
+    <table class='status-table table-auto-width' v-cloak>
+      <thead>
+        <tr>
+          <th>Product</th>
+          <th>Location</th>
+          <th>Env</th>
+          <th>Service</th>
+          <th>Ports</th>
+          <th>Notes</th>
+        </tr>
+      </thead>
 
-            <h3>Deployment Types</h3>
-            <table class='status-table table-auto-width' v-cloak>
-              <thead>
-                <tr>
-                  <th>Product</th>
-                  <th>Location</th>
-                  <th>Env</th>
-                  <th>Service</th>
-                  <th>Ports</th>
-                  <th>Notes</th>
-                </tr>
-              </thead>
-
-              <tbody>
-                <tr v-for='d in component.latest_version.deployments'>
-                  <td v-tooltip:right="[[ d.product_version.name ]]">[[ d.product_version.shortname]]</td>
-                  <td>[[ d.location_class.name ]]</td>
-                  <td>[[ d.environment.name ]]</td>
-                  <td>[[ d.service_name ]] [[ d.binary_name ]]</td>
-                  <td>[[ d.open_ports ]]</td>
-                  <td class='pa-replace-urls'>[[ d.notes ]]</td>
-                </tr>
-              </tbody>
-            </table>
-
-            <div style='opacity: 0.5; padding-top: 15px;'>
-            <h3>Cloud deployments (TODO)</h3>
-            <table class='status-table table-auto-width'>
-              <thead>
-                <tr class='auto-width'>
-                  <th>Datacenter</th>
-                  <th>Y/N</th>
-                  <th>Metrics</th>
-                  <th>Logs</th>
-                  <th>Alerts</th>
-                  <th>Notes</th>
-                </tr>
-              </thead>
-
-              <tbody>
-                <tr><td>US1</td><td>YES</td><td><a href="#">metrics</a></td><td>-</td><td>-</td><td>-</td></tr>
-                <tr><td>US2</td><td>YES</td><td><a href="#">metrics</a></td><td>-</td><td>-</td><td>-</td></tr>
-                <tr><td>US3</td><td>YES</td><td><a href="#">metrics</a></td><td>-</td><td>-</td><td>-</td></tr>
-                <tr><td>US4</td><td>YES</td><td><a href="#">metrics</a></td><td>-</td><td>-</td><td>-</td></tr>
-                <tr><td>EU1</td><td>YES</td><td><a href="#">metrics</a></td><td><a href="#">logs</a></td><td>-</td><td>-</td></tr>
-                <tr><td>EU2</td><td>YES</td><td><a href="#">metrics</a></td><td><a href="#">logs</a></td><td>-</td><td>-</td></tr>
-                <tr><td>AU1</td><td>YES</td><td><a href="#">metrics</a></td><td>-</td><td><a href="#">alerts</a></td><td>-</td></tr>
-                <tr><td>XG1</td><td>No</td><td><a href="#">-</a></td><td>-</td><td>-</td><td>-</td></tr>
-                <tr><td>XG2</td><td>No</td><td><a href="#">-</a></td><td>-</td><td>-</td><td>-</td></tr>
-              </tbody>
-            </table>
-            </div>
-
-          </div>
-        </div>
+      <tbody>
+        <tr v-for='d in component.latest_version.deployments'>
+          <td v-tooltip:right="[[ d.product_version.name ]]">[[ d.product_version.shortname]]</td>
+          <td>[[ d.location_class.name ]]</td>
+          <td>[[ d.environment.name ]]</td>
+          <td>[[ d.service_name ]] [[ d.binary_name ]]</td>
+          <td>[[ d.open_ports ]]</td>
+          <td class='pa-replace-urls'>[[ d.notes ]]</td>
+        </tr>
+      </tbody>
+    </table>
+</el-card>

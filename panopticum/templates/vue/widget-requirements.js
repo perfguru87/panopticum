@@ -65,15 +65,17 @@ Vue.component('widget-requirements', {
         }
     },
     template: `
-    {% verbatim %}<div>
-        <h3>{{title }}
-            <span class='pa-component-rating' v-if='component_version.op_applicable'>
-                    {{ component_version.meta_op_rating }}%
-            </span>
-            <span class='pa-component-stars' v-if='component_version.op_applicable'>
-                    {{ component_version.meta_op_rating }}
-            </span>
-        </h3>
+    {% verbatim %}<el-card>
+        <div slot="header" class="clearfix">
+            <h4><span>{{title }}</span>
+                <span class='pa-component-rating' v-if='component_version.op_applicable'>
+                        {{ component_version.meta_op_rating }}%
+                </span>
+                <span class='pa-component-stars' v-if='component_version.op_applicable'>
+                        {{ component_version.meta_op_rating }}
+                </span>
+            </h4>
+        </div>
 
         <table class='status-table' v-bind:class="[ requirements ? '' : 'status-table-na']">
             <thead>
@@ -94,6 +96,6 @@ Vue.component('widget-requirements', {
             </tr>
             </tbody>
         </table>
-    </div>{% endverbatim %}
+    </el-card>{% endverbatim %}
     `
 })
