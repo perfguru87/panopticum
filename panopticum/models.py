@@ -1,9 +1,10 @@
+import django.forms
 from django.db import models
 from datatableview.views import DatatableView
 from datatableview import helpers
 from django.forms.models import model_to_dict
 import datetime
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import AbstractUser, Group
 from simple_history.models import HistoricalRecords
 
 import panopticum.fields
@@ -255,11 +256,15 @@ class RequirementStatusEntry(models.Model):
     status = models.ForeignKey(RequirementStatus, on_delete=models.CASCADE)
     type = models.ForeignKey(RequirementStatusType, on_delete=models.CASCADE) # component owner or signee
     requirement = models.ForeignKey('Requirement', related_name='statuses', on_delete=models.CASCADE)
-    notes = models.TextField(null=True, blank=True, max_length=255)
+    notes = models.TextField(null=True, blank=True, max_length=16*pow(2, 10))
     component_version = models.ForeignKey('ComponentVersionModel', related_name='statuses', on_delete=models.CASCADE)
 
     class Meta:
         unique_together = ['status', 'type', 'component_version', 'requirement']
+        permissions = [
+            ("change_owner_status", "Can change component owner status"),
+            ("change_signee_status", "Can change signee status")
+        ]
 
     def __unicode__(self):
         return f"{self.__class__.__name__}: {self.status.name} ({self.status.type.name})"
@@ -281,8 +286,10 @@ class Requirement(models.Model):
 class RequirementSet(models.Model):
     """ Container for requirements. Example of usage: various requirement widgets at frontend """
     name = models.CharField(max_length=30, unique=True)
-    requirements = models.ManyToManyField(Requirement, related_name='requirements+')
+    requirements = models.ManyToManyField(Requirement, related_name='sets')
     description = models.TextField(null=True, blank=True)
+    #
+    owner_groups = models.ManyToManyField(Group, related_name='owner_groups', blank=True)
 
     def __unicode__(self):
         return f"{self.__class__.__name__}: {self.name}"

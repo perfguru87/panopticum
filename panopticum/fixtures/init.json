@@ -170,6 +170,30 @@
     }
   },
   {
+    "model": "panopticum.requirement",
+    "pk": 16,
+    "fields": {
+      "title": "API guideline compliance",
+      "description": ""
+    }
+  },
+  {
+    "model": "panopticum.requirement",
+    "pk": 17,
+    "fields": {
+      "title": "FIPS compliance",
+      "description": ""
+    }
+  },
+  {
+    "model": "panopticum.requirement",
+    "pk": 18,
+    "fields": {
+      "title": "GDPR compliance",
+      "description": ""
+    }
+  },
+  {
     "model": "panopticum.requirementset",
     "pk": 1,
     "fields": {
@@ -185,6 +209,15 @@
       "name": "Maintenance",
       "description": "",
       "requirements": [10, 11, 12, 13, 14, 15]
+    }
+  },
+  {
+    "model": "panopticum.requirementset",
+    "pk": 3,
+    "fields": {
+      "name": "Compliance",
+      "description": "",
+      "requirements": [16, 17, 18]
     }
   }
 ]
