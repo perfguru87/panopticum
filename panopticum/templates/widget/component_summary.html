@@ -1,21 +1,12 @@
-    <div class="x_panel tile">
-      <div class="x_title">
-        <h2>Summary</h2>
-        <ul class="nav navbar-right panel_toolbox">
-          <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
-          <li><a class="close-link"><i class="fa fa-close"></i></a></li>
-        </ul>
-        <div class="clearfix"></div>
-      </div>
-      <div class='x_content'>
-
+    <el-card class="box-card">
+        <div slot="header" class="clearfix"><h2>Summary</h2></div>
         <div class='row' v-cloak v-if='component.description'>
           <div class='col-sm-12' style='padding: 0px 5px 15px 5px;'>
               <h3 style='margin-bottom: 10px;'>Component Description</h3>
               [[ component.description ]]
           </div>
         </div>
-        <div class='row panopticum-side-by-side-table row-eq-height-xl row-eq-height-lg row-neq-height-md row-neq-height-sm row-eq-height-xs'>
+        <div class='panopticum-side-by-side-table'>
           <div class='col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-6'>
             <div>
               <h4>Development</h4>
@@ -49,6 +40,4 @@
             </div>
           </div>
         </div>
-
-      </div>
-    </div>
+      </el-card>

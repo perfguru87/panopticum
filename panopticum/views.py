@@ -82,6 +82,20 @@ class RequirementStatusViewSet(viewsets.ModelViewSet):
     filter_class = panopticum.filters.RequirementStatusFilter
     filterset_fields = '__all__'
 
+    @action(detail=True)
+    def history(self, request, pk=None):
+        status = self.get_object()
+        history_entries = status.history.all()
+        page = self.paginate_queryset(history_entries)
+        if page is not None:
+            serializer = HistoricalRequirementStatusEntrySerializer(page, many=True,
+                                                                    context={'request': request})
+            return self.get_paginated_response(serializer.data)
+
+        serializer = HistoricalRequirementStatusEntrySerializer(history_entries, many=True,
+                                                                context={'request': request})
+        return Response(serializer.data)
+
 
 class RequirementSetViewSet(viewsets.ModelViewSet):
     queryset = RequirementSet.objects.all()

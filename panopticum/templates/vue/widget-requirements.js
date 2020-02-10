@@ -38,14 +38,14 @@ Vue.component('widget-requirements', {
             for (let requirement of this.requirements) {
                 let ownerStatus = this.statuses.find(el => requirement.id == this.getId(el.requirement) && el.type == "component owner")
                 if (ownerStatus == undefined) {
-                    this.table.push({title: requirement.title, status: 'unknown', signoffStatus:'unknown', notes: ''})
+                    this.table.push({title: requirement.title, status: null, signoffStatus: null, notes: ''})
                 } else {
                     let signeeStatus = this.statuses.find(el => requirement.id == this.getId(el.requirement) && el.type == "requirement reviewer")
                     this.table.push({
                         title: requirement.title,
-                        status: ownerStatus.status, 
+                        status: ownerStatus, 
                         notes: ownerStatus.notes,
-                        signoffStatus: signeeStatus.status,
+                        signoffStatus: signeeStatus,
                         signoffNotes: signeeStatus.notes
                     })
                 }
@@ -65,15 +65,17 @@ Vue.component('widget-requirements', {
         }
     },
     template: `
-    {% verbatim %}<div>
-        <h3>{{title }}
-            <span class='pa-component-rating' v-if='component_version.op_applicable'>
-                    {{ component_version.meta_op_rating }}%
-            </span>
-            <span class='pa-component-stars' v-if='component_version.op_applicable'>
-                    {{ component_version.meta_op_rating }}
-            </span>
-        </h3>
+    {% verbatim %}<el-card>
+        <div slot="header" class="clearfix">
+            <h4><span>{{title }}</span>
+                <span class='pa-component-rating' v-if='component_version.op_applicable'>
+                        {{ component_version.meta_op_rating }}%
+                </span>
+                <span class='pa-component-stars' v-if='component_version.op_applicable'>
+                        {{ component_version.meta_op_rating }}
+                </span>
+            </h4>
+        </div>
 
         <table class='status-table' v-bind:class="[ requirements ? '' : 'status-table-na']">
             <thead>
@@ -94,6 +96,6 @@ Vue.component('widget-requirements', {
             </tr>
             </tbody>
         </table>
-    </div>{% endverbatim %}
+    </el-card>{% endverbatim %}
     `
 })

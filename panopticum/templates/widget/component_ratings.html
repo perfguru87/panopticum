@@ -1,51 +1,32 @@
-        <div class="x_panel tile">
-          <div class="x_title">
-            <h2>Ratings</h2>
+<el-card>
+  <div slot="header" class="clearfix">
+    <h3 v-cloak>Quality Assurance
+      <span class='pa-component-rating' v-cloak v-if='component.latest_version.qa_applicable'>
+        [[ component.latest_version.meta_qa_rating ]]%
+      </span>
+      <span class='pa-component-stars' v-cloak v-if='component.latest_version.qa_applicable'>
+        [[ component.latest_version.meta_qa_rating ]]
+      </span>
+    </h3>
+  </div>
 
-            <ul class="nav navbar-right panel_toolbox">
-              <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
-              <li><a class="close-link"><i class="fa fa-close"></i></a></li>
-            </ul>
-            <div class="clearfix"></div>
-          </div>
-          <div class="x_content" style='margin-top: 0px;'>
-
-<!--
-   <canvas id="ratings-chart" height="150" width="500" style="width: 500px; height: 150px; padding-top: 0px;"></canvas>
-//-->
-
-            <h3 v-cloak>Quality Assurance
-              <span class='pa-component-rating' v-cloak v-if='component.latest_version.qa_applicable'>
-                [[ component.latest_version.meta_qa_rating ]]%
-              </span>
-              <span class='pa-component-stars' v-cloak v-if='component.latest_version.qa_applicable'>
-                [[ component.latest_version.meta_qa_rating ]]
-              </span>
-            </h2>
-
-            <table class='status-table' v-bind:class="[ component.latest_version.qa_applicable ? '' : 'status-table-na']" v-cloak>
-              <thead>
-                <tr>
-                  <th>Test type</th>
-                  <th>Rating</th>
-                  <th>Notes</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for='item in component.latest_version.quality_assurance' v-cloak>
-                  <td>[[ item.title ]]</td>
-                  <td class='pa-quality'>[[ item.status ]]</td>
-                  <td class='pa-replace-urls'>[[ item.notes ]]</td>
-                </tr>
-              </tbody>
-            </table>
-            <widget-requirements setid="1" v-bind:component_version="component.latest_version" v-cloak></widget-requirements>
-            <widget-requirements setid="2" v-bind:component_version="component.latest_version" v-cloak></widget-requirements>
-            <widget-requirements setid="3" v-bind:component_version="component.latest_version" v-cloak></widget-requirements>
-
-
-
-
-
-          </div>
-        </div>
+  <table class='status-table' v-bind:class="[ component.latest_version.qa_applicable ? '' : 'status-table-na']" v-cloak>
+    <thead>
+      <tr>
+        <th>Test type</th>
+        <th>Rating</th>
+        <th>Notes</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr v-for='item in component.latest_version.quality_assurance' v-cloak>
+        <td>[[ item.title ]]</td>
+        <td class='pa-quality'>[[ item.status ]]</td>
+        <td class='pa-replace-urls'>[[ item.notes ]]</td>
+      </tr>
+    </tbody>
+  </table>
+</el-card>
+<widget-requirements setid="1" v-bind:component_version="component.latest_version" v-cloak></widget-requirements>
+<widget-requirements setid="2" v-bind:component_version="component.latest_version" v-cloak></widget-requirements>
+<widget-requirements setid="3" v-bind:component_version="component.latest_version" v-cloak></widget-requirements>

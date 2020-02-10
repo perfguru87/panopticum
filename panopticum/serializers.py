@@ -1,7 +1,7 @@
 import rest_framework.authtoken.models
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
-from django.forms.models import model_to_dict
+from drf_queryfields import QueryFieldsMixin
 import panopticum.models
 from panopticum.models import *
 
@@ -70,7 +70,7 @@ class ProductVersionSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class UserSerializer(serializers.ModelSerializer):
+class UserSerializer(QueryFieldsMixin, serializers.ModelSerializer):
     class Meta:
         model = get_user_model()
         exclude = ('password', )
@@ -151,6 +151,7 @@ class RequirementSerializer(DynamicFieldsModelSerializer, serializers.ModelSeria
 
 
 class RequirementStatusEntrySerializer(serializers.HyperlinkedModelSerializer):
+    id = serializers.IntegerField()
     status = serializers.SlugRelatedField(
         read_only=True,
         slug_field='name'
@@ -256,4 +257,12 @@ class TokenSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = rest_framework.authtoken.models.Token()
+        fields = '__all__'
+
+class HistoricalRequirementStatusEntrySerializer(serializers.ModelSerializer):
+    history_user = serializers.HyperlinkedRelatedField(read_only=True, view_name='user-detail')
+    requirement = serializers.HyperlinkedRelatedField(read_only=True, view_name='requirement-detail')
+    component_version = serializers.HyperlinkedRelatedField(read_only=True, view_name='componentversionmodel-detail')
+    class Meta:
+        model = getattr(panopticum.models, 'HistoricalRequirementStatusEntry')
         fields = '__all__'

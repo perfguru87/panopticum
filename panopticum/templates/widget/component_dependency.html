@@ -1,83 +1,41 @@
-    <div class="x_panel tile">
-      <div class="x_title">
-        <h2>Dependencies</h2>
-        <ul class="nav navbar-right panel_toolbox">
-          <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
-          <li><a class="close-link"><i class="fa fa-close"></i></a></li>
-        </ul>
-        <div class="clearfix"></div>
-      </div>
-      <div class='x_content'>
+<el-card v-if="component.latest_version.depends_on && component.latest_version.depends_on.length">
+  <div slot="header" class="clearfix">
+    <h2>Dependencies</h2>
+  </div>
 
-        <div class='row'>
-          <div class='col-sm-12'>
+  <h4>Services</h4>
+  <table class='status-table' v-cloak>
+    <thead>
+      <tr>
+        <th>Service</th>
+        <th>Dependency</th>
+        <th>Notes</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr v-for='item in component.latest_version.depends_on' v-if="item.type !== 'includes'" v-cloak>
+        <td><a v-bind:href="'/component/' + item.component.id">[[ item.component.name ]]</a></td>
+        <td class='pa-dependency'>[[ item.type ]]</td>
+        <td class='pa-replace-urls'>[[ item.notes ]]</td>
+      </tr>
+    </tbody>
+  </table>
 
-            <h3>Services</h3>
-            <table class='status-table' v-cloak>
-              <thead>
-                <tr>
-                  <th>Service</th>
-                  <th>Dependency</th>
-                  <th>Notes</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for='item in component.latest_version.depends_on' v-if="item.type !== 'includes'" v-cloak>
-                  <td><a v-bind:href="'/component/' + item.component.id">[[ item.component.name ]]</a></td>
-                  <td class='pa-dependency'>[[ item.type ]]</td>
-                  <td class='pa-replace-urls'>[[ item.notes ]]</td>
-                </tr>
-              </tbody>
-            </table>
-
-            <h3>Libraries</h3>
-            <table class='status-table' v-cloak>
-              <thead>
-                <tr>
-                  <th>Library</th>
-                  <th>Vendor</th>
-                  <th>Notes</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for='item in component.latest_version.depends_on' v-if="item.type === 'includes'" v-cloak>
-                  <td>[[ item.component.name ]]</td>
-                  <td>[[ item.component.vendor.name ]]</td>
-                  <td class='pa-replace-urls'>[[ item.notes ]]</td>
-                </tr>
-              </tbody>
-            </table>
-
-          </div>
-        </div>
-
-        <br>
-
-        <div class='row panopticum-side-by-side-table row-eq-height-xl row-eq-height-lg row-neq-height-md row-neq-height-sm row-eq-height-xs' style='opacity: 0.5;'>
-          <div class='col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-6'>
-            <div>
-              <h4>RDBMS (TODO)</h4>
-              <table class='col-3-center'>
-                <tr><td>Supported DBs</td><td>:</td><td>-</td></tr>
-                <tr><td>ORM</td><td>:</td><td>-</td></tr>
-                <tr><td>DB conn pool</td><td>:</td><td>-</td></tr>
-                <tr><td>Volume model</td><td>:</td><td>-</td></tr>
-                <tr><td>Data retention</td><td>:</td><td>-</td></tr>
-              </table>
-            </div>
-          </div>
-          <div class='col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-6'>
-            <div>
-              <h4>NoSQL (TODO)</h4>
-              <table class='col-3-center'>
-                <tr><td>Supported DBs</td><td>:</td><td>-</td></tr>
-                <tr><td>ORM</td><td>:</td><td>-</td></tr>
-                <tr><td>DB conn pool</td><td>:</td><td>-</td></tr>
-                <tr><td>Volume model</td><td>:</td><td>-</td></tr>
-                <tr><td>Data retention</td><td>:</td><td>-</td></tr>
-              </table>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+  <h4>Libraries</h4>
+  <table class='status-table' v-cloak>
+    <thead>
+      <tr>
+        <th>Library</th>
+        <th>Vendor</th>
+        <th>Notes</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr v-for='item in component.latest_version.depends_on' v-if="item.type === 'includes'" v-cloak>
+        <td>[[ item.component.name ]]</td>
+        <td>[[ item.component.vendor.name ]]</td>
+        <td class='pa-replace-urls'>[[ item.notes ]]</td>
+      </tr>
+    </tbody>
+  </table>
+</el-card>

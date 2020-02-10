@@ -8,6 +8,7 @@ django-modeladmin-reorder
 django-simple-history
 djangorestframework-datatables
 djangorestframework-filters==1.0.0.dev0
+djangorestframework-queryfields
 gevent
 gunicorn
 jira-python
