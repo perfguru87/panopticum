@@ -14,3 +14,6 @@ jira-python
 pygraphviz
 pillow
 scalpl
+gunicorn
+gevent
+iso3166

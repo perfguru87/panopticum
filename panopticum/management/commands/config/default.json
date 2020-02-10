@@ -1,0 +1,213 @@
+{
+   "ComponentCategories":{
+      "Platform":{
+         "description":"",
+         "order":1
+      },
+      "Search":{
+         "description":"Search Services use this category",
+         "order":2
+      }
+   },
+   "ComponentSubCategories":[
+      {
+         "category":"SubCategory_A",
+         "description":"",
+         "name":"Platform"
+      },
+      {
+         "category":"SubCategory_B",
+         "description":"",
+         "name":"Platform"
+      },
+      {
+         "category":"SubCategory_B",
+         "description":"",
+         "name":"Search"
+      },
+      {
+         "category":"SubCategory_C",
+         "description":"",
+         "name":"Search"
+      }
+   ],
+   "ComponentDataPrivacies":{"Framework": {"order": 1}, "Infrastructure": {"order": 2}},
+
+   "ComponentRuntimes":["Component", "Database", "Database", "Driver", "Framework", "Library", "MQ Service",
+      "OS Process", "OS Service", "Web Service"],
+   "Loggers":[
+      "Logf"
+   ],
+   "DataCenters":{
+      "Australia 1":{
+         "grafana":"https://grafana.company.com/display/AU1.html",
+         "info":"https://intranet.company.com/DCs/AU1.html",
+         "metrics":"https://intranet.company.com/metrics/AU1.html"
+      },
+      "Europe 1":{
+         "grafana":"https://grafana.company.com/display/EU1.html",
+         "info":"https://intranet.company.com/DCs/EU1.html",
+         "metrics":"https://intranet.company.com/metrics/EU1.html"
+      },
+      "USA 1":{
+         "grafana":"https://grafana.company.com/display/USA1.html",
+         "info":"",
+         "metrics":"https://intranet.company.com/metrics/USA1.html"
+      }
+   },
+
+   "DBVendors":["MSSQL", "None", "Oracle", "Percona", "PostgreSQL", "SQLite"],
+
+   "DeploymentEnvironments":{
+      "-":"Not Applicable",
+      "Docker": "Docker Container",
+      "LinuxContainer":"Linux Container",
+      "LinuxOS":"Linux OS",
+      "LinuxVM":"Linux VM",
+      "MacOS":"Mac OS",
+      "N/A":"Not Applicable",
+      "K8S": "Kubernetes",
+      "TBD":"TBD",
+      "VZ":"Virtuozzo Container",
+      "WindowsVM":"Windows VM",
+      "plesk":"Plesk"
+   },
+   "DeploymentLocations":{
+      "aws":{
+         "name" : "Amazon Web Services",
+         "description":"https://aws.amazon.com/",
+         "order":1
+      },
+      "cloud-agent":{
+         "name": "Cloud agent unit",
+         "description":"Agent application that works with cloud datacenter",
+         "order":3
+      },
+      "cloud":{
+         "name": "Cloud datacenter",
+         "description":"",
+         "order":4
+      },
+      "azure":{
+         "name": "Microsoft Azure",
+         "description":"https://azure.microsoft.com/en-us/",
+         "order":5
+      },
+      "OSA":{
+         "name": "Open Stack",
+         "description":"OpenStack-Ansible (OSA) uses the Ansible IT automation engine to deploy an OpenStack environment on Ubuntu Linux. https://docs.openstack.org/project-deploy-guide/openstack-ansible/ocata/overview-osa.html",
+         "order":6
+      },
+      "on-prem-agent":{
+         "name" : "On-prem agent unit",
+         "description":"",
+         "order":7
+      },
+      "on-prem":{
+         "name": "On-prem centralized",
+         "description":"On premise installation managed centrally by Admins",
+         "order":8
+      },
+      "plesk":{
+         "name": "Plesk",
+         "description":"Plesk is a commercial web hosting platform with a control panel that allows a server administrator to set up new websites, reseller accounts, e-mail accounts and DNS entries through a web-based interface. Originally designed in Novosibirsk, Russia, the hosting automation software was released by Plesk Inc. Visit https://www.plesk.com for more information",
+         "order":9
+      },
+      "pds":{
+         "name": "Partner On-prem centralized",
+         "description":"Partner managed On-premise centralized location",
+         "order":10
+      },
+      "tbd":{
+         "name": "TBD",
+         "description":"To be filled later by user.",
+         "order":11
+      }
+   },
+
+   "ProgrammingLanguages":[".Net", "Android", "C/C++", "Erlang", "Go-lang", "Java", "Javascript", "Objective-C", "PHP", "Perl", "Powershell-script", "Python", "Ruby", "shellscript"],
+
+   "ApplicationVendors":["Acronis", "Commercial", "Google", "OpenSource", "Percona"],
+
+   "ApplicationFrameworks":{
+      "DBIx":"Perl",
+      "Mason":"Perl",
+      "WPF":".Net",
+      "aiohttp":"Python",
+      "android sdk":"Android",
+      "angular1":"Javascript",
+      "angular2":"Javascript",
+      "angular4":"Javascript",
+      "asyncio":"Python",
+      "beego":"Go-lang",
+      "boost":"C/C++",
+      "extjs4":"Javascript",
+      "fastcgi":"Python",
+      "flask":"Python",
+      "gevent":"Python",
+      "gin":"Go-lang",
+      "go-micro":"Go-lang",
+      "go-std":"Go-lang",
+      "gorm":"Go-lang",
+      "gorp":"Go-lang",
+      "laravel":"PHP",
+      "phantomjs":"Python",
+      "ruby on rails":"Ruby",
+      "sqlalchmey":"Python",
+      "storedprocs":"Python",
+      "tornado":"Python",
+      "vuejs":"Javascript",
+      "werkzeug":"Python",
+      "wix":"C/C++",
+      "xorm":"Go-lang"
+   },
+   "ProductVersions":{
+      "My Cloud Product 1.0":{
+         "shortname":"MyCloudProduct1.0",
+         "order":1,
+         "family":"My Cloud Product"
+      },
+      "My On-prem Product 2.0":{
+         "shortname":"MyOn-PremProduct2.0",
+         "order":1,
+         "family":"My On-prem Product"
+      },
+      "My Other Product 1.0":{
+         "shortname":"MyOtherProduct1.0",
+         "order":1,
+         "family":"My Other Product"
+      }
+   },
+   "ProductFamilies":[
+      "My Cloud Prodct",
+      "My On-prem Product",
+      "My Other Product"
+   ],
+   "Ports":{
+      "HTTP-80":{
+         "port":80
+      },
+      "HTTPS-443":{
+         "port":443
+      },
+      "HTTP-8080":{
+         "port":8080
+      },
+      "HTTP-8081":{
+         "port":8081
+      }
+   },
+   "Defaults":{
+      "DeploymentEnvironment":"K8S",
+      "DeploymentLocationShortName": "cloud",
+      "DeploymentLocationName":"Cloud datacenter",
+      "ProductFamily":"My Cloud Product",
+      "ProductVersion":"My Cloud Product 1.0",
+      "Port":"TBD",
+      "ApplicationVendor":"OpenSource",
+      "DependencyType":"sync_rw",
+      "ComponentDataPrivacy":"Application",
+      "ComponentRuntime":"Component",
+      "ComponentVersion":"1.0"
+   }
+}

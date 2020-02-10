@@ -645,7 +645,8 @@ class ComponentDependencyModel(models.Model):
 ##################################################################################################
 
 class DeploymentLocationClassModel(models.Model):
-    name = models.CharField(max_length=64, help_text="global, per-datacenter, customer, endpoint")
+    name = models.CharField(max_length=128, help_text="global, per-datacenter, customer, endpoint")
+    shortname = models.CharField(max_length=64, unique=True, help_text="most useful by automation tools like data importer/exporter")
     description = models.TextField(blank=True, null=True)
     order = models.IntegerField(help_text="sorting order")
 

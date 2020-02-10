@@ -1,0 +1,39 @@
+Category,Sub-Category,Vendor,Deployment Container,Deployment Environment,Binary name,Runtime Type,Name,Description,Dependency,Wiki,Repo,Deployment Location,Language,Framework,DB,Logging,REST API RAML,Ports,Additional Comments,KLOC,Is legacy?,Is duplicated?,PM,Owner,Architect,release1,release2
+Platform,Services,MyCompany,account-srv,K8S,account-srv,Component,Account Manager,"* Account Manager (Identity Access Management). Central piece that owns details of users, admins, resources within the system and manages the access per user of the system.","* Percona
+* RabbitMQ
+* NGINX",https://wiki.mycompany.com/comcloud/iam.html,https://github.com/mycompany/ComCloud/tree/master/iam,AWS,Python,"tornado,sqlalchemy, aiohttp",Percona,TBD,https://git.company.com/projects/RAML/repos/iam,HTTP: 8080,,TBD,TBD,partial,Sergey.S@company.com,Hiten@company.com,"at@company.com,vlads@company.com",yes,yes
+Backup Services,Agent,MyCompany,bckp_fileagent,agent,bckp-fileagent,Component,File Backup,Agent component that provides agent machine data in streamed manner.,"* Account Manager
+* Storage Service
+* RabbitMQ
+* File Service",https://wiki.mycompany.com/comcloud/backup/filesystem.html,https://github.com/mycompany/ComCloud/tree/master/agent-filesystem,"cloud,on-prem",Go-lang,go-std, -,TBD,-,"HTTP: 8080  # container_HTTP
+HTTP: 80",,TBD,TBD,TBD,"RY@company.com,MM@company.com",kim@company.com,"alex@company.com,hiten@company.com",,yes
+Infrastructure,Storage,MyCompany,infra_storage,K8S,storage-manager,Component,Storage Service,Manages underlying storage and supports various file transfer protocols.,"* Account Manager
+* Percona",https://wiki.mycompany.com/comcloud/infra/storage-services.html,https://github.com/mycompany/ComCloud/tree/master/storage-services,cloud-only,C++,boost,Percona,,,,,,,,,,,,
+Backup Services,Services,MyCompany,order_management,K8S,order-manager,Component,Order Manager,Order Management,"* Account Manager
+* Storage Service
+* RabbitMQ
+* File Service",https://wiki.mycompany.com/comcloud/backup/order-manager.html,https://github.com/mycompany/ComCloud/tree/master/service-order-manager,"cloud,on-prem",Go-lang,go-std,Percona,TBD,https://git.company.com/projects/RAML/repos/order-manager,"HTTP: 8080  # container_HTTP
+HTTP: 80",,TBD,TBD,TBD,"RY@company.com,MM@company.com",kim@company.com,"alex@company.com,hiten@company.com",,yes
+Backup Services,Agent,MyCompany,bckp_email_archiver,K8S,bckp-email-archiver,Component,Email Archive,"It has agent + server part implemented together and sits in Cloud infrastructure. It can be deployed in AWS, MS Azure, private cloud, onpremise",* Account Manager,"Requirements: https://adn.company.com/display/ABRWC/Mail+archiving
+
+TBD: Component details page.",https://github.com/mycompany/ComCloud/tree/master/email-archiver,cloud-only,python,TBD,TBD,TBD,https://git.company.com/projects/RAML/repos/email-archiver,"SMTP-CONTAINER: 10
+SMTP: 25
+HTTP: 80  # container_HTTP
+HTTP: 80",,TBD,TBD,TBD,"RY@company.com,MM@company.com",kim@company.com,Denis@company.com,,
+Infrastructure,Infra,HashiCorp,vault,K8S,vault,Component,HashiCorp Vault,"Vault is a tool for securely accessing secrets. A secret is anything that you want to tightly control access to, such as API keys, passwords, certificates, and more. Vault provides a unified interface to any secret, while providing tight access control and recording a detailed audit log.
+
+Excellent documentation - https://git.company.com/projects/ABC/repos/msp-scm/browse/roles/msp.k8s.vault/readme.md","* HashiCorp Vault
+* HashiCorp Consul
+* Percona",TBD,-,"cloud-only,aws",TBD,TBD,TBD,TBD,TBD,TCP: 8200,,TBD,TBD,TBD,TBD,TBD,TBD,,
+Search,Infra,Elasticsearch,search_es,K8S,java,Component,ELK Exporter,Used to search across all the data stored in product,"* Endpoint Protection Manager
+* HashiCorp Consul
+* Prometheus
+* PostgreSQL",TBD,-,"cloud-only,azure",TBD,TBD,TBD,TBD,TBD,TBD,,TBD,TBD,TBD,TBD,TBD,TBD,,
+Infrastructure,Infra,HashiCorp,consul,VZ,consul,Component,HashiCorp Consul,Consul is used for registration and discovery of components in environment,* TBD,https://www.consul.io/,-,cloud-only,TBD,TBD,TBD,TBD,https://www.consul.io/api/index.html,HTTP: 8500,,N/A,N/A,,TBD,VV@company.com,TBD,,
+Infrastructure,Infra,Pivotal,RabbitMQ,VZ,rabbitmq-server,Component,RabbitMQ,"RabbitMQ is an open-source message-broker software that originally implemented the Advanced Message Queuing Protocol and has since been extended with a plug-in architecture to support Streaming Text Oriented Messaging Protocol, Message Queuing Telemetry Transport, and other protocols",-,https://www.rabbitmq.com/,-,"cloud, TBD",TBD,TBD,TBD,TBD,-,HTTP: 5672,,,TBD,TBD,TBD,TBD,TBD,,
+Infrastructure,Infra,CloudNative Computing,prometheus,VZ,TBD,Component,Prometheus,Prometheus is an open-source systems monitoring and alerting toolkit.,* TBD,https://prometheus.io/docs/introduction/overview/,-,TBD,TBD,TBD,TBD,TBD,TBD,"HTTP: 3000  # grafana_port
+HTTP: 9090  # prometheus_port",,,TBD,TBD,TBD,TBD,TBD,,
+Infrastructure,Infra,Okla,speedtest,VZ,speedtest,Component,Ookla Speedtest.net,Periodically check on network speed in our own data center,* TBD,https://www.speedtest.net/,-,cloud-only,TBD,TBD,TBD,TBD,TBD,HTTP: 8080,,,TBD,TBD,TBD,TBD,TBD,,
+Infrastructure,Infra,Percona,pmmserver,VZ,pmm-server,Component,Percona Monitoring and Management,"Percona Monitoring and Management (PMM) is an open source platform for managing and monitoring MySQL and MongoDB performance. It is developed by percona in collaboration with experts in the field of managed database services, support and consulting. PMM is a free and open-source solution that you can run in your own environment for maximum security and reliability. It provides thorough time-based analysis for MySQL and MongoDB servers to ensure that your data works as efficiently as possible.",* TBD,https://www.percona.com/doc/percona-monitoring-and-management/index.html,-,cloud-only,TBD,TBD,TBD,TBD,TBD,TBD,,,TBD,TBD,TBD,TBD,TBD,,
+Infrastructure,Infra,Percona,percona,VZ,TBD,TBD,Percona,"Percona is a leading provider of unbiased open source database solutions that allow organizations to easily, securely and affordably maintain business agility, minimize risks, and stay competitive",https://www.percona.com/,https://www.percona.com/,-,cloud-only,TBD,TBD,TBD,TBD,TBD,HTTP: 3306,,,TBD,TBD,TBD,TBD,TBD,,
+Infrastructure,Infra,OpenSource,haproxy,TBD,haproxy,TBD,HA Proxy,"HAProxy is free, open source software that provides a high availability load balancer and proxy server for TCP and HTTP-based applications that spreads requests across multiple servers",http://www.haproxy.org/,TBD,-,cloud-only,TBD,TBD,TBD,TBD,TBD,TBD,,,TBD,TBD,TBD,TBD,TBD,,
