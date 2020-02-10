@@ -293,6 +293,7 @@ div.owners-list td.owner img {
 table.status-table tbody tr:nth-child(even) td { background-color: #f0f0f0; }
 table.status-table tbody tr td:first-child { width: 150px; text-align: left; }
 table.status-table tbody tr td:nth-child(2) { width: 10%; text-align: center; }
+table.status-table tbody tr td:nth-child(3) { width: 10%; text-align: center; }
 table.status-table tbody tr td:last-child { text-align: left; padding-left: 5px; }
 table.status-table { width: 100%; }
 table.status-table tbody tr:first-child td { padding-top: 5px; }
@@ -345,14 +346,22 @@ i.yes, i.no, i.unknown {
     text-align: center;
 }
 i.yes { color: green; }
-i.no { color: #bf9e9e; }
+i.no { color: rgb(209, 58, 58); }
 i.unknown { color: #aaa; }
+
+.el-popper[x-placement^=top] .popper__arrow  {
+    border-top-color: #777;
+}
+
+div.signoff-popover {
+    border-color: #999;
+}
 
 td.pa-quality, td.pa-status { white-space: nowrap; text-align: center;}
 td.pa-quality i, td.pa-status i { width: 10px; }
 td.pa-quality i.fa-star, td.pa-status i.fa-star { color: green; }
 td.pa-quality i.fa-star-o, td.pa-status i.fa-star-o { color: #aaa; }
-td.pa-quality i.unknown, td.pa-status i.unknown { font-size: 12px; color: crimson; }
+td.pa-quality i.unknown { font-size: 12px; color: crimson; }
 
 span.yes, span.no, span.na, span.unknown, span.some {
     display: block;
