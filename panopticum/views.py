@@ -17,18 +17,23 @@ from .models import *
 from .serializers import *
 from .jira import JiraProxy
 
+class RelativeURLViewSet(viewsets.ModelViewSet):
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context.update({'request': None})
+        return context
 
-class ProductVersionViewSet(viewsets.ModelViewSet):
+class ProductVersionViewSet(RelativeURLViewSet):
     queryset = ProductVersionModel.objects.all().order_by('order')
     serializer_class = ProductVersionSerializer
 
-class HistoryComponentVersionViewSet(viewsets.ModelViewSet):
+class HistoryComponentVersionViewSet(RelativeURLViewSet):
     queryset = ComponentVersionModel.history.all()
     serializer_class = HistoricalComponentVersionSerializer
     filterset_fields = '__all__'
 
 
-class ComponentViewSet(viewsets.ModelViewSet):
+class ComponentViewSet(RelativeURLViewSet):
     queryset = ComponentModel.objects.all()
     serializer_class = ComponentSerializerSimple
 
@@ -43,40 +48,40 @@ class ComponentViewSet(viewsets.ModelViewSet):
         return Response(ComponentVersionSerializerSimple(component_version,
                                                          context={'request': self.request}).data)
 
-class DeploymentLocationClassViewSet(viewsets.ModelViewSet):
+class DeploymentLocationClassViewSet(RelativeURLViewSet):
     queryset = DeploymentLocationClassModel.objects.all()
     serializer_class = DeploymentLocationClassSerializer
 
 
-class ComponentVersionViewSet(viewsets.ModelViewSet):
+class ComponentVersionViewSet(RelativeURLViewSet):
     queryset = ComponentVersionModel.objects.all()
     serializer_class = ComponentVersionSerializer
     filterset_fileds = "__all__"
 
 
-class ComponentRuntimeTypeViewSet(viewsets.ModelViewSet):
+class ComponentRuntimeTypeViewSet(RelativeURLViewSet):
     queryset = ComponentRuntimeTypeModel.objects.all()
     serializer_class = ComponentRuntimeTypeSerializer
 
 
-class ComponentDataPrivacyClassViewSet(viewsets.ModelViewSet):
+class ComponentDataPrivacyClassViewSet(RelativeURLViewSet):
     queryset = ComponentDataPrivacyClassModel.objects.all()
     serializer_class = ComponentDataPrivacyClassSerializer
 
 
-class ComponentCategoryViewSet(viewsets.ModelViewSet):
+class ComponentCategoryViewSet(RelativeURLViewSet):
     queryset = ComponentCategoryModel.objects.all()
     serializer_class = ComponentCategorySerializer
 
 
-class RequirementViewSet(viewsets.ModelViewSet):
+class RequirementViewSet(RelativeURLViewSet):
     queryset = Requirement.objects.all()
     serializer_class = RequirementSerializer
     filter_class = panopticum.filters.RequirementFilter
     filterset_fields = '__all__'
 
 
-class RequirementStatusViewSet(viewsets.ModelViewSet):
+class RequirementStatusViewSet(RelativeURLViewSet):
     queryset = RequirementStatusEntry.objects.all()
     serializer_class = RequirementStatusEntrySerializer
     filter_class = panopticum.filters.RequirementStatusFilter
@@ -89,28 +94,28 @@ class RequirementStatusViewSet(viewsets.ModelViewSet):
         page = self.paginate_queryset(history_entries)
         if page is not None:
             serializer = HistoricalRequirementStatusEntrySerializer(page, many=True,
-                                                                    context={'request': request})
+                                                                    context={'request': None})
             return self.get_paginated_response(serializer.data)
 
         serializer = HistoricalRequirementStatusEntrySerializer(history_entries, many=True,
-                                                                context={'request': request})
+                                                                context={'request': None})
         return Response(serializer.data)
 
 
-class RequirementSetViewSet(viewsets.ModelViewSet):
+class RequirementSetViewSet(RelativeURLViewSet):
     queryset = RequirementSet.objects.all()
     serializer_class = RequirementSetSerializer
     filterset_filelds = '__all__'
 
 
-class UserDetail(viewsets.ModelViewSet):
+class UserDetail(RelativeURLViewSet):
     queryset = get_user_model().objects.all()
     serializer_class = UserSerializer
     permission_classes = (permissions.IsAuthenticated,)
     filterset_fields = ['username', 'email']
 
 
-class Token(viewsets.ModelViewSet):
+class Token(RelativeURLViewSet):
     queryset = rest_framework.authtoken.models.Token.objects.all()
     serializer_class = TokenSerializer
     permission_classes = (permissions.IsAuthenticated,)
