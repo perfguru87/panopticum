@@ -298,6 +298,22 @@ class RequirementSet(models.Model):
         return self.__unicode__()
 
 
+class ComponentManager(models.Manager):
+    def with_rating(self, requirement_set_id=None):
+        if requirement_set_id:
+            requirement_count = RequirementSet.objects.get(pk=requirement_set_id).requirements.count()
+            annotate_filter = django.db.models.Q(statuses__status=3,
+                                                 statuses__requirement__sets=requirement_set_id)
+        else:
+            requirement_count = RequirementSet.objects.all().aggregate(count=django.db.models.Count('requirements'))['count']
+            annotate_filter = django.db.models.Q(statuses__status=3)
+        return self.model.objects.annotate(
+            rating= 100 * django.db.models.Count('statuses',
+                                         filter=annotate_filter,
+                                         output_field=django.db.models.FloatField())
+                  / requirement_count)
+
+
 class ComponentVersionModel(models.Model):
     component = models.ForeignKey(ComponentModel, on_delete=models.PROTECT, related_name='component_version')
 
@@ -305,6 +321,7 @@ class ComponentVersionModel(models.Model):
                                help_text="note: component version instance will be cloned if you change version!")
     comments = models.TextField(blank=True, null=True)
     history = HistoricalRecords()
+    objects = ComponentManager()
 
     # dependencies
 
@@ -340,96 +357,6 @@ class ComponentVersionModel(models.Model):
 
     dev_api_is_public = panopticum.fields.NoPartialYesField("API is public")
 
-    # TODO: deprecated. Let's remove
-    # compliance
-
-    compliance_applicable = models.BooleanField(verbose_name="Compliance requirements are applicable", default=True)
-
-    compliance_fips_status = panopticum.fields.NoPartialYesField("FIPS compliance")
-    compliance_fips_notes = panopticum.fields.SmartTextField("FIPS compliance notes")
-    compliance_fips_signoff = panopticum.fields.SigneeField(related_name='signed_fips')
-
-    compliance_gdpr_status = panopticum.fields.NoPartialYesField("GDPR compliance")
-    compliance_gdpr_notes = panopticum.fields.SmartTextField("GDRP compliance notes")
-    compliance_gdpr_signoff = panopticum.fields.SigneeField(related_name='signed_gdpr')
-
-    compliance_api_status = panopticum.fields.NoPartialYesField("API guildeine compliance")
-    compliance_api_notes = panopticum.fields.SmartTextField("API guideline compliance notes")
-    compliance_api_signoff = panopticum.fields.SigneeField(related_name='signed_api_guideline')
-
-    # TODO: deprecated. Let's remove
-    # operational readiness information
-
-    op_applicable = models.BooleanField(verbose_name="Operational requirements are applicable", default=True)
-
-    op_guide_status = panopticum.fields.NoPartialYesField("Operations guide")
-    op_guide_notes = panopticum.fields.SmartTextField("Operations guide notes")
-    op_guide_signoff = panopticum.fields.SigneeField(related_name='signed_op_guide')
-
-    op_failover_status = panopticum.fields.NoPartialYesField("Failover")
-    op_failover_notes = panopticum.fields.SmartTextField("Failover notes")
-    op_failover_signoff = panopticum.fields.SigneeField(related_name='signed_failover')
-
-    op_horizontal_scalability_status = panopticum.fields.NoPartialYesField("Horizontal scalability")
-    op_horizontal_scalability_notes = panopticum.fields.SmartTextField("Horizontal scalability notes")
-    op_horizontal_scalability_signoff = panopticum.fields.SigneeField(related_name='signed_horizontal_scalability')
-
-    op_scaling_guide_status = panopticum.fields.NoPartialYesField("Scaling guide")
-    op_scaling_guide_notes = panopticum.fields.SmartTextField("Scaling guide notes")
-    op_scaling_guide_signoff = panopticum.fields.SigneeField(related_name='signed_scaling_guide')
-
-    op_sla_guide_status = panopticum.fields.NoPartialYesField("SLA/SLO guide")
-    op_sla_guide_notes = panopticum.fields.SmartTextField("SLA/SLO guide notes")
-    op_sla_guide_signoff = panopticum.fields.SigneeField(related_name='signed_sla_guide')
-
-    op_metrics_status = panopticum.fields.NoPartialYesField("Monitoring")
-    op_metrics_notes = panopticum.fields.SmartTextField("Monitoring notes")
-    op_metrics_signoff = panopticum.fields.SigneeField(related_name='signed_metrics')
-
-    op_alerts_status = panopticum.fields.NoPartialYesField("Alerts guide")
-    op_alerts_notes = panopticum.fields.SmartTextField("Alerts guide notes")
-    op_alerts_signoff = panopticum.fields.SigneeField(related_name='signed_alerts')
-
-    op_zero_downtime_status = panopticum.fields.NoPartialYesField("Zero-downtime upgrade")
-    op_zero_downtime_notes = panopticum.fields.SmartTextField("Zero-downtime upgrade notes")
-    op_zero_downtime_signoff = panopticum.fields.SigneeField(related_name='signed_zero_downtime')
-
-    op_backup_status = panopticum.fields.NoPartialYesField("Backup")
-    op_backup_notes = panopticum.fields.SmartTextField("Backup notes")
-    op_backup_signoff = panopticum.fields.SigneeField(related_name='signed_backup')
-
-    op_safe_restart = models.BooleanField(help_text="Is it safe to restart?", blank=True, null=True)
-    op_safe_delete = models.BooleanField(help_text="Is it safe to delete?", blank=True, null=True)
-    op_safe_redeploy = models.BooleanField(help_text="Is it safe to redeploy?", blank=True, null=True)
-
-    # TODO: deprecated. Let's remove
-    # maintainability
-
-    mt_applicable = models.BooleanField(verbose_name="Maintainability requirements are applicable", default=True)
-
-    mt_http_tracing_status = panopticum.fields.NoPartialYesField("HTTP requests tracing", help_text="HTTP request b3 propagation support")
-    mt_http_tracing_notes = panopticum.fields.SmartTextField("HTTP requests tracing notes")
-    mt_http_tracing_signoff = panopticum.fields.SigneeField(related_name='signed_http_tracing')
-
-    mt_logging_completeness_status = panopticum.fields.NoPartialYesField("Logging completeness", help_text="Are logs sufficient?")
-    mt_logging_completeness_notes = panopticum.fields.SmartTextField("Logging completeness notes")
-    mt_logging_completeness_signoff = panopticum.fields.SigneeField(related_name='signed_logging_completeness')
-
-    mt_logging_format_status = panopticum.fields.NoPartialYesField("Logging format", help_text="Logs have proper format")
-    mt_logging_format_notes = panopticum.fields.SmartTextField("Logging format notes")
-    mt_logging_format_signoff = panopticum.fields.SigneeField(related_name='signed_logging_format')
-
-    mt_logging_storage_status = panopticum.fields.NoPartialYesField("Logging storage", help_text="Is proper logs storage used?")
-    mt_logging_storage_notes = panopticum.fields.SmartTextField("Logging storage notes")
-    mt_logging_storage_signoff = panopticum.fields.SigneeField(related_name='signed_logging_storage')
-
-    mt_logging_sanitization_status = panopticum.fields.NoPartialYesField("Logs sanitization", help_text="Logs do not have sensitive information")
-    mt_logging_sanitization_notes = panopticum.fields.SmartTextField("Logging sanitization notes")
-    mt_logging_sanitization_signoff = panopticum.fields.SigneeField(related_name='signed_logggin_sanitization')
-
-    mt_db_anonymisation_status = panopticum.fields.NoPartialYesField("DataBase anonymisation")
-    mt_db_anonymisation_notes = panopticum.fields.SmartTextField("DataBase anonymisation")
-    mt_db_anonymisation_signoff = panopticum.fields.SigneeField(related_name='signed_db_anonymisation')
 
     # quality assurance
 
@@ -494,6 +421,14 @@ class ComponentVersionModel(models.Model):
     meta_searchstr_locations = models.TextField(blank=True)
     meta_searchstr_product_versions = models.TextField(blank=True)
 
+    def _get_rating(self):
+        max_status_rating = RequirementStatus.objects.aggregate(models.Max('rating'))['rating__max']
+        rating = self.statuses.filter(requirement__sets=1, type=2) \
+            .aggregate(rating__sum=models.Sum('status__rating'))['rating__sum']
+        max_rating = self.statuses.filter(requirement__sets=1,
+                                                       type=2).count() * max_status_rating
+        return rating / max_rating
+
     def _update_any_rating(self, target, condition, dictionary, fields):
         rating = 0
         max_rating = 0
@@ -514,19 +449,6 @@ class ComponentVersionModel(models.Model):
         self.__dict__[target] = int(100 * rating / max_rating)
         return rating, max_rating, bad_rating
 
-    @staticmethod
-    def get_compliance_fields():
-        return ('compliance_fips_status', 'compliance_gdpr_status', 'compliance_api_status')
-
-    @staticmethod
-    def get_operations_fields():
-        return ('op_guide_status', 'op_failover_status', 'op_horizontal_scalability_status', 'op_scaling_guide_status',
-                'op_sla_guide_status', 'op_metrics_status', 'op_alerts_status', 'op_zero_downtime_status', 'op_backup_status')
-
-    @staticmethod
-    def get_maintenance_fields():
-        return ('mt_http_tracing_status', 'mt_logging_completeness_status', 'mt_logging_format_status',
-                'mt_logging_storage_status', 'mt_logging_sanitization_status', 'mt_db_anonymisation_status')
 
     @staticmethod
     def get_quality_assurance_fields():
@@ -534,17 +456,6 @@ class ComponentVersionModel(models.Model):
                 'qa_longhaul_tests_status', 'qa_security_tests_status', 'qa_api_tests_status',
                 'qa_anonymisation_tests_status', 'qa_upgrade_tests_status')
 
-    def _update_compliance_rating(self):
-        return self._update_any_rating('meta_compliance_rating', 'compliance_applicable', NO_PARTIAL_YES_RATING,
-                                       ComponentVersionModel.get_compliance_fields())
-
-    def _update_mt_rating(self):
-        return self._update_any_rating('meta_mt_rating', 'mt_applicable', NO_PARTIAL_YES_RATING,
-                                       ComponentVersionModel.get_maintenance_fields())
-
-    def _update_op_rating(self):
-        return self._update_any_rating('meta_op_rating', 'op_applicable', NO_PARTIAL_YES_RATING,
-                                       ComponentVersionModel.get_operations_fields())
 
     def _update_qa_rating(self):
         return self._update_any_rating('meta_qa_rating', 'qa_applicable', LOW_MED_HIGH_RATING,
@@ -555,14 +466,6 @@ class ComponentVersionModel(models.Model):
                 'owner_escalation_list', 'owner_expert', 'owner_architect',
                 'dev_language', 'dev_raml', 'dev_repo', 'dev_jira_component', 'dev_docs', 'dev_api_is_public']
 
-        if self.compliance_applicable:
-            ret += list(ComponentVersionModel.get_compliance_fields())
-
-        if self.op_applicable:
-            ret += list(ComponentVersionModel.get_operations_fields()) + ['op_safe_restart']
-
-        if self.mt_applicable:
-            ret += list(ComponentVersionModel.get_maintenance_fields())
 
         if self.qa_applicable:
             ret += list(ComponentVersionModel.get_quality_assurance_fields())
@@ -588,19 +491,6 @@ class ComponentVersionModel(models.Model):
         self.meta_profile_completeness = int(100 * completeness / max_completeness)
         self.meta_profile_not_filled_fields = ", ".join(sorted(not_filled_fields))
 
-    def _update_rating(self):
-        rating = 0
-        max_rating = 0
-        bad_rating = []
-
-        for f in (self._update_mt_rating, self._update_op_rating, self._update_qa_rating, self._update_compliance_rating):
-            r, mr, br = f()
-            rating += r
-            max_rating += mr
-            bad_rating += br
-
-        self.meta_rating = int(100 * rating / max_rating)
-        self.meta_bad_rating_fields = ", ".join(bad_rating)
 
     def update_meta_locations_and_product_versions(self):
         locations = {}
@@ -618,8 +508,7 @@ class ComponentVersionModel(models.Model):
         super().save()
 
     def save(self, *args, **kwargs):
-        self._update_profile_completeness()
-        self._update_rating()
+        #self._update_profile_completeness()
 
         self.meta_update_date = datetime.datetime.now()
         super().save(*args, **kwargs)
@@ -752,3 +641,4 @@ class DatacenterModel(models.Model):
 
     def __str__(self):
         return "%s" % self.name
+
