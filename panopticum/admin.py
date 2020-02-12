@@ -296,9 +296,11 @@ class ComponentVersionAdmin(admin.ModelAdmin):
         return request.user.is_superuser or \
                (obj and request.user == obj.owner_maintainer) or request.user.has_perm(SIGNEE_STATUS_PERMISSION)
 
+
     def get_readonly_fields(self, request, obj=None):
         readonly_fields = set(super().get_readonly_fields(request, obj))
-        if request.user.has_perm(SIGNEE_STATUS_PERMISSION):
+
+        if request.user.has_perm(SIGNEE_STATUS_PERMISSION) and not request.user.is_superuser:
             for title, definition  in self.get_fieldsets(request, obj):
                 readonly_fields.update(definition.get('fields', ()))
         return tuple(readonly_fields)
