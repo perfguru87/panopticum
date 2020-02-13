@@ -2,8 +2,34 @@ import rest_framework.authtoken.models
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from django.forms.models import model_to_dict
+import panopticum.models
+from panopticum.models import *
 
-from .models import *
+class DynamicFieldsModelSerializer(serializers.ModelSerializer):
+    """
+    A ModelSerializer that takes an additional `fields` argument that
+    controls which fields should be displayed.
+    """
+
+    def __init__(self, *args, **kwargs):
+        # Don't pass the 'fields' arg up to the superclass
+        fields = kwargs.pop('fields', None)
+
+        # Instantiate the superclass normally
+        super(DynamicFieldsModelSerializer, self).__init__(*args, **kwargs)
+
+        if fields is not None:
+            # Drop any fields that are not specified in the `fields` argument.
+            allowed = set(fields)
+            existing = set(self.fields)
+            for field_name in existing - allowed:
+                self.fields.pop(field_name)
+
+class HistoricalComponentVersionSerializer(serializers.HyperlinkedModelSerializer):
+    """ Model for history of Component version changes. Check https://django-simple-history.readthedocs.io"""
+    class Meta:
+        model = getattr(panopticum.models, 'HistoricalComponentVersionModel')
+        fields = '__all__'
 
 
 class ComponentDataPrivacyClassSerializer(serializers.ModelSerializer):
@@ -102,10 +128,59 @@ class ComponentDependencySerializerSimple(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class RequirementSetSimpleSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = RequirementSet
+        fields = ['id', 'name']
+
+
+class RequirementSimpleSerializer(DynamicFieldsModelSerializer, serializers.ModelSerializer):
+
+    class Meta:
+        model = Requirement
+        fields = '__all__'
+
+
+class RequirementSerializer(DynamicFieldsModelSerializer, serializers.ModelSerializer):
+    requirements = RequirementSetSimpleSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Requirement
+        fields = '__all__'
+
+
+class RequirementStatusEntrySerializer(serializers.HyperlinkedModelSerializer):
+    status = serializers.SlugRelatedField(
+        read_only=True,
+        slug_field='name'
+    )
+    type = serializers.SlugRelatedField(
+        read_only=True,
+        slug_field='owner'
+    )
+
+    class Meta:
+        model = RequirementStatusEntry
+        fields = '__all__'
+
+
+class RequirementSetSerializer(serializers.ModelSerializer):
+    requirements = RequirementSimpleSerializer(read_only=True, many=True)
+
+    class Meta:
+        model = RequirementSet
+        fields = '__all__'
+
+
 class ComponentVersionSerializerSimple(serializers.ModelSerializer):
     id = serializers.IntegerField(read_only=True)
 
-    depends_on = ComponentDependencySerializerSimple(source='componentdependencymodel_set', many=True, read_only=True)
+    history = serializers.HyperlinkedRelatedField(view_name='historicalcomponentversionmodel-detail',
+                                                  many=True, read_only=True,
+                                                  )
+    depends_on = ComponentDependencySerializerSimple(source='componentdependencymodel_set',
+                                                     many=True, read_only=True)
 
     owner_maintainer = UserSerializer(read_only=True)
     owner_responsible_qa = UserSerializer(read_only=True)
@@ -166,17 +241,10 @@ class ComponentVersionSerializerSimple(serializers.ModelSerializer):
 
     class Meta:
         model = ComponentVersionModel
-        fields = '__all__'
-
-
-class ComponentSerializer(ComponentSerializerSimple):
-    latest_version = serializers.SerializerMethodField()
-
-    def get_latest_version(self, component):
-         objs = ComponentVersionModel.objects.filter(component=component.id).order_by('-meta_update_date')
-         if len(objs):
-              return ComponentVersionSerializerSimple(objs[0]).data
-         return None
+        exclude = ComponentVersionModel.get_compliance_fields() + \
+                  ComponentVersionModel.get_maintenance_fields() + \
+                  ComponentVersionModel.get_operations_fields() + \
+                  ComponentVersionModel.get_quality_assurance_fields()
 
 
 class ComponentVersionSerializer(ComponentVersionSerializerSimple):

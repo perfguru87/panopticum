@@ -1,17 +1,18 @@
+import rest_framework.decorators
+import rest_framework.status
 from django.shortcuts import render
 from django.conf import settings
 from django.http import JsonResponse
 
-from rest_framework import viewsets
-from rest_framework import permissions
+from rest_framework import viewsets, permissions, views
 from rest_framework.response import Response
 from rest_framework.decorators import action
-from rest_framework import views
 from rest_framework.views import APIView
 import rest_framework.authtoken.models
 import django.contrib.auth
 import django.contrib.auth.models
 
+import panopticum.filters
 from .models import *
 from .serializers import *
 from .jira import JiraProxy
@@ -21,11 +22,26 @@ class ProductVersionViewSet(viewsets.ModelViewSet):
     queryset = ProductVersionModel.objects.all().order_by('order')
     serializer_class = ProductVersionSerializer
 
+class HistoryComponentVersionViewSet(viewsets.ModelViewSet):
+    queryset = ComponentVersionModel.history.all()
+    serializer_class = HistoricalComponentVersionSerializer
+    filterset_fields = '__all__'
+
 
 class ComponentViewSet(viewsets.ModelViewSet):
     queryset = ComponentModel.objects.all()
-    serializer_class = ComponentSerializer
+    serializer_class = ComponentSerializerSimple
 
+    @action(detail=True)
+    def latest_version(self, request, pk=None):
+        component_obj = self.get_object()
+        component_version = ComponentVersionModel.objects.filter(component=component_obj.id).order_by(
+            '-meta_update_date').first()
+        if not component_version:
+            return Response({'error': f"Last version for {component_obj.name}({component_obj.pk}) not found"},
+                            status=rest_framework.status.HTTP_404_NOT_FOUND)
+        return Response(ComponentVersionSerializerSimple(component_version,
+                                                         context={'request': self.request}).data)
 
 class DeploymentLocationClassViewSet(viewsets.ModelViewSet):
     queryset = DeploymentLocationClassModel.objects.all()
@@ -35,6 +51,7 @@ class DeploymentLocationClassViewSet(viewsets.ModelViewSet):
 class ComponentVersionViewSet(viewsets.ModelViewSet):
     queryset = ComponentVersionModel.objects.all()
     serializer_class = ComponentVersionSerializer
+    filterset_fileds = "__all__"
 
 
 class ComponentRuntimeTypeViewSet(viewsets.ModelViewSet):
@@ -50,6 +67,26 @@ class ComponentDataPrivacyClassViewSet(viewsets.ModelViewSet):
 class ComponentCategoryViewSet(viewsets.ModelViewSet):
     queryset = ComponentCategoryModel.objects.all()
     serializer_class = ComponentCategorySerializer
+
+
+class RequirementViewSet(viewsets.ModelViewSet):
+    queryset = Requirement.objects.all()
+    serializer_class = RequirementSerializer
+    filter_class = panopticum.filters.RequirementFilter
+    filterset_fields = '__all__'
+
+
+class RequirementStatusViewSet(viewsets.ModelViewSet):
+    queryset = RequirementStatusEntry.objects.all()
+    serializer_class = RequirementStatusEntrySerializer
+    filter_class = panopticum.filters.RequirementStatusFilter
+    filterset_fields = '__all__'
+
+
+class RequirementSetViewSet(viewsets.ModelViewSet):
+    queryset = RequirementSet.objects.all()
+    serializer_class = RequirementSetSerializer
+    filterset_filelds = '__all__'
 
 
 class UserDetail(viewsets.ModelViewSet):

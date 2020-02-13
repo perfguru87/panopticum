@@ -38,12 +38,15 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_filters',
     'rest_framework',
     'rest_framework.authtoken',
     'rest_framework_datatables',
+    'rest_framework_filters',
     'django_extensions',
     'corsheaders',
     'admin_reorder',
+    'simple_history',
     'panopticum'
 ]
 
@@ -58,7 +61,7 @@ REST_FRAMEWORK = {
         'rest_framework_datatables.renderers.DatatablesRenderer',
     ),
     'DEFAULT_FILTER_BACKENDS': (
-        'django_filters.rest_framework.DjangoFilterBackend',
+        'rest_framework_filters.backends.RestFrameworkFilterBackend',
         'rest_framework_datatables.filters.DatatablesFilterBackend',
     ),
     'DEFAULT_PAGINATION_CLASS': 'rest_framework_datatables.pagination.DatatablesPageNumberPagination',
@@ -75,6 +78,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'admin_reorder.middleware.ModelAdminReorder',
+    'simple_history.middleware.HistoryRequestMiddleware'
 ]
 
 ROOT_URLCONF = 'panopticum_django.urls'
@@ -157,7 +161,8 @@ ADMIN_REORDER = (
     {'app': 'panopticum', 'label': 'Active Directory', 'models':
         ('panopticum.CountryModel', 'panopticum.OrganizationModel', 'panopticum.OrgDepartmentModel',
          'panopticum.PersonRoleModel', 'panopticum.User')
-    }
+    },
+    {'app': 'panopticum', 'label': 'misc', 'models': ('panopticum.Requirement', 'panopticum.RequirementSet')}
 )
 
 
@@ -183,13 +188,13 @@ PAGE_FOOTER = "Copyright © 2019"
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
+STATIC_ROOT = 'static'
 STATIC_URL = '/static/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
 
 
 AUTH_USER_MODEL = 'panopticum.User'
-
 
 curr_dir = os.path.abspath(os.path.dirname(__file__))
 if os.path.exists(os.path.join(curr_dir, "settings_local.py")):

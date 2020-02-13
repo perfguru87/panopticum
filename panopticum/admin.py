@@ -1,12 +1,22 @@
+import typing
+
+import django.forms
 from django.contrib import admin
 from django.forms.widgets import SelectMultiple, NumberInput, TextInput, Textarea, Select
-import django.contrib.auth.admin
+from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
-
-import datetime
+import django.core.exceptions
+from django.contrib.auth.models import AnonymousUser
 
 # Register your models here.
+import panopticum.fields
 from panopticum.models import *
+
+SIGNEE_STATUS_TYPE = 2 # Requirement status type with name = "approver person". Check init.json
+OWNER_STATUS_TYPE = 1
+UNKNOWN_REQUIREMENT_STATUS = 1 # it's unknown status. Check init.json fixture
+OWNER_STATUS_PERMISSION = 'panopticum.change_owner_status'
+SIGNEE_STATUS_PERMISSION = 'panopticum.change_signee_status'
 
 formfields_large = {models.ForeignKey: {'widget': Select(attrs={'width': '300px', 'style': 'width:300px'})},
                     models.ManyToManyField: {'widget': SelectMultiple(attrs={'size': '7', 'width': '300px', 'style': 'width:300px'})},
@@ -70,12 +80,192 @@ class ComponentDeploymentAdmin(admin.TabularInline):
     verbose_name_plural = "Component Deployments"
 
 
+class RequirementInlineAdmin(admin.TabularInline):
+    model = Requirement
+
+
+class RequirementForm(django.forms.ModelForm):
+    """ Custom admin form for Requirement row. We merge 2 requirement statuses to Requirement row.
+    Pay attention: we does not have model for Requirement row. We do not need it until we can calculate it
+    from requirement statues by django admin form and frontend """
+    owner_status = panopticum.fields.RequirementStatusChoiceField(queryset=RequirementStatus.objects.all(),
+                                                                  label='Readiness')
+    owner_notes = django.forms.CharField(label='notes',
+                                         widget=django.forms.Textarea({'rows': '2'}),
+                                         max_length=16 * pow(2, 10),
+                                         required=False,
+                                         )
+    approve_status = panopticum.fields.RequirementStatusChoiceField(
+        queryset=RequirementStatus.objects.filter(allow_for=SIGNEE_STATUS_TYPE),
+        label='Sign off'
+    )
+    approve_notes = django.forms.CharField(label='Signee notes',
+                                           widget=django.forms.Textarea({'rows': '2'}),
+                                           max_length=16 * pow(2, 10),
+                                           required=False)
+    user = AnonymousUser()
+
+    class Meta:
+        fields = '__all__'
+        model = RequirementStatusEntry
+        labels = {
+            'owner_status': 'Readiness',
+            'owner_notes': 'Notes',
+            'approve_status': 'Sign off',
+            'approve_notes': 'Sign off notes'
+        }
+
+    def __init__(self, *args, **kwargs):
+
+        # define initial fields values
+        self.base_fields['owner_status'].initial = UNKNOWN_REQUIREMENT_STATUS
+        self.base_fields['approve_status'].initial = UNKNOWN_REQUIREMENT_STATUS
+
+        if kwargs.get('instance'):
+            # read and set field values from status models
+            initial = {
+                'owner_status': kwargs['instance'].status.pk,
+                'owner_notes': kwargs['instance'].notes
+            }
+            try:
+                signee_status_obj = self.get_signee_status(kwargs['instance'])
+                initial['approve_status'] = signee_status_obj.status.pk
+                initial['approve_notes'] = signee_status_obj.notes
+            except django.core.exceptions.ObjectDoesNotExist:
+                # set default values for signee
+                initial['approve_status'] = UNKNOWN_REQUIREMENT_STATUS
+
+            kwargs.update(initial=initial)
+
+        super().__init__(*args, **kwargs)
+
+        if 'instance' in kwargs:  # disable defined requirement. We disallow to change requirement title after save
+            self.fields['requirement'].disabled = True
+        if not self.user.has_perm(OWNER_STATUS_PERMISSION):
+            self.fields['owner_status'].disabled = True
+            self.fields['owner_notes'].disabled = True
+        if not self.user.has_perm(SIGNEE_STATUS_PERMISSION):
+            self.fields['approve_status'].disabled = True
+            self.fields['approve_notes'].disabled = True
+
+    @staticmethod
+    def get_signee_status(obj):
+        return RequirementStatusEntry.objects.get(
+            requirement=obj.requirement,
+            type=SIGNEE_STATUS_TYPE,
+            component_version=obj.component_version
+        )
+
+    def is_valid(self):
+        # skip validation for 3 empty requirement rows that added bellow
+        if 'requirement' not in self.cleaned_data:
+            return True
+        return super().is_valid()
+
+    def _save_status(self, field_prefix, type_pk):
+        status = self.cleaned_data[f'{field_prefix}_status']
+        notes = self.cleaned_data[field_prefix + "_notes"]
+        status_obj, created = RequirementStatusEntry.objects.get_or_create(
+            component_version=self.instance.component_version,
+            requirement=self.instance.requirement,
+            type=RequirementStatusType.objects.get(pk=type_pk),
+            defaults={
+                "status": status,
+                "notes": notes
+            }
+        )
+        if not created:
+            status_obj.status = status
+            status_obj.notes = notes
+            status_obj.save()
+        return status_obj
+
+    def save(self, commit=True, *args, **kwargs):
+        if 'requirement' in self.cleaned_data:
+            if 'approve_status' in self.changed_data or 'approve_notes' in self.changed_data:
+                self._save_status('approve', SIGNEE_STATUS_TYPE)
+
+            elif 'owner_status' in self.changed_data:  # reset sign off if readiness is changed
+                self.cleaned_data['approve_status'] = RequirementStatus.objects.get(pk=UNKNOWN_REQUIREMENT_STATUS)
+                self._save_status('approve', SIGNEE_STATUS_TYPE)
+            return self._save_status('owner', OWNER_STATUS_TYPE)
+
+
+class RequirementStatusEntryAdmin(admin.TabularInline):
+    model = RequirementStatusEntry
+    form = RequirementForm
+    fields = ('requirement', 'owner_status', 'owner_notes', 'approve_status', 'approve_notes')
+
+    def owner_status(self, obj):
+        return obj.status.name
+
+    def owner_notes(self, obj):
+        return obj.notes
+
+    def approve_status(self, obj):
+        return self.form.get_signee_status(obj).status.name
+
+    def approve_notes(self, obj):
+        return self.form.get_signee_status(obj).notes
+
+    def get_formset(self, request, obj=None, **kwargs):
+        self.form.user = request.user
+        return super().get_formset(request, obj, **kwargs)
+
+    def get_queryset(self, request):
+        qs =super().get_queryset(request)
+        # show requirements available for requirement set owners only
+        if not request.user.has_perm(OWNER_STATUS_PERMISSION) and \
+                request.user.has_perm(SIGNEE_STATUS_PERMISSION):
+            return qs.filter(type=SIGNEE_STATUS_TYPE,
+                             requirement__sets__owner_groups__in=request.user.groups.all())
+        return qs.filter(type=OWNER_STATUS_TYPE)
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        requirement_qs = Requirement.objects.all()
+        # choice list must contain only requirements available for requirement set owners
+        if not request.user.has_perm(OWNER_STATUS_PERMISSION) and \
+                request.user.has_perm(SIGNEE_STATUS_PERMISSION):
+            requirement_qs = requirement_qs.filter(sets__owner_groups__in=request.user.groups.all())
+
+        field_map = {
+            "requirement": panopticum.fields.RequirementChoiceField(
+                queryset=requirement_qs
+            ),
+        }
+
+        if db_field.name in field_map:
+            return field_map[db_field.name]
+        else:
+            return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+    def has_change_permission(self, request, obj=None):
+        """ Allow change requirement if user have permissions """
+        return request.user.has_perm(SIGNEE_STATUS_PERMISSION) or \
+               (request.user.has_perm(OWNER_STATUS_PERMISSION) and
+                obj and request.user == obj.owner_maintainer)
+
+    def has_add_permission(self, request, obj=None):
+        return self.has_change_permission(request, obj)
+
+
+class RequirementAdmin(admin.ModelAdmin):
+    list_display = ['title']
+    model = Requirement
+
+
+class RequirementSetAdmin(admin.ModelAdmin):
+    filter_horizontal = ['requirements', 'owner_groups']
+    list_display = ['name']
+    model = RequirementSet
+
+
 class ComponentVersionAdmin(admin.ModelAdmin):
     formfield_overrides = formfields_large
 
-    inlines = (ComponentDependencyAdmin, ComponentDeploymentAdmin)
+    inlines = (ComponentDependencyAdmin, ComponentDeploymentAdmin, RequirementStatusEntryAdmin)
 
-    fieldsets = (
+    fieldsets = [
         (None, {'fields': ('component', 'version', 'comments')}),
         ('Ownership', {'classes': ('collapse', 'select-200px'),
                        'fields': (
@@ -88,31 +278,7 @@ class ComponentVersionAdmin(admin.ModelAdmin):
                                      ('dev_repo', 'dev_public_repo'),
                                      ('dev_docs', 'dev_public_docs'),
                                      ('dev_build_jenkins_job', 'dev_api_is_public'))}),
-        ('Compliance', {'classes': ('collapse', 'show_hide_applicable'),
-                          'fields': ('compliance_applicable',
-                                     ('compliance_fips_status', 'compliance_fips_notes'),
-                                     ('compliance_gdpr_status', 'compliance_gdpr_notes'),
-                                     ('compliance_api_status', 'compliance_api_notes'))}),
-        ('Operations capabilities', {'classes': ('collapse', 'show_hide_applicable'),
-                          'fields': ('op_applicable',
-                                     ('op_guide_status', 'op_guide_notes'),
-                                     ('op_failover_status', 'op_failover_notes'),
-                                     ('op_horizontal_scalability_status', 'op_horizontal_scalability_notes'),
-                                     ('op_scaling_guide_status', 'op_scaling_guide_notes'),
-                                     ('op_sla_guide_status', 'op_sla_guide_notes'),
-                                     ('op_metrics_status', 'op_metrics_notes'),
-                                     ('op_alerts_status', 'op_alerts_notes'),
-                                     ('op_zero_downtime_status', 'op_zero_downtime_notes'),
-                                     ('op_backup_status', 'op_backup_notes'),
-                                      'op_safe_restart')}),
-        ('Maintenance capabilities', {'classes': ('collapse', 'show_hide_applicable'),
-                          'fields': ('mt_applicable',
-                                     ('mt_http_tracing_status', 'mt_http_tracing_notes'),
-                                     ('mt_logging_completeness_status', 'mt_logging_completeness_notes'),
-                                     ('mt_logging_format_status', 'mt_logging_format_notes'),
-                                     ('mt_logging_storage_status', 'mt_logging_storage_notes'),
-                                     ('mt_logging_sanitization_status', 'mt_logging_sanitization_notes'),
-                                     ('mt_db_anonymisation_status', 'mt_db_anonymisation_notes'))}),
+
         ('Quality Assurance', {'classes': ('collapse', 'show_hide_applicable'),
                           'fields': ('qa_applicable',
                                      ('qa_manual_tests_status', 'qa_manual_tests_notes'),
@@ -124,7 +290,18 @@ class ComponentVersionAdmin(admin.ModelAdmin):
                                      ('qa_api_tests_status', 'qa_api_tests_notes'),
                                      ('qa_anonymisation_tests_status', 'qa_anonymisation_tests_notes'),
                                      ('qa_upgrade_tests_status', 'qa_upgrade_tests_notes'))}),
-    )
+    ]
+
+    def has_change_permission(self, request, obj: typing.Optional[ComponentVersionModel]=None):
+        return request.user.is_superuser or \
+               (obj and request.user == obj.owner_maintainer) or request.user.has_perm(SIGNEE_STATUS_PERMISSION)
+
+    def get_readonly_fields(self, request, obj=None):
+        readonly_fields = set(super().get_readonly_fields(request, obj))
+        if request.user.has_perm(SIGNEE_STATUS_PERMISSION):
+            for title, definition  in self.get_fieldsets(request, obj):
+                readonly_fields.update(definition.get('fields', ()))
+        return tuple(readonly_fields)
 
     def formfield_for_manytomany(self, db_field, request, **kwargs):
         # standard django method
@@ -134,10 +311,38 @@ class ComponentVersionAdmin(admin.ModelAdmin):
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        # standard django method
         if db_field.name in ("owner_maintainer", "owner_responsible_qa"):
             kwargs["queryset"] = User.objects.filter(hidden=False)
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+    def get_inline_formsets(self, request, formsets, inline_instances, obj=None):
+        """ allow to edit requirements if user have permission panopticum.change_*_status and
+        ignore change_component_version_model permission.
+        """
+        can_edit_parent = self.has_change_permission(request, obj) if obj else self.has_add_permission(request)
+        inline_admin_formsets = []
+        for inline, formset in zip(inline_instances, formsets):
+            fieldsets = list(inline.get_fieldsets(request, obj))
+            readonly = list(inline.get_readonly_fields(request, obj))
+            if can_edit_parent or issubclass(formset.model, RequirementStatusEntry):
+                has_add_permission = inline._has_add_permission(request, obj)
+                has_change_permission = inline.has_change_permission(request, obj)
+                has_delete_permission = inline.has_delete_permission(request, obj)
+            else:
+                # Disable all edit-permissions, and overide formset settings.
+                has_add_permission = has_change_permission = has_delete_permission = False
+                formset.extra = formset.max_num = 0
+            has_view_permission = inline.has_view_permission(request, obj)
+            prepopulated = dict(inline.get_prepopulated_fields(request, obj))
+            inline_admin_formset = admin.helpers.InlineAdminFormSet(
+                inline, formset, fieldsets, prepopulated, readonly, model_admin=self,
+                has_add_permission=has_add_permission, has_change_permission=has_change_permission,
+                has_delete_permission=has_delete_permission,
+                has_view_permission=has_view_permission,
+            )
+            inline_admin_formsets.append(inline_admin_formset)
+        return inline_admin_formsets
+
 
     def _clone(self, obj):
         old_depends_on = ComponentDependencyModel.objects.filter(version=obj.id).order_by('id')
@@ -193,3 +398,5 @@ admin.site.register(ComponentVersionModel, ComponentVersionAdmin)
 admin.site.register(DeploymentLocationClassModel)
 admin.site.register(DeploymentEnvironmentModel)
 admin.site.register(TCPPortModel)
+admin.site.register(RequirementSet, RequirementSetAdmin)
+admin.site.register(Requirement, RequirementAdmin)

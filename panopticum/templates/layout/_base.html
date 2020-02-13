@@ -121,9 +121,11 @@
 
       {% endblock %}
 <!--      <script src="/static/vendors/vue/vue.min.js"></script> //-->
+      {% block  scripts %}
       <script src="/static/vendors/vue/vue.js"></script>
       <script src="/static/vendors/vue-tooltip/vue-tooltip.js"></script>
       <script src="/static/vendors/axios/axios.min.js"></script>
+      {% endblock scripts %}
       {% block extra_js %}
           {% include "layout/_sidebar.js" %}
       {% endblock %}
