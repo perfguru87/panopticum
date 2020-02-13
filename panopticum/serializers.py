@@ -150,6 +150,15 @@ class RequirementSerializer(DynamicFieldsModelSerializer, serializers.ModelSeria
         model = Requirement
         fields = '__all__'
 
+class RequirementStatusSerializer(serializers.ModelSerializer):
+    allow_for = serializers.SlugRelatedField(
+        read_only=True,
+        many=True,
+        slug_field='owner'
+    )
+    class Meta:
+        model = RequirementStatus
+        fields = '__all__'
 
 class RequirementStatusEntrySerializer(serializers.HyperlinkedModelSerializer):
     status = serializers.SlugRelatedField(

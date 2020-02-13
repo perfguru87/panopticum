@@ -2,7 +2,15 @@
 
 {% block title %} Operations dashboard {% endblock title %}
 
+{% block scripts %}
+  {{ block.super }}
+ <script src="//unpkg.com/element-ui"></script>
+ <script src="//unpkg.com/element-ui/lib/umd/locale/en.js"></script>
+ <script src="https://cdn.jsdelivr.net/npm/vue2-filters/dist/vue2-filters.min.js"></script>
+{% endblock %}
+
 {% block stylesheets %}
+<link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
   {{ block.super }}
 {% endblock stylesheets %}
 
@@ -33,30 +41,8 @@
     <div class="col-sm-12"><hr></div>
 </div>
 <div class="row">
-    <div class="col-sm-12">
-      <div class='x_panel'>
-        <table id="components" class="table table-striped" style="width:100%">
-            <thead>
-                <tr>
-                    <th class='colId'>ID</th>
-                    <th class='colProductVersion'></th>
-                    <th class='colLocationClass'></th>
-                    <th class='colRuntimeType'></th>
-                    <th class='colComponent searchable'>Component</th>
-                    <th class='colGuide'>Guide</th>
-                    <th class='colFailover'>Failover</th>
-                    <th class='colScaleout'>Horizontal<br>scalability</th>
-                    <th class='colScaleGuide'>Scaling<br>guide</th>
-                    <th class='colSLO'>SLO/SLA</th>
-                    <th class='colMetrics'>Metrics</th>
-                    <th class='colAlerts'>Alerts</th>
-                    <th class='colUpgrade' title='Zero-downtime upgrade'>ZD Upgrade</th>
-                    <th class='colBackup'>Backup</th>
-                    <th class='colRating'>Rating</th>
-                </tr>
-            </thead>
-        </table>
-      </div>
+    <div class="col-sm-12" id="vue-component">
+        <widget-components-list></widget-components-list>
     </div>
 </div>
 {% endblock %}
@@ -122,7 +108,7 @@ function create_table() {
             {"data": "op_alerts_status"},
             {"data": "op_zero_downtime_status"},
             {"data": "op_backup_status"},
-            {"data": "meta_op_rating"},
+            {"data": "rating"},
         ],
         "columnDefs": [
             {
@@ -187,7 +173,7 @@ $(document).ready(function() {
     pa_populate_options(refc, "#component_runtime_type", "/api/component_runtime_type/?format=json", false);
 
     // Setup - add a text input to each footer cell
-
+    ELEMENT.locale(ELEMENT.lang.en);
     $('#components thead tr').clone(true).appendTo('#components thead');
     $('#components thead tr:eq(1) th').each( function (i) {
         var cl = $(this).attr("class");
@@ -213,6 +199,12 @@ $(document).ready(function() {
         else
             $(this).html('');
     });
+    {% include "vue/status.js" %}
+    {% include "vue/widget-components-list.js" %}
+    {% include "vue/widget-signoff.js" %}
+    const app = new Vue({
+        el: "#vue-component"
+    })
 });
 </script>
 

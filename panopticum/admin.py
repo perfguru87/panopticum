@@ -346,6 +346,7 @@ class ComponentVersionAdmin(admin.ModelAdmin):
                 has_add_permission = inline._has_add_permission(request, obj)
                 has_change_permission = inline.has_change_permission(request, obj)
                 has_delete_permission = inline.has_delete_permission(request, obj)
+
             else:
                 # Disable all edit-permissions, and overide formset settings.
                 has_add_permission = has_change_permission = has_delete_permission = False

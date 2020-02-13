@@ -11,6 +11,7 @@ from rest_framework.views import APIView
 import rest_framework.authtoken.models
 import django.contrib.auth
 import django.contrib.auth.models
+import rest_framework.filters
 
 import panopticum.filters
 from .models import *
@@ -59,6 +60,7 @@ class ComponentVersionViewSet(RelativeURLViewSet):
     serializer_class = ComponentVersionSerializer
     filter_class = panopticum.filters.ComponentVersionFilter
     filterset_fileds = "__all__"
+    ordering_fields = ('component__name', 'version')
 
     def get_queryset(self):
         req_set = self.request.query_params.get('requirement_set')
@@ -86,11 +88,16 @@ class RequirementViewSet(RelativeURLViewSet):
     filter_class = panopticum.filters.RequirementFilter
     filterset_fields = '__all__'
 
+class StatusViewSet(viewsets.ModelViewSet):
+    queryset = RequirementStatus.objects.all()
+    serializer_class = RequirementStatusSerializer
+    filter_class = panopticum.filters.RequirementStatusFilter
+    filterset_fields = '__all__'
 
-class RequirementStatusViewSet(RelativeURLViewSet):
+class RequirementStatusEntryViewSet(RelativeURLViewSet):
     queryset = RequirementStatusEntry.objects.all()
     serializer_class = RequirementStatusEntrySerializer
-    filter_class = panopticum.filters.RequirementStatusFilter
+    filter_class = panopticum.filters.RequirementStatusEntryFilter
     filterset_fields = '__all__'
 
     @action(detail=True)

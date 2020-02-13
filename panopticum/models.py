@@ -276,8 +276,9 @@ class Requirement(models.Model):
     title = models.CharField(max_length=30, unique=True)  # backup, logging storage
     description = models.TextField(max_length=1024)  # that requirements about ...
 
+
     def __unicode__(self):
-        return f"{self.sets.first().name}: {self.title}" if self.sets.exists() else f"{__class__.__name__}: {self.title}"
+        return f"{self.__class__.__name__}: {self.title}"
 
     def __str__(self):
         return self.__unicode__()
@@ -300,16 +301,19 @@ class RequirementSet(models.Model):
 
 class ComponentManager(models.Manager):
     def with_rating(self, requirement_set_id=None):
+        annotate_filter_kwargs = {
+            "statuses__status": 3,
+            "statuses__type": 2,
+        }
+
         if requirement_set_id:
             requirement_count = RequirementSet.objects.get(pk=requirement_set_id).requirements.count()
-            annotate_filter = django.db.models.Q(statuses__status=3,
-                                                 statuses__requirement__sets=requirement_set_id)
+            annotate_filter_kwargs.update({'statuses__requirement__sets': requirement_set_id})
         else:
             requirement_count = RequirementSet.objects.all().aggregate(count=django.db.models.Count('requirements'))['count']
-            annotate_filter = django.db.models.Q(statuses__status=3)
         return self.model.objects.annotate(
             rating= 100 * django.db.models.Count('statuses',
-                                         filter=annotate_filter,
+                                         filter=django.db.models.Q(**annotate_filter_kwargs),
                                          output_field=django.db.models.FloatField())
                   / requirement_count)
 
@@ -535,8 +539,7 @@ class ComponentDependencyModel(models.Model):
 
 class DeploymentLocationClassModel(models.Model):
     name = models.CharField(max_length=128, help_text="global, per-datacenter, customer, endpoint")
-    shortname = models.CharField(max_length=64, unique=True, null=True,
-                                 help_text="most useful by automation tools like data importer/exporter")
+    shortname = models.CharField(max_length=64, null=True, unique=True, help_text="most useful by automation tools like data importer/exporter")
     description = models.TextField(blank=True, null=True)
     order = models.IntegerField(help_text="sorting order")
 
