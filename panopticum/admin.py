@@ -195,6 +195,12 @@ class RequirementStatusEntryAdmin(admin.TabularInline):
     model = RequirementStatusEntry
     form = RequirementForm
     fields = ('requirement', 'owner_status', 'owner_notes', 'approve_status', 'approve_notes')
+    # classes = ('collapse', 'requirements-admin', 'no-upper')
+    classes = ('requirements-admin', 'no-upper')
+    extra = 1
+
+    def requirement(self, obj):
+        return obj.name
 
     def owner_status(self, obj):
         return obj.status.name
@@ -218,8 +224,8 @@ class RequirementStatusEntryAdmin(admin.TabularInline):
         if not request.user.has_perm(OWNER_STATUS_PERMISSION) and \
                 request.user.has_perm(SIGNEE_STATUS_PERMISSION):
             return qs.filter(type=SIGNEE_STATUS_TYPE,
-                             requirement__sets__owner_groups__in=request.user.groups.all())
-        return qs.filter(type=OWNER_STATUS_TYPE)
+                             requirement__sets__owner_groups__in=request.user.groups.all()).order_by('requirement_id')
+        return qs.filter(type=OWNER_STATUS_TYPE).order_by('requirement_id')
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         requirement_qs = Requirement.objects.all()
@@ -248,6 +254,8 @@ class RequirementStatusEntryAdmin(admin.TabularInline):
     def has_add_permission(self, request, obj=None):
         return self.has_change_permission(request, obj)
 
+    def has_delete_permission(self, request, obj=None):
+        return False
 
 class RequirementAdmin(admin.ModelAdmin):
     list_display = ['title']
