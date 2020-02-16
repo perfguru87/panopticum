@@ -277,8 +277,7 @@ class Requirement(models.Model):
     description = models.TextField(max_length=1024)  # that requirements about ...
 
     def __unicode__(self):
-        sets = self.sets.all()
-        return f"{sets[0].name}: {self.title}" if len(sets) else f"{__class__.__name__}: {self.title}"
+        return f"{self.sets.first().name}: {self.title}" if self.sets.exists() else f"{__class__.__name__}: {self.title}"
 
     def __str__(self):
         return self.__unicode__()
