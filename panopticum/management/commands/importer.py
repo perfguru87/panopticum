@@ -517,7 +517,7 @@ class Utility:
             comp_ver_obj = ComponentVersionModel.objects.create(version=version, component_id=comp_obj.id)
             created = True
 
-        if update is True or created is True:
+        if update_record is True or created is True:
             try:
                 comp_ver_obj.comments = 'SEED'
                 comp_ver_obj.dev_jira_component = ''  # dont have info
@@ -583,7 +583,7 @@ class Utility:
                 comp_ver_obj.qa_upgrade_tests_status = 'unknown'  # dont have info
                 comp_ver_obj.qa_upgrade_tests_notes = ''  # dont have info
                 comp_ver_obj.meta_deleted = False  # dont have info
-                comp_ver_obj.component_id = comp_obj
+                comp_ver_obj.component_id = comp_obj.id
 
                 maintainers = Utility.get_users_by_emailid(kwargs['owners'])
                 if maintainers is not None and len(maintainers) > 0:
@@ -654,7 +654,7 @@ class Utility:
                                                     comp_ver_obj,
                                                     Utility.default_dep_type)
                     except Exception as e:
-                        logging.error("Ignoring exception [%s] for name [%s].", e, dep_name.strip())
+                        logging.info("Ignoring exception [%s] for name [%s].", e, dep_name.strip())
 
                 # We now create Component Deployment Model.
                 Utility.get_comp_deployment(kwargs['deployment_name'],  # name
@@ -859,7 +859,7 @@ class SeedDataImporter:
 
         with open(self._csv_file, newline='') as csv_content:
             try:
-                reader = csv.DictReader(csv_content)
+                reader = csv.DictReader(csv_content, delimiter = ';')
             except csv.Error as err:
                 print(r"Issues encountered reading CSV content. Make sure its valid component CSV file.")
                 print(err)
