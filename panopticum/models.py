@@ -301,10 +301,7 @@ class RequirementSet(models.Model):
 
 class ComponentManager(models.Manager):
     def with_rating(self, requirement_set_id=None):
-        annotate_filter_kwargs = {
-            "statuses__status": 3,
-            "statuses__type": 2,
-        }
+        annotate_filter_kwargs = dict(statuses__type=2)
 
         if requirement_set_id:
             requirement_count = RequirementSet.objects.get(pk=requirement_set_id).requirements.count()
@@ -313,9 +310,22 @@ class ComponentManager(models.Manager):
             requirement_count = RequirementSet.objects.all().aggregate(count=django.db.models.Count('requirements'))['count']
         return self.model.objects.annotate(
             rating= 100 * django.db.models.Count('statuses',
-                                         filter=django.db.models.Q(**annotate_filter_kwargs),
+                                         filter=django.db.models.Q(statuses__status=3,
+                                                                   **annotate_filter_kwargs),
                                          output_field=django.db.models.FloatField())
-                  / requirement_count)
+                  / requirement_count,
+            total_statuses = django.db.models.Count('statuses',
+                                                   filter=django.db.models.Q(**annotate_filter_kwargs)),
+            positive_status_count=django.db.models.Count('statuses',
+                                                   filter=django.db.models.Q(statuses__status=3,
+                                                                             **annotate_filter_kwargs)),
+            negative_status_count = django.db.models.Count('statuses',
+                                                     filter=django.db.models.Q(statuses__status=2,
+                                                                               **annotate_filter_kwargs)),
+            unknown_status_count = django.db.models.Count('statuses',
+                                                     filter=django.db.models.Q(statuses__status=1,
+                                                                               **annotate_filter_kwargs))
+        )
 
 
 class ComponentVersionModel(models.Model):
@@ -404,9 +414,8 @@ class ComponentVersionModel(models.Model):
 
     # meta
 
-    meta_update_by = models.ForeignKey(User, on_delete=models.PROTECT, blank=True, null=True, related_name='updater_of')
-    meta_update_date = models.DateTimeField(db_index=True)
-    meta_deleted = models.BooleanField(default=False)
+    update_date = models.DateTimeField(db_index=True, auto_now=True)
+    deleted = models.BooleanField(default=False)
 
     meta_compliance_rating = models.IntegerField(default=0)
     meta_mt_rating = models.IntegerField(default=0)
@@ -417,11 +426,13 @@ class ComponentVersionModel(models.Model):
     meta_profile_not_filled_fields = models.TextField(default="")
     meta_bad_rating_fields = models.TextField(default="")
 
+    # TODO: remove and switch to calculated field
     meta_locations = models.ManyToManyField('DeploymentLocationClassModel', help_text='cached component deployment locations',
                                             related_name='component_versions', blank=True)
+    # TODO: remove and switch to calculated field
     meta_product_versions = models.ManyToManyField('ProductVersionModel', help_text='cached product versions',
                                                    related_name='component_versions', blank=True)
-
+    # TODO: remove
     meta_searchstr_locations = models.TextField(blank=True)
     meta_searchstr_product_versions = models.TextField(blank=True)
 
@@ -496,7 +507,7 @@ class ComponentVersionModel(models.Model):
         self.meta_profile_not_filled_fields = ", ".join(sorted(not_filled_fields))
 
 
-    def update_meta_locations_and_product_versions(self):
+    def update_meta_locations_and_product_versions(self): # TODO: remove and switch to calculated fields
         locations = {}
         product_versions = {}
 
@@ -514,7 +525,6 @@ class ComponentVersionModel(models.Model):
     def save(self, *args, **kwargs):
         #self._update_profile_completeness()
 
-        self.meta_update_date = datetime.datetime.now()
         super().save(*args, **kwargs)
 
         self.update_meta_locations_and_product_versions()
@@ -587,7 +597,7 @@ class ProductVersionModel(models.Model):
     family = models.ForeignKey(ProductFamilyModel, on_delete=models.PROTECT)
     order = models.IntegerField(help_text="sorting order")
 
-    def _update_components_meta_searchstr(self):
+    def _update_components_meta_searchstr(self): # TODO: remove and switch to calculated fields
         if not self.id:
             return
 
@@ -609,9 +619,15 @@ class ProductVersionModel(models.Model):
 class ComponentDeploymentModel(models.Model):
     name = models.CharField(max_length=64, help_text="Component deployment name: Cloud Account Server",
                             verbose_name="Deployment name", blank=True)
-    location_class = models.ForeignKey(DeploymentLocationClassModel, on_delete=models.PROTECT)
-    product_version = models.ForeignKey(ProductVersionModel, on_delete=models.PROTECT)
-    environment = models.ForeignKey(DeploymentEnvironmentModel, on_delete=models.PROTECT)
+    location_class = models.ForeignKey(DeploymentLocationClassModel,
+                                       related_name='deployments',
+                                       on_delete=models.PROTECT)
+    product_version = models.ForeignKey(ProductVersionModel,
+                                        related_name='deployments',
+                                        on_delete=models.PROTECT)
+    environment = models.ForeignKey(DeploymentEnvironmentModel,
+                                    related_name='deployments',
+                                    on_delete=models.PROTECT)
     component_version = models.ForeignKey(ComponentVersionModel,
                                           related_name='deployments',
                                           on_delete=models.PROTECT)

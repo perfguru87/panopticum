@@ -161,10 +161,7 @@ class RequirementStatusSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class RequirementStatusEntrySerializer(serializers.HyperlinkedModelSerializer):
-    status = serializers.SlugRelatedField(
-        read_only=True,
-        slug_field='name'
-    )
+
     type = serializers.SlugRelatedField(
         read_only=True,
         slug_field='owner'
@@ -208,8 +205,6 @@ class ComponentVersionSerializerSimple(serializers.ModelSerializer):
     meta_locations = DeploymentLocationClassSerializer(read_only=True, many=True)
     meta_product_versions = ProductVersionSerializer(read_only=True, many=True)
 
-    rating = serializers.FloatField(read_only=True)
-
 
     def get_dev_languages(self, component):
         objs = component.dev_language.get_queryset()
@@ -245,6 +240,11 @@ class ComponentVersionSerializerSimple(serializers.ModelSerializer):
 
 class ComponentVersionSerializer(QueryFieldsMixin, ComponentVersionSerializerSimple):
     component = ComponentSerializerSimple(read_only=True)
+    rating = serializers.FloatField(read_only=True)
+    total_statuses = serializers.IntegerField(read_only=True)
+    positive_status_count = serializers.IntegerField(read_only=True)
+    negative_status_count = serializers.IntegerField(read_only=True)
+    unknown_status_count = serializers.IntegerField(read_only=True)
 
 
 class TokenSerializer(serializers.ModelSerializer):

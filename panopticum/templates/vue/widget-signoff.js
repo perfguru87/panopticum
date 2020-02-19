@@ -33,6 +33,10 @@ Vue.component('widget-signoff', {
     if (this.status) this.updateLastChange(this.status);
   },
   methods: {
+    getIDfromHref(href) {
+      const idPattern = new RegExp("^.*/(\\d+)/(?:\\?.+)?$");
+      return Number(idPattern.exec(href)[1]);
+    },
     updateLastChange: function(status) {
       let url = document.createElement('a');
       url.href = status.url;
@@ -70,7 +74,7 @@ Vue.component('widget-signoff', {
       <div class="text item" v-if="status && status.notes && status.type=='requirement reviewer'">by reason: {{ status.notes }}</div>
     </div>
     <span slot="reference">
-      <app-status :status="status" ></app-status>
+      <app-status :status="status ? status.status : null " ></app-status>
     </span>
   </el-popover>{% endverbatim %}
   `
