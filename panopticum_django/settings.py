@@ -65,7 +65,7 @@ REST_FRAMEWORK = {
         'rest_framework.filters.OrderingFilter',
         'rest_framework_datatables.filters.DatatablesFilterBackend',
     ),
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    'DEFAULT_PAGINATION_CLASS': 'panopticum.pagination.CustomPagination',
     'PAGE_SIZE': 50,
 }
 

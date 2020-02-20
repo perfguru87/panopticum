@@ -18,11 +18,13 @@ from .models import *
 from .serializers import *
 from .jira import JiraProxy
 
+
 class RelativeURLViewSet(viewsets.ModelViewSet):
     def get_serializer_context(self):
         context = super().get_serializer_context()
         context.update({'request': None})
         return context
+
 
 class ProductVersionViewSet(RelativeURLViewSet):
     queryset = ProductVersionModel.objects.all().order_by('order')
@@ -43,12 +45,13 @@ class ComponentViewSet(RelativeURLViewSet):
     def latest_version(self, request, pk=None):
         component_obj = self.get_object()
         component_version = ComponentVersionModel.objects.filter(component=component_obj.id).order_by(
-            '-meta_update_date').first()
+            '-update_date').first()
         if not component_version:
             return Response({'error': f"Last version for {component_obj.name}({component_obj.pk}) not found"},
                             status=rest_framework.status.HTTP_404_NOT_FOUND)
         return Response(ComponentVersionSerializerSimple(component_version,
                                                          context={'request': self.request}).data)
+
 
 class DeploymentLocationClassViewSet(RelativeURLViewSet):
     queryset = DeploymentLocationClassModel.objects.all()
@@ -88,11 +91,13 @@ class RequirementViewSet(RelativeURLViewSet):
     filter_class = panopticum.filters.RequirementFilter
     filterset_fields = '__all__'
 
+
 class StatusViewSet(viewsets.ModelViewSet):
     queryset = RequirementStatus.objects.all()
     serializer_class = RequirementStatusSerializer
     filter_class = panopticum.filters.RequirementStatusFilter
     filterset_fields = '__all__'
+
 
 class RequirementStatusEntryViewSet(RelativeURLViewSet):
     queryset = RequirementStatusEntry.objects.all()

@@ -1,4 +1,5 @@
 Vue.component('widget-components-list', {
+    props: ['requirementSetId'],
     data: function() {
         return {
             componentVersions: [],
@@ -10,7 +11,6 @@ Vue.component('widget-components-list', {
             componentSorting: '',
             headerFilters: {},
             loading: true,
-            requirementSetId: 1,
             products: [],
             locations: [],
             currentProduct: null,
@@ -21,11 +21,11 @@ Vue.component('widget-components-list', {
         await this.fetchFilters();
 
         const [requirements, ] = await Promise.all([
-            axios.get('/api/requirement_set/1/?format=json').then(resp => resp.data.requirements),
-            this.filterComponents(),
+            axios.get(`/api/requirement_set/${this.requirementSetId}/?format=json`).then(resp => resp.data.requirements),
             this.fetchStatuses(),
         ])
         this.requirements = requirements;
+        await this.filterComponents()
         this.loading = false
     },
     watch: {
@@ -66,6 +66,24 @@ Vue.component('widget-components-list', {
                 }
             })
         },
+        fetchStatusEntryPage(offset) {
+            const requirementsIds = this.requirements.map(req => req.id);
+            const componentVersionIds = this.componentVersions.map(compVer => compVer.id);
+            let url = `/api/requirement_status/?format=json&component_version__in=${componentVersionIds.join()}&requirement__in=${requirementsIds.join()}`
+            if (offset) url += `&offset=${offset}`
+            return axios.get(url)
+                .then(resp => resp.data);
+        },
+        async fetchStatusEntries() {
+            // Statuses count can be > than pagination limits. We should fetch statuses from all pages
+            let offset = 0;
+            let data;
+            do {
+                data = await this.fetchStatusEntryPage(offset);
+                offset = data.next;
+                this.statuses.push(...data.results);
+            } while (data.next);
+        },
         fetchSearchComponents(queryString) {
             const [componentName, version] = queryString.split(':')
             let queryParams = "";
@@ -78,9 +96,9 @@ Vue.component('widget-components-list', {
             this.loading = true
             this.cancelSource = axios.CancelToken.source();
             queryParams += `&requirement_set=${this.requirementSetId}` + 
-                           `&deployments__product_version=${this.currentProduct}` +
                            `&ordering=${this.componentSorting}component__name,${this.componentSorting}version`
             if (this.currentLocation) queryParams += `&deployments__location_class=${this.currentLocation}`
+            if (this.currentProduct) queryParams += `&deployments__product_version=${this.currentProduct}`
             return axios.get(`/api/component_version/?format=json${queryParams}`, 
                     {cancelToken: this.cancelSource.token})
                 .then(resp => {
@@ -121,30 +139,25 @@ Vue.component('widget-components-list', {
             const idPattern = new RegExp("^.*/(\\d+)/(?:\\?.+)?$");
             return Number(idPattern.exec(href)[1]);
         },
-        getSigneeClass: function(signeeStatus) { 
+        getOwnerClass: function(status) { 
             return {
-                "signee signee-no el-icon-remove": signeeStatus && signeeStatus.status.id == 2, // TODO: move constant to separated module after migration to webpack 
-                "signee signee-yes el-icon-circle-check": signeeStatus && signeeStatus.status.id == 3
+                "owner owner-no el-icon-remove": status && status.status.id == 2, // TODO: move constant to separated module after migration to webpack 
+                "owner owner-yes el-icon-circle-check": status && [3,4].includes(status.status.id)
             }
         },
-        getOwnerClass: function(obj) {
-            let ownerStatus = obj.row[obj.column.label];
-            if (ownerStatus == undefined) return;
-            ownerStatus = ownerStatus.owner
-            if (ownerStatus && ownerStatus.status.id == 2) return 'owner-no';
-            if (ownerStatus && [3, 4].includes(ownerStatus.status.id) ) return "owner-yes";
+        getSigneeClass: function(obj) {
+            let status = obj.row[obj.column.label];
+            if (status == undefined) return;
+            status = status.signee
+            if (status && status.status.id == 2) return 'signee-no';
+            if (status && [3, 4].includes(status.status.id) ) return "signee-yes";
         },
         handleChangeFilter(id) {
             this.filterComponents()
         },
         updateTable: async function() {
-            
-            const requirementsIds = this.requirements.map(req => req.id);
-            const componentVersionIds = this.componentVersions.map(compVer => compVer.id);
-            const statuses = await axios.get(`/api/requirement_status/?format=json&component_version__in=${componentVersionIds.join()}&requirement__in=${requirementsIds.join()}`)
-                .then(resp => resp.data.results);
-            
-            this.statuses = statuses;
+            console.log(this.requirements);
+            await this.fetchStatusEntries();
 
             this.tableData = this.componentVersions.map(compVer => { 
                 let overal_status = 'unknown';
@@ -160,6 +173,7 @@ Vue.component('widget-components-list', {
                 let data = {
                     id: compVer.id, 
                     name: compVer.component.name, 
+                    componentId: compVer.component.id,
                     version: compVer.version,
                     overal_status: overal_status
                 }
@@ -190,6 +204,7 @@ Vue.component('widget-components-list', {
         <div style="display: inline-block">
             <label class="el-form-item__label" for="product">Product</label>
             <el-select v-model="currentProduct" :loading="!products" name='product' placeholder="product" >
+                <el-option label="all" :value="null"></el-option>
                 <el-option v-for="product in products" 
                     :key="product.id" 
                     :label="product.name" 
@@ -200,6 +215,7 @@ Vue.component('widget-components-list', {
         <div style="display: inline-block">
             <label class="el-form-item__label" for="location">Location</label>
             <el-select v-model="currentLocation" :loading="!locations" name="location" placeholder="location" >
+                <el-option label="all" :value="null"></el-option>
                 <el-option v-for="location in locations" 
                     :key="location.id" 
                     :label="location.name" 
@@ -212,7 +228,7 @@ Vue.component('widget-components-list', {
         <el-table stripe style="width: 100%" 
         :data="tableData"
         empty-text="No data"
-        :cell-class-name="getOwnerClass"
+        :cell-class-name="getSigneeClass"
         border>
             <el-table-column label="Component" 
                     width="200" 
@@ -227,7 +243,7 @@ Vue.component('widget-components-list', {
                     clearable></el-input>
                 </template>
                 <template slot-scope="scope">
-                    <span class="word-wrap">{{ scope.row.name }}:{{ scope.row.version }}</span>
+                    <a class="word-wrap" :href="'/component/' + scope.row.componentId">{{ scope.row.name| truncate(50) }}:{{ scope.row.version }}</a>
                 </template>
             </el-table-column>
 
@@ -265,7 +281,7 @@ Vue.component('widget-components-list', {
                                     <el-dropdown-item align="right" 
                                     :command="{requirement: req, type: 'owner', status: status}"
                                     v-for="status of statusDefinitions.owner" :key="status.id">
-                                        {{ status.name |capitalize }}<app-status :status="status"/>
+                                        {{ status.name |capitalize }}<app-status :status="status" lightIcon/>
                                     </el-dropdown-item>
                                     <el-dropdown-item divided align="right" command="reset">
                                         Reset<i class="el-icon-circle-close"></i>
@@ -294,14 +310,14 @@ Vue.component('widget-components-list', {
                     
                 </template>
                 <template slot-scope="scope">
-                    <div :class="getSigneeClass(scope.row[req.title].signee)"></div>
+                    <div :class="getOwnerClass(scope.row[req.title].owner)"></div>
                     <div class="inner-cell">
                         <span class="word-wrap" v-if="scope.row[req.title].owner && scope.row[req.title].owner.notes && scope.row[req.title].owner.status.name !='n/a'">
                         {{ scope.row[req.title].owner.notes }}
-                    </span>
-                    <span v-else-if="scope.row[req.title].owner">{{scope.row[req.title].owner.status.name}}</span>
-                    <span v-else>Unknown</span>
-                </div>
+                        </span>
+                        <span v-else-if="scope.row[req.title].owner">{{scope.row[req.title].owner.status.name}}</span>
+                        <span v-else>unknown</span>
+                    </div>
                 </template>
             </el-table-column>
 

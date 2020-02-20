@@ -29,7 +29,7 @@
 </div>
 <div class="row">
     <div class="col-sm-12" id="vue-component">
-        <widget-components-list></widget-components-list>
+        <widget-components-list :requirement-set-id="requirementSetId"></widget-components-list>
     </div>
 </div>
 {% endblock %}
@@ -46,7 +46,12 @@ $(document).ready(function() {
     {% include "vue/widget-components-list.js" %}
     {% include "vue/widget-signoff.js" %}
     const app = new Vue({
-        el: "#vue-component"
+        el: "#vue-component",
+        data: function() {
+            return {
+                requirementSetId: 1
+            }
+        }
     })
 });
 </script>

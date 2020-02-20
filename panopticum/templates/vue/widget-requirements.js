@@ -65,7 +65,6 @@ Vue.component('widget-requirements', {
                     })
                 }
             }
-            console.log(this.statuses);
         },
         updateStatuses: function() {
             if (!this.component_version.id) return;
