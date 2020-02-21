@@ -270,6 +270,14 @@ class RequirementSetAdmin(admin.ModelAdmin):
 
 class ComponentVersionAdmin(admin.ModelAdmin):
     formfield_overrides = formfields_large
+    search_fields = ['component__name', 'version']
+    autocomplete_fields = ['owner_maintainer',
+                           'owner_responsible_qa',
+                           'owner_product_manager',
+                           'owner_program_manager',
+                           'owner_expert',
+                           'owner_escalation_list',
+                           'owner_architect']
 
     inlines = (ComponentDependencyAdmin, ComponentDeploymentAdmin, RequirementStatusEntryAdmin)
 
@@ -318,7 +326,7 @@ class ComponentVersionAdmin(admin.ModelAdmin):
         if db_field.name in ("owner_product_manager", "owner_program_manager", "owner_expert",
                              "owner_escalation_list", "owner_architect"):
             kwargs["queryset"] = User.objects.filter(hidden=False)
-        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+        return super().formfield_for_manytomany(db_field, request, **kwargs)
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name in ("owner_maintainer", "owner_responsible_qa"):
