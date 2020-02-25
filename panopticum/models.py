@@ -292,7 +292,7 @@ class Requirement(models.Model):
     description = models.TextField(max_length=1024)  # that requirements about ...
 
     def __unicode__(self):
-        return f"{self.__class__.__name__}: {self.title}"
+        return f"{self.sets.first().name}: {self.title}" if self.sets.exists() else f"{__class__.__name__}: {self.title}"
 
     def __str__(self):
         return self.__unicode__()
@@ -540,7 +540,6 @@ class ComponentVersionModel(models.Model):
         super().save()
 
     def save(self, *args, **kwargs):
-        #self._update_profile_completeness()
 
         super().save(*args, **kwargs)
 
@@ -566,7 +565,8 @@ class ComponentDependencyModel(models.Model):
 
 class DeploymentLocationClassModel(models.Model):
     name = models.CharField(max_length=128, help_text="global, per-datacenter, customer, endpoint")
-    shortname = models.CharField(max_length=64, null=True, unique=True, help_text="most useful by automation tools like data importer/exporter")
+    shortname = models.CharField(max_length=64, unique=True, null=True,
+                                 help_text="most useful by automation tools like data importer/exporter")
     description = models.TextField(blank=True, null=True)
     order = models.IntegerField(help_text="sorting order")
 
@@ -677,4 +677,3 @@ class DatacenterModel(models.Model):
 
     def __str__(self):
         return "%s" % self.name
-

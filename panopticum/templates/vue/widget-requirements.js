@@ -50,6 +50,7 @@ Vue.component('widget-requirements', {
             })
         },
         updateTable: function() {
+            this.table = [];
             for (let requirement of this.requirements) {
                 let ownerStatus = this.statuses.find(el => requirement.id == this.getId(el.requirement) && el.type == "component owner")
                 if (ownerStatus == undefined) {

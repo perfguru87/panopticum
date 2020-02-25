@@ -282,7 +282,7 @@ class ComponentVersionAdmin(admin.ModelAdmin):
     inlines = (ComponentDependencyAdmin, ComponentDeploymentAdmin, RequirementStatusEntryAdmin)
 
     fieldsets = [
-        (None, {'fields': ('component', 'version', 'comments')}),
+        (None, {'fields': ('component', 'version', 'release_date', 'comments')}),
         ('Ownership', {'classes': ('collapse', 'select-200px'),
                        'fields': (
                                   ('owner_maintainer', 'owner_responsible_qa'),
