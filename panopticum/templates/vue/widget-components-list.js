@@ -13,8 +13,15 @@ Vue.component('widget-components-list', {
             loading: true,
             products: [],
             locations: [],
+            runtimes: [],
             currentProduct: null,
-            currentLocation: null
+            currentLocation: null,
+            currentRuntime: null
+        }
+    },
+    computed: {
+        allStatusDefinitions: function() {
+            return [...this.statusDefinitions.owner, this.statusDefinitions.signee];
         }
     },
     created: async function() {
@@ -37,9 +44,11 @@ Vue.component('widget-components-list', {
 
     methods: {
         async fetchFilters() {
-            const [products, locations] = await Promise.all([
+            // fetch entries from REST API for filters at top page(product, location, runtime type) 
+            const [products, locations, runtimes] = await Promise.all([
                 axios.get('/api/product_version/?format=json').then(resp => resp.data.results),
-                axios.get('/api/location_class/?format=json').then(resp => resp.data.results)
+                axios.get('/api/location_class/?format=json').then(resp => resp.data.results),
+                axios.get('/api/component_runtime_type/?format=json').then(resp => resp.data.results),
             ])
             const sortFunction = function(a, b) {
                 if (a.order < b.order) {
@@ -55,9 +64,12 @@ Vue.component('widget-components-list', {
 
             this.products = products.sort(sortFunction);
             this.locations = locations.sort(sortFunction);
+            this.runtimes = runtimes.sort(sortFunction);
             this.currentProduct = 4; // hardcode for default 9.0 TODO: make setting per user\group
+            this.currentLocation = 1; // datacenters
         },
         fetchStatuses() {
+            // fetch statuses to cache
             return axios.get('/api/status/?format=json&allow_for=1&allow_for=2').then(resp => {
                 const statuses = resp.data.results;
                 this.statusDefinitions = {
@@ -67,6 +79,7 @@ Vue.component('widget-components-list', {
             })
         },
         fetchStatusEntryPage(offset) {
+            // fetch requirement status entries by one page
             const requirementsIds = this.requirements.map(req => req.id);
             const componentVersionIds = this.componentVersions.map(compVer => compVer.id);
             let url = `/api/requirement_status/?format=json&component_version__in=${componentVersionIds.join()}&requirement__in=${requirementsIds.join()}`
@@ -85,6 +98,7 @@ Vue.component('widget-components-list', {
             } while (data.next);
         },
         fetchSearchComponents(queryString) {
+            // filter component versions on changes in component input filter
             const [componentName, version] = queryString.split(':')
             let queryParams = "";
             if (componentName) queryParams += `&component__name__icontains=${componentName}`;
@@ -92,8 +106,9 @@ Vue.component('widget-components-list', {
             this.filterComponents(queryParams);
         },
         filterComponents(queryParams='') {
+            // send REST API request for fetching component versions by queryParam
             this.cancelSearch();
-            this.loading = true
+            this.loading = true;
             this.cancelSource = axios.CancelToken.source();
             queryParams += `&requirement_set=${this.requirementSetId}` + 
                            `&ordering=${this.componentSorting}component__name,${this.componentSorting}version`
@@ -114,38 +129,57 @@ Vue.component('widget-components-list', {
             
         },
         cancelSearch() {
+            // cancel previous search pending http requiests
             if (this.cancelSource) {
                 this.cancelSource.cancel('Start new search, stop active search');
             }
             loading = false
         },
         handleDropdownCommand(command) {
+            // handle change dropdown filters
             let headerFilters = {};
             let queryParams=''
             Object.keys(this.headerFilters).map(key => {headerFilters[key] = null} );
+            const unknownOveralQuery = `&total_statuses!=${this.requirements.length}`;
+            const notReadyOveralQuery = `&negative_status_count!=0&unknown_status_count=0&total_statuses=${this.requirements.length}`;
+            const readyOveralQuery = `&unknown_status_count=0&negative_status_count=0&total_statuses=${this.requirements.length}`;
             
             if (command != 'reset') {
-                queryParams = `&statuses__status=${command.status.id}&statuses__requirement=${command.requirement.id}&statuses__type=${command.type == 'owner' ? 1 : 2}`
-                if (command.status.id == 1) {  // unknown status
-                    const notUnknownStatusesIds = this.statusDefinitions.owner.filter(s => s.id != 1 ).map(s => s.id);
-                    queryParams = `&exclude_statuses=${notUnknownStatusesIds}&exclude_requirement=${command.requirement.id}&exclude_type=${command.type == 'owner' ? 1 : 2}`
+                if(command.type == 'overal') {
+                    queryParams = command.status.id == 3 ? readyOveralQuery : notReadyOveralQuery;
+                } else {
+                    queryParams = `&statuses__status=${command.status.id}&statuses__requirement=${command.requirement.id}&statuses__type=${command.type == 'owner' ? 1 : 2}`
                 }
-                headerFilters[command.requirement.id] = {status: command.status, type: command.type};
+                if (command.status.id == 1) {  // unknown status
+                    if (command.type == 'overal') {
+                        queryParams = unknownOveralQuery;
+                    } else {
+                        const notUnknownStatusesIds = this.statusDefinitions.owner.filter(s => s.id != 1 ).map(s => s.id);
+                        queryParams = `&exclude_statuses=${notUnknownStatusesIds}&exclude_requirement=${command.requirement.id}&exclude_type=${command.type == 'owner' ? 1 : 2}`
+                    }
+                }
+
+                if (command.type == 'overal') {
+                    headerFilters['overal'] = {status: command.status}
+                } else {
+                    headerFilters[command.requirement.id] = {status: command.status, type: command.type};
+                }
             }
             this.headerFilters = headerFilters;
             this.filterComponents(queryParams);
         },
         getIDfromHref(href) {
+            // parse Hyperlink releative link. For eaxmple: for /api/component_version/1/ will return 1
             const idPattern = new RegExp("^.*/(\\d+)/(?:\\?.+)?$");
             return Number(idPattern.exec(href)[1]);
         },
-        getOwnerClass: function(status) { 
+        getOwnerClass(status) { 
             return {
-                "owner owner-no el-icon-remove": status && status.status.id == 2, // TODO: move constant to separated module after migration to webpack 
-                "owner owner-yes el-icon-circle-check": status && [3,4].includes(status.status.id)
+                "owner el-icon-remove": status && status.status.id == 2, // TODO: move constant to separated module after migration to webpack 
+                "owner el-icon-circle-check": status && [3,4].includes(status.status.id)
             }
         },
-        getSigneeClass: function(obj) {
+        getSigneeClass(obj) {
             let status = obj.row[obj.column.label];
             if (status == undefined) return;
             status = status.signee
@@ -153,39 +187,41 @@ Vue.component('widget-components-list', {
             if (status && [3, 4].includes(status.status.id) ) return "signee-yes";
         },
         handleChangeFilter(id) {
+            this.headerFilters = {};
             this.filterComponents()
         },
-        updateTable: async function() {
-            console.log(this.requirements);
-            await this.fetchStatusEntries();
-
-            this.tableData = this.componentVersions.map(compVer => { 
-                let overal_status = 'unknown';
-                const allStatusDefinitions = [...this.statusDefinitions.owner, this.statusDefinitions.signee]
-                if (compVer.total_statuses == this.requirements.length) {
-                    if (compVer.negative_status_count != 0 && compVer.unknown_status_count == 0) {
-                        overal_status = allStatusDefinitions.find(s => s.id == 2); // not ready status
-                    } else if (compVer.unknown_status_count == 0 && compVer.negative_status_count == 0) {
-                        overal_status = allStatusDefinitions.find(s => s.id == 3); // ready status
-                    }
+        getOveralStatus(compVer) {
+            let overal_status = 'unknown';
+            if (compVer.total_statuses == this.requirements.length) {
+                if (compVer.negative_status_count != 0 && compVer.unknown_status_count == 0) {
+                    overal_status = this.allStatusDefinitions.find(s => s.id == 2); // not ready status
+                } else if (compVer.unknown_status_count == 0 && compVer.negative_status_count == 0) {
+                    overal_status = this.allStatusDefinitions.find(s => s.id == 3); // ready status
                 }
-
+            }
+            return overal_status;
+        },
+        updateTable: async function() {
+            await this.fetchStatusEntries();
+            this.tableData = this.componentVersions.map(compVer => { 
+                
                 let data = {
                     id: compVer.id, 
                     name: compVer.component.name, 
                     componentId: compVer.component.id,
                     version: compVer.version,
-                    overal_status: overal_status
+                    overal_status: this.getOveralStatus(compVer)
                 }
                 for (req of this.requirements) {
                     let statuses = this.statuses.filter(status => {
                         return (
+                            status.requirement &&
                             this.getIDfromHref(status.requirement) == req.id && 
                             this.getIDfromHref(status.component_version) == compVer.id
                         )
                     }).map(status => {
-                        status.status = allStatusDefinitions
-                            .find(s => s.id == this.getIDfromHref(status.status));
+                        status.status = this.allStatusDefinitions
+                            .find(s => s.id == (status.status.id ? status.status.id : this.getIDfromHref(status.status)));
                         return status;
                     });
                     data[req.title] = {
@@ -195,7 +231,6 @@ Vue.component('widget-components-list', {
                 }
                 return data;
             });
-
         }
     },
     template: `{% verbatim %}
@@ -203,8 +238,7 @@ Vue.component('widget-components-list', {
     <el-row>
         <div style="display: inline-block">
             <label class="el-form-item__label" for="product">Product</label>
-            <el-select v-model="currentProduct" :loading="!products" name='product' placeholder="product" >
-                <el-option label="all" :value="null"></el-option>
+            <el-select v-model="currentProduct" :loading="!products" name='product' placeholder="product" clearable>
                 <el-option v-for="product in products" 
                     :key="product.id" 
                     :label="product.name" 
@@ -212,18 +246,30 @@ Vue.component('widget-components-list', {
             </el-select>
         </div>
         <el-divider direction="vertical"></el-divider>
+
         <div style="display: inline-block">
             <label class="el-form-item__label" for="location">Location</label>
-            <el-select v-model="currentLocation" :loading="!locations" name="location" placeholder="location" >
-                <el-option label="all" :value="null"></el-option>
+            <el-select v-model="currentLocation" :loading="!locations" name="location" placeholder="location" clearable>
                 <el-option v-for="location in locations" 
                     :key="location.id" 
                     :label="location.name" 
                     :value="location.id"></el-option>
             </el-select>
-    </div>
+        </div>
+        <el-divider direction="vertical"></el-divider>
+
+        <div style="display: inline-block">
+            <label class="el-form-item__label" for="runtimes">Runtime type</label>
+            <el-select v-model="currentRuntime" :loading="!runtimes" name="Runtime Type" placeholder="runtime type" clearable>
+                <el-option v-for="runtime in runtimes" 
+                    :key="runtime.id" 
+                    :label="runtime.name" 
+                    :value="runtime.id"></el-option>
+            </el-select>
+        </div>
     </el-row>
     <el-divider></el-divider>
+
     <el-row>
         <el-table stripe style="width: 100%" 
         :data="tableData"
@@ -250,11 +296,28 @@ Vue.component('widget-components-list', {
             <el-table-column
                 label="Overal status"
                 header-align="center"
-                width="60"
-                align="center"
-            >
+                width="80"
+                align="center">
+                <template slot="header">
+                    <span class="word-wrap">Overal status</span>
+                    <div>
+                            <el-dropdown trigger="click" placement="bottom-start" @command="handleDropdownCommand">
+                                <span>
+                                    <app-status v-if="headerFilters && headerFilters['overal']" :status='headerFilters["overal"].status' lightIcon/>
+                                    <i v-else class="el-icon-arrow-down" style="font-size: 9px; display: inline-block; margin-left: 0"></i>
+                                </span>
+                                <el-dropdown-menu slot="dropdown">
+                                    <el-dropdown-item :command="{requirement: null, type: 'overal', status: status}"
+                                    v-for="status of statusDefinitions.signee" :key="status.id">
+                                    <app-status :status="status" lightIcon />{{ status.name | capitalize }}
+                                </el-dropdown-item>
+                                <el-dropdown-item command="reset" divided><i class="el-icon-circle-close"></i>Reset</el-dropdown-item>
+                                </el-dropdown-menu>
+                            </el-dropdown>
+                    </div>
+                </template>
                 <template slot-scope="scope">
-                    <span> <app-status :status="scope.row.overal_status"></app-status></span>
+                    <span><app-status :status="scope.row.overal_status" lightIcon></app-status></span>
                 </template>
             </el-table-column>
 
@@ -268,7 +331,9 @@ Vue.component('widget-components-list', {
                     <el-row>
                         <span class="word-wrap">{{ req.title }}</span>
                     </el-row>
-                    <el-row>
+
+                    <el-row> 
+                         <!-- owner dropdown filter -->
                         <div style="position: absolute; left:0; bottom: 3px">
                             <el-dropdown trigger="click" @command="handleDropdownCommand">
                                 <span>
@@ -289,6 +354,7 @@ Vue.component('widget-components-list', {
                                 </el-dropdown-menu>
                             </el-dropdown>
                         </div>
+                        <!-- signee dropdown filter -->
                         <div style="position: absolute; float: right; right:0; bottom: 3px">
                             <el-dropdown trigger="click" placement="bottom-start" @command="handleDropdownCommand">
                                 <span>
@@ -309,14 +375,14 @@ Vue.component('widget-components-list', {
                     </el-row>
                     
                 </template>
+
                 <template slot-scope="scope">
+                    
                     <div :class="getOwnerClass(scope.row[req.title].owner)"></div>
                     <div class="inner-cell">
                         <span class="word-wrap" v-if="scope.row[req.title].owner && scope.row[req.title].owner.notes && scope.row[req.title].owner.status.name !='n/a'">
                         {{ scope.row[req.title].owner.notes }}
                         </span>
-                        <span v-else-if="scope.row[req.title].owner">{{scope.row[req.title].owner.status.name}}</span>
-                        <span v-else>unknown</span>
                     </div>
                 </template>
             </el-table-column>
