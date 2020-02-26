@@ -112,6 +112,7 @@ class UserDetail(RelativeURLViewSet):
     queryset = get_user_model().objects.all()
     serializer_class = UserSerializer
     permission_classes = (permissions.IsAuthenticated,)
+    filter_class= panopticum.filters.UserFilter
     filterset_fields = ['username', 'email']
 
 

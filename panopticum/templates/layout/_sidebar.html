@@ -102,19 +102,14 @@
 
   <!-- /menu footer buttons -->
   <div class="sidebar-footer hidden-small">
-    <a data-toggle="tooltip" data-placement="top" title="Settings">
+    <a data-toggle="tooltip" data-placement="top" title="Admin" href='/admin/'>
       <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
-    </a>
-    <a data-toggle="tooltip" data-placement="top" title="FullScreen">
-      <span class="glyphicon glyphicon-fullscreen" aria-hidden="true"></span>
-    </a>
-    <a data-toggle="tooltip" data-placement="top" title="Lock">
-      <span class="glyphicon glyphicon-eye-close" aria-hidden="true"></span>
     </a>
     <a data-toggle="tooltip" data-placement="top" title="{% if user.is_authenticated %}Logout{% else %}Login{% endif %}"
        href="{% if user.is_authenticated %}{% url 'logout' %}{% else %}{% url 'login' %}{% endif %}?next={{ request.get_full_path }}">
       <span class="glyphicon glyphicon-off" aria-hidden="true"></span>
     </a>
+    <a style="width: 50%; height: 35px;"></a>
   </div>
   <!-- /menu footer buttons -->
 </div>
