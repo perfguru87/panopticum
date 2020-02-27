@@ -15,22 +15,10 @@
 {% endblock stylesheets %}
 
 {% block content %}
-  <div class="right_col" role="main">
-    <div class="">
-
-<div class="row title_left">
-    <div class="col-sm-12">
-        <h3>Operations dashboard</h3>
-    </div>
-</div>
-
-<div class="row">
-    <div class="col-sm-12"><hr></div>
-</div>
-<div class="row">
-    <div class="col-sm-12" id="vue-component">
-        <widget-components-list :requirement-set-id="requirementSetId"></widget-components-list>
-    </div>
+<div class="right_col" role="main">
+<div class="">
+<div  id="vue-component">
+    <dashboard-team></dashboard-team>
 </div>
 {% endblock %}
 {% block extra_js %}
@@ -41,17 +29,13 @@
 $(document).ready(function() {
 
     ELEMENT.locale(ELEMENT.lang.en);
- 
+
     {% include "vue/status.js" %}
     {% include "vue/widget-components-list.js" %}
     {% include "vue/widget-signoff.js" %}
+    {% include "vue/dashboard-team.js" %}
     const app = new Vue({
-        el: "#vue-component",
-        data: function() {
-            return {
-                requirementSetId: 1
-            }
-        }
+        el: "#vue-component"
     })
 });
 </script>

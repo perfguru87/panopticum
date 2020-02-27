@@ -1,15 +1,15 @@
 Vue.component('widget-components-list', {
-    props: ['requirementSetId'],
+    props: ['requirementSetId', 'filters'],
     data: function() {
         return {
             componentVersions: [],
             statuses: [],
             tableData: [],
             requirements: [],
+            headerFilters: {},
             componentVersionSearch: null,
             statusDefinitions: {},
             componentSorting: '',
-            headerFilters: {},
             loading: true,
             products: [],
             locations: [],
@@ -32,8 +32,16 @@ Vue.component('widget-components-list', {
             this.fetchStatuses(),
         ])
         this.requirements = requirements;
-        await this.filterComponents()
-        this.loading = false
+        if (this.filters && this.filters.length) {
+            this.handleDropdownCommand({
+                requirement: {id: Number(this.filters[0].requirement)},
+                status: {id: Number(this.filters[0].status)},
+                type: this.filters[0].type
+            });
+        } else {
+            await this.filterComponents();
+        }
+        this.loading = false;
     },
     watch: {
         componentVersionSearch: 'fetchSearchComponents',
@@ -44,7 +52,7 @@ Vue.component('widget-components-list', {
 
     methods: {
         async fetchFilters() {
-            // fetch entries from REST API for filters at top page(product, location, runtime type) 
+            // fetch entries from REST API for filters at top page(product, location, runtime type)
             const [products, locations, runtimes] = await Promise.all([
                 axios.get('/api/product_version/?format=json').then(resp => resp.data.results),
                 axios.get('/api/location_class/?format=json').then(resp => resp.data.results),
@@ -166,6 +174,7 @@ Vue.component('widget-components-list', {
                 }
             }
             this.headerFilters = headerFilters;
+            this.$emit('update:header-filters', this.headerFilters);
             this.filterComponents(queryParams);
         },
         getIDfromHref(href) {
@@ -173,9 +182,9 @@ Vue.component('widget-components-list', {
             const idPattern = new RegExp("^.*/(\\d+)/(?:\\?.+)?$");
             return Number(idPattern.exec(href)[1]);
         },
-        getOwnerClass(status) { 
+        getOwnerClass(status) {
             return {
-                "owner el-icon-remove": status && status.status.id == 2, // TODO: move constant to separated module after migration to webpack 
+                "owner el-icon-remove": status && status.status.id == 2, // TODO: move constant to separated module after migration to webpack
                 "owner el-icon-circle-check": status && [3,4].includes(status.status.id)
             }
         },
@@ -203,8 +212,8 @@ Vue.component('widget-components-list', {
         },
         updateTable: async function() {
             await this.fetchStatusEntries();
-            this.tableData = this.componentVersions.map(compVer => { 
-                
+            this.tableData = this.componentVersions.map(compVer => {
+
                 let data = {
                     id: compVer.id, 
                     name: compVer.component.name, 
@@ -261,9 +270,9 @@ Vue.component('widget-components-list', {
         <div style="display: inline-block">
             <label class="el-form-item__label" for="runtimes">Runtime type</label>
             <el-select v-model="currentRuntime" :loading="!runtimes" name="Runtime Type" placeholder="runtime type" clearable>
-                <el-option v-for="runtime in runtimes" 
-                    :key="runtime.id" 
-                    :label="runtime.name" 
+                <el-option v-for="runtime in runtimes"
+                    :key="runtime.id"
+                    :label="runtime.name"
                     :value="runtime.id"></el-option>
             </el-select>
         </div>
@@ -332,7 +341,7 @@ Vue.component('widget-components-list', {
                         <span class="word-wrap">{{ req.title }}</span>
                     </el-row>
 
-                    <el-row> 
+                    <el-row>
                          <!-- owner dropdown filter -->
                         <div style="position: absolute; left:0; bottom: 3px">
                             <el-dropdown trigger="click" @command="handleDropdownCommand">
