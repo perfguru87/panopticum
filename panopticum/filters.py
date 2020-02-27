@@ -125,6 +125,11 @@ class ComponentVersionFilter(filters.FilterSet):
         fields = '__all__'
 
     def filter_exclude_statuses(self, qs, name, value):
+        """ handle query params for excluding component version with some requirement statuses.
+        that useful for filtering component version that have not requirement statuses by some
+        requirement. It's equal to select "unknown" status at frontend filters. We exclude all
+        statuses except unknown: Ready, not ready, n/a. That case cover situation when component
+        version have not requirement status. If requirement status is not exist it equal "unknown" status"""
         requirement = self.request.query_params.get('exclude_requirement')
         req_type = self.request.query_params.get('exclude_type')
         args = {}

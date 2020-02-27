@@ -4,6 +4,7 @@ from rest_framework.pagination import LimitOffsetPagination
 class CustomPagination(LimitOffsetPagination):
 
     def get_next(self):
+        """ return next page offset """
         if self.offset + self.limit >= self.count:
             return None
 
@@ -11,6 +12,7 @@ class CustomPagination(LimitOffsetPagination):
         return offset
 
     def get_previous(self):
+        """ return previous page offset """
         if self.offset <= 0:
             return None
 

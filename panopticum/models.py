@@ -9,6 +9,13 @@ from simple_history.models import HistoricalRecords
 
 import panopticum.fields
 
+# constants from fixtures
+NOT_APP_STATUS = 4
+POSITIVE_STATUS = 3
+NEGATIVE_STATUS = 2
+UNKNOWN_STATUS = 1
+SIGNEE_STATUS_TYPE = 2
+
 class User(AbstractUser):
     dn = models.CharField(max_length=255, null=True)
     title = models.CharField(max_length=64, blank=True, null=True)
@@ -300,8 +307,12 @@ class RequirementSet(models.Model):
 
 
 class ComponentManager(models.Manager):
+
     def with_rating(self, requirement_set_id=None):
-        annotate_filter_kwargs = dict(statuses__type=2)
+        """ Custom manager method for add calculated fields: total_statuses, positive_status_count,
+         negative_status_count, unknown_status_count. That useful for calculation overal component
+         version status """
+        annotate_filter_kwargs = dict(statuses__type=SIGNEE_STATUS_TYPE)
 
         if requirement_set_id:
             requirement_count = RequirementSet.objects.get(pk=requirement_set_id).requirements.count()
@@ -310,20 +321,20 @@ class ComponentManager(models.Manager):
             requirement_count = RequirementSet.objects.all().aggregate(count=django.db.models.Count('requirements'))['count']
         return self.model.objects.annotate(
             rating= 100 * django.db.models.Count('statuses',
-                                         filter=django.db.models.Q(statuses__status=3,
+                                         filter=django.db.models.Q(statuses__status=POSITIVE_STATUS,
                                                                    **annotate_filter_kwargs),
                                          output_field=django.db.models.FloatField())
                   / requirement_count,
             total_statuses = django.db.models.Count('statuses',
                                                    filter=django.db.models.Q(**annotate_filter_kwargs)),
             positive_status_count=django.db.models.Count('statuses',
-                                                   filter=django.db.models.Q(statuses__status=3,
+                                                   filter=django.db.models.Q(statuses__status=POSITIVE_STATUS,
                                                                              **annotate_filter_kwargs)),
             negative_status_count = django.db.models.Count('statuses',
-                                                     filter=django.db.models.Q(statuses__status=2,
+                                                     filter=django.db.models.Q(statuses__status=NEGATIVE_STATUS,
                                                                                **annotate_filter_kwargs)),
             unknown_status_count = django.db.models.Count('statuses',
-                                                     filter=django.db.models.Q(statuses__status=1,
+                                                     filter=django.db.models.Q(statuses__status=UNKNOWN_STATUS,
                                                                                **annotate_filter_kwargs))
         )
 
@@ -413,7 +424,6 @@ class ComponentVersionModel(models.Model):
     qa_upgrade_tests_signoff = panopticum.fields.SigneeField(related_name='signed_upgrade_tests')
 
     # meta
-    release_date = models.DateField(null=True, blank=True)
     update_date = models.DateTimeField(db_index=True, auto_now=True)
     deleted = models.BooleanField(default=False)
 
