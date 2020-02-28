@@ -155,9 +155,7 @@ function vue_components_init() {
     /*
      * vue js code below breaks gentelella menu javascript
      */
-    console.log('pre-populate components menu');
     $.getJSON('/api/component/?format=json', function(data) {
-        console.log('populate components menu');
         var url = window.location.pathname;
         $.each(data.results, function(key, val) {
             var href = "/component/" + val.id;

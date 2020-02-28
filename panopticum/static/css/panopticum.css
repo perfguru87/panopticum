@@ -450,3 +450,67 @@ span.pa-component-stars i {
 .el-card__header {
     padding: 5px 20px;
 }
+
+.table-header, .word-wrap {
+    word-break: break-word;
+    white-space: normal;
+}
+
+.expanded-table {
+    background-color: #f5fcfc;
+}
+
+.table-header {
+    font-weight: bold;
+    background-color: #fafafa;
+}
+
+
+div.owner {
+    position: absolute;
+    left: 0;
+    top: 0;
+}
+
+.owner-no {
+    color: red;
+}
+
+.owner-yes {
+    color: DarkSeaGreen;
+}
+
+.owner-status-indicator {
+    width: 6px;
+    height: 100%;
+    position: absolute;
+    float: left;
+    left: 0px;
+    top: 0px;
+}
+
+.signee-no {
+    background-color: #F5B7B1 !important;
+}
+
+.signee-yes {
+    background-color: #D4EFDF !important;
+}
+
+.inner-cell {
+    margin: 12px 0 4px;
+}
+
+.el-table td {
+    padding: 0;
+}
+
+.el-table th {
+    padding-bottom: 5px;
+}
+
+.el-table .cell {
+    padding-left: 2px !important;
+    word-break: break-word !important;
+    white-space: normal;
+}

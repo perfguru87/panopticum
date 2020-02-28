@@ -56,6 +56,7 @@ class DeploymentLocationClassViewSet(RelativeURLViewSet):
 class ComponentVersionViewSet(RelativeURLViewSet):
     queryset = ComponentVersionModel.objects.all()
     serializer_class = ComponentVersionSerializer
+    filter_class = panopticum.filters.ComponentVersionFilter
     filterset_fileds = "__all__"
 
 
@@ -112,6 +113,7 @@ class UserDetail(RelativeURLViewSet):
     queryset = get_user_model().objects.all()
     serializer_class = UserSerializer
     permission_classes = (permissions.IsAuthenticated,)
+    filter_class= panopticum.filters.UserFilter
     filterset_fields = ['username', 'email']
 
 

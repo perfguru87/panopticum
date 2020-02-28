@@ -720,7 +720,9 @@ class ComponentDeploymentModel(models.Model):
     location_class = models.ForeignKey(DeploymentLocationClassModel, on_delete=models.PROTECT)
     product_version = models.ForeignKey(ProductVersionModel, on_delete=models.PROTECT)
     environment = models.ForeignKey(DeploymentEnvironmentModel, on_delete=models.PROTECT)
-    component_version = models.ForeignKey(ComponentVersionModel, on_delete=models.PROTECT)
+    component_version = models.ForeignKey(ComponentVersionModel,
+                                          related_name='deployments',
+                                          on_delete=models.PROTECT)
     service_name = models.CharField(max_length=64, help_text="accsrv, taskmngr", blank=True)
     binary_name = models.CharField(max_length=64, help_text="accsrv.exe", blank=True)
     open_ports = models.ManyToManyField(TCPPortModel, blank=True)
