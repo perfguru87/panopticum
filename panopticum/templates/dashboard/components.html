@@ -31,7 +31,7 @@
 </div>
 <div class="row">
     <div class="col-sm-12" id="vue-component">
-        <dashboard-components></dashboard-components>
+        <dashboard-components :filters="filters" v-on:update:header-filter="onChangeFilters"></dashboard-components>
     </div>
 </div>
 {% endblock %}
@@ -48,7 +48,29 @@ $(document).ready(function() {
         el: "#vue-component",
         data: function() {
             return {
-                requirementSetId: 1
+                filters: []
+            }
+        },
+        created: function() {
+            this.filters = this.getFilters('filters');
+        },
+        methods: {
+            getFilters(key) {
+                const params = new URLSearchParams(window.location.hash.substr(1));
+                let filtersParam = params.get(key);
+                filtersParam = filtersParam ? JSON.parse(filtersParam) : [];
+                return filtersParam;
+            },
+            setFilters(key, value) {
+                const url = new URL(window.location);
+                const originalHash = url.hash;
+                const params = new URLSearchParams(originalHash.substr(1));
+                params.set(key, JSON.stringify(value));
+                url.hash = "#" + params.toString();
+                history.pushState(null, '', url.href);
+            },
+            onChangeFilters(filters) {
+                this.setFilters('filters', filters);
             }
         }
     })

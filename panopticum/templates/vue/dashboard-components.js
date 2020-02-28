@@ -1,4 +1,5 @@
 Vue.component('dashboard-components', {
+  props: ['filters'],
   data: function() {
     return {
       tableData: [],
@@ -37,6 +38,7 @@ Vue.component('dashboard-components', {
     this.locations = locations;
     this.runtimes = runtimes;
     this.privacies = privacies;
+    if (this.filters) {this.headerFilters = this.filters;}
     this.fetchTableData();
   },
   watch: {
@@ -100,6 +102,7 @@ Vue.component('dashboard-components', {
       this.headerFilters
         .filter(headerFilter => headerFilter.value)
         .map(headerFilter => queryParams[headerFilter.query] = headerFilter.value);
+      this.$emit("update:header-filter", this.headerFilters);
       this.fetchComponentsVersions(queryParams);
     }
   },
@@ -135,6 +138,7 @@ Vue.component('dashboard-components', {
       </el-table-column>
 
       <el-table-column
+        width="100" 
         label="Version"
         prop="componentVersion.version">
         <template slot="header" slot-scope="scope">
@@ -274,7 +278,8 @@ Vue.component('dashboard-components', {
         </template>
       </el-table-column>
 
-      <el-table-column 
+      <el-table-column
+        width="60" 
         label="RAML">
         <template slot-scope="scope">
           <a :href="scope.row.componentVersion.dev_raml" 
@@ -283,6 +288,7 @@ Vue.component('dashboard-components', {
         </template>
       </el-table-column>
       <el-table-column 
+        width="60" 
         label="Repo">
         <template slot-scope="scope">
           <a :href="scope.row.componentVersion.dev_repo" 
@@ -290,7 +296,8 @@ Vue.component('dashboard-components', {
           v-if="scope.row.componentVersion.dev_repo && scope.row.componentVersion.dev_repo.startsWith('http')"></a>
         </template>
       </el-table-column>
-      <el-table-column 
+      <el-table-column
+      width="60" 
         label="JIRA">
         <template slot-scope="scope">
           <a :href="scope.row.componentVersion.dev_jira_component" 
@@ -298,7 +305,8 @@ Vue.component('dashboard-components', {
           v-if="scope.row.componentVersion.dev_jira_component && scope.row.componentVersion.dev_jira_component.startsWith('http')"></a>
         </template>
       </el-table-column>
-      <el-table-column 
+      <el-table-column
+        width="60" 
         label="docs">
         <template slot-scope="scope">
           <a :href="scope.row.componentVersion.dev_docs" 
