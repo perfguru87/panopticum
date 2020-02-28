@@ -40,6 +40,10 @@ class DeploymentEnvironmentFilter(filters.FilterSet):
         model = models.DeploymentEnvironmentModel
         fields = '__all__'
 
+class ProductVersionFilter(filters.FilterSet):
+    class Meta:
+        model = models.ProductVersionModel
+        fields = '__all__'
 
 class RequirementStatusTypeFilter(filters.FilterSet):
 
@@ -85,7 +89,11 @@ class DeploymentFilter(filters.FilterSet):
     component_version = filters.RelatedFilter('ComponentVersionFilter',
                                          field_name='component_version',
                                           lookups='__all__',
-                                         queryset=models.ComponentVersionModel.objects.all())
+                                         queryset=models.ComponentVersionModel.objects.all()),
+    product_version = filters.RelatedFilter(ProductVersionFilter,
+                                            lookups='__all__',
+                                            queryset=models.ProductVersionModel.objects.all())
+
     class Meta:
         model = models.ComponentDeploymentModel
         fields = '__all__'

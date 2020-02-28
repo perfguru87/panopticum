@@ -56,6 +56,7 @@ class DeploymentLocationClassViewSet(RelativeURLViewSet):
 class ComponentVersionViewSet(RelativeURLViewSet):
     queryset = ComponentVersionModel.objects.all()
     serializer_class = ComponentVersionSerializer
+    filter_class = panopticum.filters.ComponentVersionFilter
     filterset_fileds = "__all__"
 
 
