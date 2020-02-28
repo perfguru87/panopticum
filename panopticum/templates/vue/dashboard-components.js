@@ -31,14 +31,17 @@ Vue.component('dashboard-components', {
       this.fetchObject('location_class'),
       this.fetchObject('component_runtime_type'),
       this.fetchObject('component_data_privacy_class'),
-      this.fetchComponentsVersions(),
     ])
     this.categories = categories;
     this.products = products;
     this.locations = locations;
     this.runtimes = runtimes;
     this.privacies = privacies;
-    if (this.filters) {this.headerFilters = this.filters;}
+    if (this.filters) {
+      this.headerFilters = this.filters;
+    } else {
+      await this.fetchComponentsVersions();
+    }
     this.fetchTableData();
   },
   watch: {
