@@ -1,5 +1,4 @@
 .gitignore
-compose
 Dockerfile
 env
 venv
@@ -7,4 +6,5 @@ venv
 data
 panopticum_django/settings_local.py
 panopticum/migrations
-media
+_old_migrations
+static

@@ -1,0 +1,54 @@
+{{- if .Values.admin.superuser.create }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ template "panopticum.fullname" . }}-superuser
+  labels:
+    app: {{ template "panopticum.name" . }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
+    release: {{ .Release.Name }}
+    heritage: "{{ .Release.Service }}"
+    helm.sh/chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+  annotations:
+    "helm.sh/hook": post-install
+    "helm.sh/hook-delete-policy": before-hook-creation
+    "helm.sh/hook-weight": "4"
+spec:
+  template:
+    spec:
+      containers:
+      - name: migrations
+        image: {{ template "panopticum.image" . }}
+        imagePullPolicy: "{{ .Values.image.pullPolicy }}"
+        command:
+          - python
+          - manage.py
+          - shell
+          - -c
+          - |-
+            import os
+            from django.contrib.auth import get_user_model
+            User = get_user_model()
+            User.objects.create_superuser(os.environ.get('SUPERUSER_USERNAME'),
+                                          os.environ.get('SUPERUSER_EMAIL'),
+                                          os.environ.get('SUPERUSER_PASSWORD'))
+        env:
+          - name: SUPERUSER_USERNAME
+            valueFrom:
+              secretKeyRef:
+                name: {{ template "panopticum.fullname" . }}-superuser
+                key: username
+          - name: SUPERUSER_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: {{ template "panopticum.fullname" . }}-superuser
+                key: password
+          - name: SUPERUSER_EMAIL
+            valueFrom:
+              secretKeyRef:
+                name: {{ template "panopticum.fullname" . }}-superuser
+                key: email
+{{ include "panopticum.dbvars" . | indent 10 }}
+      restartPolicy: Never
+  backoffLimit: 2
+  {{- end }}

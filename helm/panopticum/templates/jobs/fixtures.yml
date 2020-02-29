@@ -1,0 +1,61 @@
+{{- if .Values.fixtures.enabled }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ template "panopticum.fullname" . }}-fixtures
+  labels:
+    app: {{ template "panopticum.name" . }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
+    release: {{ .Release.Name }}
+    heritage: "{{ .Release.Service }}"
+    helm.sh/chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+  annotations:
+    "helm.sh/hook": post-install
+    "helm.sh/hook-delete-policy": before-hook-creation
+    "helm.sh/hook-weight": "4"
+spec:
+  template:
+    spec:
+      initContainers:
+      {{- if .Values.fixtures }}
+      - name: copy-fixtures
+        image: {{ template "panopticum.fixtures.image" . }}
+        imagePullPolicy: "{{ .Values.fixtures.image.pullPolicy }}"
+        command:
+          - cp
+          {{- range .Values.fixtures.files }}
+          - {{ . }}
+          {{- end }}
+          - /mnt/fixtures
+        volumeMounts:
+          - name: fixtures
+            mountPath: /mnt/fixtures
+      {{- end }}
+      containers:
+      - name: loaddata
+        image: {{ template "panopticum.image" . }}
+        imagePullPolicy: "{{ .Values.image.pullPolicy }}"
+        command:
+          - django-admin
+          - loaddata
+          - --settings=panopticum_django.settings
+          - --pythonpath=.
+          - init.json
+          {{- range .Values.fixtures.files }}
+          - /mnt/fixtures/{{ last (splitList "/" .) }}
+          {{- end }}
+        env:
+{{ include "panopticum.dbvars" . | indent 10 }}
+        volumeMounts:
+          {{- if .Values.fixtures }}
+          - name: fixtures
+            mountPath: /mnt/fixtures
+          {{- end }}
+      volumes:
+        {{- if .Values.fixtures }}
+        - name: fixtures
+          emptyDir: {}
+        {{- end }}
+      restartPolicy: Never
+  backoffLimit: 2
+{{- end }}

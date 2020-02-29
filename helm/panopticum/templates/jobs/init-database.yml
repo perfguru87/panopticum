@@ -1,0 +1,36 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ template "panopticum.fullname" . }}-initdb
+  labels:
+    app: {{ template "panopticum.name" . }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
+    release: {{ .Release.Name }}
+    heritage: "{{ .Release.Service }}"
+    helm.sh/chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+  annotations:
+    "helm.sh/hook": pre-install,pre-upgrade
+    "helm.sh/hook-delete-policy": before-hook-creation
+    "helm.sh/hook-weight": "5"
+spec:
+  template:
+    spec:
+      containers:
+      - name: migrations
+        image: {{ template "panopticum.image" . }}
+        imagePullPolicy: "{{ .Values.image.pullPolicy }}"
+        command:
+          - python
+          - manage.py
+          - migrate
+        resources:
+          requests:
+            memory: 64Mi
+            cpu: 100m
+          limits:
+            memory: 128Mi
+            cpu: 250m
+        env:
+{{ include "panopticum.dbvars" . | indent 10 }}
+      restartPolicy: Never
+  backoffLimit: 2

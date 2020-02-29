@@ -1,0 +1,118 @@
+image:
+  registry:
+  repository: panopticum/backend # private
+  tag: latest
+  pullPolicy: Always
+  # pullSecrets:
+  #  - docker-login
+
+ldap:
+  enabled: false
+  ## LDAP dn
+  #dn:
+  ## LDAP password
+  #password:
+  ## Populate users from ldap at deployment
+  populate: false
+
+configsFromImage:
+  enabled: false
+  image:
+    registry:
+    repository: company-configs
+    tag: latest
+    pullPolicy: Always
+    # pullSecrets:
+    #  - docker-login
+
+database:
+  engine: django.db.backends.sqlite3
+  ## database host
+  # host: 127.0.0.1
+  ## database port
+  # port:
+  ## database name
+  # name: panopticum
+  ## database user
+  # user: panopticum
+  ## database password
+  # password: somepass
+
+fixtures:
+  enabled: false
+  image:
+    registry:
+    repository: fixtures
+    tag: latest
+    pullPolicy: Always
+    ##pullSecrets:
+    #  - docker-login
+  # source path in image
+  files:
+    - fixtures/fixtures.json
+
+admin:
+  superuser:
+    create: false
+    username: admin
+    password: admin
+    email:
+
+backend:
+  service:
+    name: backend
+    type: ClusterIP
+    # type: LoadBalancer
+    # Assign a static LB IP
+    # loadBalancerIP: 203.0.113.32
+    loadBalancerSourceRanges: []
+    #  - 10.0.0.0/8
+    #  - 130.211.204.2/32
+    externalPort: 8000
+    port: 8000
+    annotations: {}
+    #   cloud.google.com/load-balancer-type: "Internal"
+    #
+    # An example using type:loadbalancer and AWS internal ELB on kops
+    # type: LoadBalancer
+    # annotations:
+    #   dns.alpha.kubernetes.io/internal: vault.internal.domain.name
+    #   service.beta.kubernetes.io/aws-load-balancer-internal: 0.0.0.0/0
+  resources:
+    requests:
+      memory: 128Mi
+      cpu: 200m
+    limits:
+      memory: 512Mi
+      cpu: 800m
+frontend:
+  service:
+    name: frontend
+    type: ClusterIP
+    # type: LoadBalancer
+    # Assign a static LB IP
+    # loadBalancerIP: 203.0.113.32
+    loadBalancerSourceRanges: []
+    #  - 10.0.0.0/8
+    #  - 130.211.204.2/32
+    externalPort: 80
+    port: 80
+    annotations: {}
+    #   cloud.google.com/load-balancer-type: "Internal"
+    #
+    # An example using type:loadbalancer and AWS internal ELB on kops
+    # type: LoadBalancer
+    # annotations:
+    #   dns.alpha.kubernetes.io/internal: vault.internal.domain.name
+    #   service.beta.kubernetes.io/aws-load-balancer-internal: 0.0.0.0/0
+  resources:
+    requests:
+      memory: 48Mi
+      cpu: 100m
+    limits:
+      memory: 256Mi
+      cpu: 500m
+
+ingress:
+  enabled: true
+  host: panopticum.example.com

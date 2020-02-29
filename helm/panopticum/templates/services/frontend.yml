@@ -1,0 +1,38 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "panopticum.fullname" . }}-{{ .Values.frontend.service.name}}
+  labels:
+    app: {{ template "panopticum.name" . }}
+    chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+{{- if .Values.frontend.service.annotations }}
+  annotations:
+{{ toYaml .Values.frontend.service.annotations | indent 4 }}
+{{- end }}
+spec:
+  type: {{ .Values.frontend.service.type }}
+  {{- if .Values.frontend.service.clusterIP }}
+  clusterIP: {{ .Values.frontend.service.clusterIP }}
+  {{- end }}
+  {{- if eq .Values.frontend.service.type "LoadBalancer" }}
+  {{- if .Values.frontend.service.loadBalancerIP }}
+  loadBalancerIP: {{ .Values.frontend.service.loadBalancerIP }}
+  {{- end }}
+  loadBalancerSourceRanges:
+    {{- range .Values.frontend.service.loadBalancerSourceRanges }}
+    - {{ . }}
+    {{- end }}
+  {{- end }}
+  ports:
+  - port: {{ .Values.frontend.service.externalPort }}
+    protocol: TCP
+    targetPort: {{ .Values.frontend.service.port }}
+    {{- if .Values.frontend.service.nodePort }}
+    nodePort: {{ .Values.frontend.service.nodePort }}
+    {{- end }}
+  selector:
+    app: {{ template "panopticum.name" . }}
+    release: {{ .Release.Name }}
+    type: frontend
