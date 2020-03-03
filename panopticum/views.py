@@ -1,3 +1,4 @@
+import django.http
 import rest_framework.decorators
 import rest_framework.status
 from django.shortcuts import render
@@ -133,6 +134,13 @@ class UserDetail(RelativeURLViewSet):
     filter_class= panopticum.filters.UserFilter
     filterset_fields = ['username', 'email']
 
+    @action(detail=True)
+    def photo(self, request, pk=None):
+        user = self.get_object()
+        if not user.photo:
+            return django.http.Http404
+        response = django.http.HttpResponse(user.photo.file.read(), content_type='image/jpeg')
+        return response
 
 class Token(RelativeURLViewSet):
     queryset = rest_framework.authtoken.models.Token.objects.all()

@@ -18,3 +18,4 @@ scalpl
 gunicorn
 gevent
 iso3166
+django-database-files-3000
