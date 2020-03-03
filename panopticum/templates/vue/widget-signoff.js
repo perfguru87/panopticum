@@ -1,6 +1,6 @@
 Vue.component('widget-signoff', {
   props: [
-    'status', 
+    'status',
   ],
   computed: {
     classObject: function() {
@@ -12,7 +12,7 @@ Vue.component('widget-signoff', {
       return `${window.location.origin}/api`
     },
     popupEnabled: function() {
-      return this.status && (this.status.notes || this.history) && this.status.status != 'unknown'
+      return this.status && (this.status.notes || this.history) && this.status.status != 'unknown';
     },
     username: function() {
       if (!this.user) return null;
@@ -26,11 +26,11 @@ Vue.component('widget-signoff', {
   data: function() {
     return {
       'history': null,
-      'user': null 
+      'user': null,
+      loading: true
     }
   },
   mounted: function() {
-    if (this.status) this.updateLastChange(this.status);
   },
   methods: {
     getIDfromHref(href) {
@@ -45,7 +45,10 @@ Vue.component('widget-signoff', {
         .then(resp => {
           if (resp.data.count > 0) {
             this.history = resp.data.results[0];
-            axios.get(this.history.history_user).then(resp => this.user = resp.data)
+            axios.get(this.history.history_user).then(resp => {
+              this.user = resp.data;
+              this.loading = false
+            });
           }
         })
     },
@@ -61,20 +64,21 @@ Vue.component('widget-signoff', {
   },
   template: `{% verbatim %}
   <el-popover
-              placement="top-end"
+              placement="bottom-end"
               width="250"
               trigger="click"
               popper-class="signoff-popover"
               v-bind:disabled = "!popupEnabled"
-              offset = -10
+              :offset="10"
+              @show="updateLastChange(status)"
   >
-    <div v-if="history && user">
+    <div v-if="history && user" :v-loading="loading">
       <div class="text item">Updated by <span style="font-weight: bold">{{ username }}</span></div>
       <div class="text item">at {{ formatDate(history.history_date) }}</div>
       <div class="text item" v-if="status && status.notes && status.type=='requirement reviewer'">by reason: {{ status.notes }}</div>
     </div>
     <span slot="reference">
-      <app-status :status="status ? status.status : null " ></app-status>
+      <app-status :status="status ? status.status : null " :class="classObject"></app-status>
     </span>
   </el-popover>{% endverbatim %}
   `
