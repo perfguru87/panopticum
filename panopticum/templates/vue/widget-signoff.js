@@ -53,14 +53,8 @@ Vue.component('widget-signoff', {
         })
     },
     formatDate: function(date) {
-      return new Date(Date.parse(date)).toLocaleString('en-US', 
-                                                       {month: 'long', 
-                                                       year: 'numeric', 
-                                                       day: 'numeric', 
-                                                       hour: 'numeric', 
-                                                       minute: 'numeric', 
-                                                       second: 'numeric'})
-    }
+      return moment(date).fromNow();
+  }
   },
   template: `{% verbatim %}
   <el-popover
@@ -74,7 +68,7 @@ Vue.component('widget-signoff', {
   >
     <div v-if="history && user" :v-loading="loading">
       <div class="text item">Updated by <span style="font-weight: bold">{{ username }}</span></div>
-      <div class="text item">at {{ formatDate(history.history_date) }}</div>
+      <div class="text item">{{ formatDate(history.history_date) }}</div>
       <div class="text item" v-if="status && status.notes && status.type=='requirement reviewer'">by reason: {{ status.notes }}</div>
     </div>
     <span slot="reference">
