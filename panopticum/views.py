@@ -11,11 +11,13 @@ from rest_framework.views import APIView
 import rest_framework.authtoken.models
 import django.contrib.auth
 import django.contrib.auth.models
+import rest_framework.filters
 
 import panopticum.filters
 from .models import *
 from .serializers import *
 from .jira import JiraProxy
+
 
 class RelativeURLViewSet(viewsets.ModelViewSet):
     def get_serializer_context(self):
@@ -23,9 +25,11 @@ class RelativeURLViewSet(viewsets.ModelViewSet):
         context.update({'request': None})
         return context
 
+
 class ProductVersionViewSet(RelativeURLViewSet):
     queryset = ProductVersionModel.objects.all().order_by('order')
     serializer_class = ProductVersionSerializer
+
 
 class HistoryComponentVersionViewSet(RelativeURLViewSet):
     queryset = ComponentVersionModel.history.all()
@@ -41,12 +45,13 @@ class ComponentViewSet(RelativeURLViewSet):
     def latest_version(self, request, pk=None):
         component_obj = self.get_object()
         component_version = ComponentVersionModel.objects.filter(component=component_obj.id).order_by(
-            '-meta_update_date').first()
+            '-update_date').first()
         if not component_version:
             return Response({'error': f"Last version for {component_obj.name}({component_obj.pk}) not found"},
                             status=rest_framework.status.HTTP_404_NOT_FOUND)
         return Response(ComponentVersionSerializerSimple(component_version,
                                                          context={'request': self.request}).data)
+
 
 class DeploymentLocationClassViewSet(RelativeURLViewSet):
     queryset = DeploymentLocationClassModel.objects.all()
@@ -58,6 +63,11 @@ class ComponentVersionViewSet(RelativeURLViewSet):
     serializer_class = ComponentVersionSerializer
     filter_class = panopticum.filters.ComponentVersionFilter
     filterset_fileds = "__all__"
+    ordering_fields = ('component__name', 'version')
+
+    def get_queryset(self):
+        req_set = self.request.query_params.get('requirement_set')
+        return ComponentVersionModel.objects.with_rating(req_set)
 
 
 class ComponentRuntimeTypeViewSet(RelativeURLViewSet):
@@ -82,10 +92,17 @@ class RequirementViewSet(RelativeURLViewSet):
     filterset_fields = '__all__'
 
 
-class RequirementStatusViewSet(RelativeURLViewSet):
+class StatusViewSet(viewsets.ModelViewSet):
+    queryset = RequirementStatus.objects.all()
+    serializer_class = RequirementStatusSerializer
+    filter_class = panopticum.filters.RequirementStatusFilter
+    filterset_fields = '__all__'
+
+
+class RequirementStatusEntryViewSet(RelativeURLViewSet):
     queryset = RequirementStatusEntry.objects.all()
     serializer_class = RequirementStatusEntrySerializer
-    filter_class = panopticum.filters.RequirementStatusFilter
+    filter_class = panopticum.filters.RequirementStatusEntryFilter
     filterset_fields = '__all__'
 
     @action(detail=True)

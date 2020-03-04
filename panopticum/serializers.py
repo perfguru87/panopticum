@@ -1,8 +1,9 @@
 import rest_framework.authtoken.models
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
-from drf_queryfields import QueryFieldsMixin
+from django.forms.models import model_to_dict
 import panopticum.models
+from drf_queryfields import QueryFieldsMixin
 from panopticum.models import *
 
 class DynamicFieldsModelSerializer(serializers.ModelSerializer):
@@ -149,13 +150,18 @@ class RequirementSerializer(DynamicFieldsModelSerializer, serializers.ModelSeria
         model = Requirement
         fields = '__all__'
 
+class RequirementStatusSerializer(serializers.ModelSerializer):
+    allow_for = serializers.SlugRelatedField(
+        read_only=True,
+        many=True,
+        slug_field='owner'
+    )
+    class Meta:
+        model = RequirementStatus
+        fields = '__all__'
 
 class RequirementStatusEntrySerializer(serializers.HyperlinkedModelSerializer):
-    id = serializers.IntegerField()
-    status = serializers.SlugRelatedField(
-        read_only=True,
-        slug_field='name'
-    )
+
     type = serializers.SlugRelatedField(
         read_only=True,
         slug_field='owner'
@@ -177,9 +183,6 @@ class RequirementSetSerializer(serializers.ModelSerializer):
 class ComponentVersionSerializerSimple(serializers.ModelSerializer):
     id = serializers.IntegerField(read_only=True)
 
-    history = serializers.HyperlinkedRelatedField(view_name='historicalcomponentversionmodel-detail',
-                                                  many=True, read_only=True,
-                                                  )
     depends_on = ComponentDependencySerializerSimple(source='componentdependencymodel_set',
                                                      many=True, read_only=True)
 
@@ -195,15 +198,13 @@ class ComponentVersionSerializerSimple(serializers.ModelSerializer):
     dev_languages = serializers.SerializerMethodField()
     dev_frameworks = serializers.SerializerMethodField()
 
-    compliance = serializers.SerializerMethodField()
-    operations = serializers.SerializerMethodField()
-    maintenance = serializers.SerializerMethodField()
     quality_assurance = serializers.SerializerMethodField()
 
     deployments = serializers.SerializerMethodField()
 
     meta_locations = DeploymentLocationClassSerializer(read_only=True, many=True)
     meta_product_versions = ProductVersionSerializer(read_only=True, many=True)
+
 
     def get_dev_languages(self, component):
         objs = component.dev_language.get_queryset()
@@ -224,15 +225,6 @@ class ComponentVersionSerializerSimple(serializers.ModelSerializer):
                         'signoff': signoff.email if signoff and applicable else ""})
         return ret
 
-    def get_compliance(self, component):
-        return self._serialize_fields(component, component.compliance_applicable, ComponentVersionModel.get_compliance_fields())
-
-    def get_operations(self, component):
-        return self._serialize_fields(component, component.op_applicable, ComponentVersionModel.get_operations_fields())
-
-    def get_maintenance(self, component):
-        return self._serialize_fields(component, component.mt_applicable, ComponentVersionModel.get_maintenance_fields())
-
     def get_quality_assurance(self, component):
         return self._serialize_fields(component, component.qa_applicable, ComponentVersionModel.get_quality_assurance_fields())
 
@@ -242,14 +234,17 @@ class ComponentVersionSerializerSimple(serializers.ModelSerializer):
 
     class Meta:
         model = ComponentVersionModel
-        exclude = ComponentVersionModel.get_compliance_fields() + \
-                  ComponentVersionModel.get_maintenance_fields() + \
-                  ComponentVersionModel.get_operations_fields() + \
-                  ComponentVersionModel.get_quality_assurance_fields()
+        exclude = ComponentVersionModel.get_quality_assurance_fields()
 
 
-class ComponentVersionSerializer(ComponentVersionSerializerSimple):
+
+class ComponentVersionSerializer(QueryFieldsMixin, ComponentVersionSerializerSimple):
     component = ComponentSerializerSimple(read_only=True)
+    rating = serializers.FloatField(read_only=True)
+    total_statuses = serializers.IntegerField(read_only=True)
+    positive_status_count = serializers.IntegerField(read_only=True)
+    negative_status_count = serializers.IntegerField(read_only=True)
+    unknown_status_count = serializers.IntegerField(read_only=True)
 
 
 class TokenSerializer(serializers.ModelSerializer):

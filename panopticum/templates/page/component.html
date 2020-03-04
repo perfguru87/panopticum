@@ -1,6 +1,6 @@
 {% extends "layout/_base.html" %}
 
-{% block title %} [[ component.name ]] {% endblock title %}
+{% block title %} Component view {% endblock title %}
 
 {% block scripts %}
   {{ block.super }}
@@ -217,6 +217,7 @@ function update_component_page_elements(component) {
 function vue_component_init() {
 
     var url = `/api${window.location.pathname}/?format=json`
+    {% include "vue/status.js" %}
     {% include "vue/widget-requirements.js" %}
     {% include "vue/widget-signoff.js" %}
 
