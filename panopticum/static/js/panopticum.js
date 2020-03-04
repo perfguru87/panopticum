@@ -123,7 +123,7 @@ function _pa_replace_jira_ids(el, jira_url, text) {
 }
 
 function _pa_replace_urls_in_text(el, jira_url, text) {
-    var re = /((http|https|ftp):\/\/[\w?=&.\/-;#~%-]+(?![\w\s?&.\/;#~%"=-]*>))/g
+    var re = /((http|https|ftp):\/\/[\w?=&.\/-;#~%-+-]+(?![\w\s?&.\/;#~%"=]*>))/g
     text = text.replace(re,"<a href='$1' target=_blank><i class='fa fa-external-link'></i></a>");
     $(el).html(text);
 
