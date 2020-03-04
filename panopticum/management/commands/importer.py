@@ -1,3 +1,4 @@
+from django.utils import timezone
 import csv
 import json
 import logging
@@ -27,6 +28,7 @@ class Status(Enum):
     UPDATED = 1
     CREATED = 2
     FAILED = -1
+
 
 class Utility:
     comp_categories = \
@@ -115,7 +117,7 @@ class Utility:
     default_app_vendor = 'OpenSource'
     default_dep_type = 'sync_rw'
     default_privacy = 'Application'
-    default_comp_version = '1.0'
+    default_comp_version = '2.0'
     parser = None
 
     @staticmethod
@@ -127,17 +129,18 @@ class Utility:
         Utility.parser.print_help()
 
     @staticmethod
-    def alloc_obj_by_name(class_name, name: str, exception: Exception = None, **kwargs):
+    def alloc_obj_by_name(class_name, name: str, **kwargs):
         """ Creates record in DB if one doesn't exists. If all well, returns created object or raises an exception """
-        name = name.strip()
-        if name:
+        if name is not None and name.strip() is not "":
+            name = name.strip()
             try:
-                # kwargs = dict(kwargs, name=name)
                 obj, created = \
                     class_name.objects \
                         .filter(name__iexact=name) \
                         .get_or_create(name=name,
                                        defaults=kwargs)
+                if created is True:
+                    logging.info("Created record with name [%s] for model [%s]", name, class_name)
                 return obj
 
             except MultipleObjectsReturned as e:
@@ -289,7 +292,7 @@ class Utility:
                                         'description':description}
                         )
         if created is True:
-            logging.debug("Location record created for shortname [%s]", shortname)
+            logging.info("Created record with name [%s] for model [%s]", name, DeploymentLocationClassModel)
         return obj
 
     @staticmethod
@@ -415,7 +418,7 @@ class Utility:
             try:
                 port_obj = Utility.get_port(port_name, port_value['port'])
                 if port_obj.port != port_value['port']:
-                    logging.info(
+                    logging.debug(
                         'Ignoring seed value! [%s] exists in DB with different port value. DB value [%d] vs Seed '
                         'value [%d].', port_name.name, port_obj.port, port_value['port'])
             except Exception as e:
@@ -436,7 +439,6 @@ class Utility:
     @staticmethod
     def seed_comp(comp_name, description, category, subcategory, privacy, vendor, runtime_type,
                   life_status):
-        logging.info('begin for name [%s]', comp_name)
         category_obj = Utility.get_comp_category(category)
         sub_category_obj = Utility.get_comp_subcategory(subcategory, category_obj.id)
         privacy_obj = Utility.get_comp_privacy(privacy, 1)
@@ -490,7 +492,7 @@ class Utility:
         # We CANNOT use Utility.alloc* function since we are trying to find using ids.
         if created is True:
             # dep_obj.save()
-            logging.info("created Record [%s]", serializers.serialize('json', [dep_obj, ]))
+            logging.info("created record [%s] in [%s]", serializers.serialize('json', [dep_obj, ]), ComponentDependencyModel)
         return dep_obj
 
     @staticmethod
@@ -498,8 +500,15 @@ class Utility:
         logging.debug('component version [%s - %s]',
                      comp_obj.name,
                      version)
-        update_record = False
+        update = False
         try:
+            timestamp = timezone.now()
+            version, created = ComponentVersionListModel.objects\
+                    .get_or_create(version = Utility.default_comp_version,
+                                   defaults={
+                                    'release_time': timestamp
+                                   })
+
             comp_ver_obj, created = \
                 ComponentVersionModel.objects \
                     .get_or_create(version=version,
@@ -516,6 +525,10 @@ class Utility:
         except ComponentVersionModel.DoesNotExist:
             comp_ver_obj = ComponentVersionModel.objects.create(version=version, component_id=comp_obj.id)
             created = True
+        except ComponentVersionListModel.DoesNotExist as e:
+            logging.error('FATAL Exception - [%s]', e)
+            print(traceback.format_exc())
+            return Status.FAILED
 
         if update_record is True or created is True:
             try:
@@ -631,6 +644,11 @@ class Utility:
                     comp_ver_obj.dev_docs = ''
                 comp_ver_obj.save()
 
+                logging.info("%s record with name [%s] for model [%s]",
+                             "Updated" if update is True else "Created",
+                             comp_ver_obj.component_id.name,
+                             ComponentVersionModel)
+
                 # We now fill the dependencies
                 for dep_name in re.sub('\*|N/A|-$', '', kwargs['dependents']).splitlines():
                     category_obj = Utility.get_comp_category('SEED')
@@ -666,6 +684,8 @@ class Utility:
                                             kwargs['location_cls'],  # deployment location class
                                             kwargs['open_ports']
                                             )
+
+
                 return Status.UPDATED if update is True else Status.CREATED
             except Exception as e:
                 logging.error('FATAL Exception - [%s]', e)
@@ -705,9 +725,6 @@ class Utility:
             for port_value in re.sub('\[|\]', '', re.sub('#.*', '', value).strip()).split(','):
                 port_value = port_value.strip()
                 port_name_entry = port_name + '-' + port_value
-                logging.info('formed port_name [%s] and port_value [%s]',
-                             port_name_entry,
-                             port_value)
                 open_port_objs.append(Utility.get_port(port_name_entry, port_value))  # TODO: Check for None objects
 
         # location_cls can have values like - cloud,on-prem
@@ -750,7 +767,7 @@ class Utility:
                     for port_objs in open_port_objs:
                         comp_depl_obj.open_ports.add(port_objs)
                     comp_depl_obj.save()
-
+                    logging.info("Created record with name [%s] for model [%s]", name, ComponentDeploymentModel)
     @staticmethod
     def get_str_data_from_list(row, name):
         return row[name].strip() if row[name].strip() != '' else 'TBD'

@@ -238,6 +238,12 @@ class ComponentModel(models.Model):
         return "%s" % self.name
 
 
+
+class ComponentVersionListModel(models.Model):
+    version = models.CharField(max_length=64, unique=True, verbose_name="Component version or build",
+                               help_text="Note: Component version instance will be cloned if you change version.")
+    release_time = models.DateTimeField(auto_now_add=True)
+
 class RequirementStatusType(models.Model):
     """ Who owner of that status? Component owner or signee or somebody else """
     owner = models.CharField(max_length=24)
@@ -301,8 +307,10 @@ class RequirementSet(models.Model):
 class ComponentVersionModel(models.Model):
     component = models.ForeignKey(ComponentModel, on_delete=models.PROTECT, related_name='component_version')
 
-    version = models.CharField(max_length=64, verbose_name="Version or build",
-                               help_text="note: component version instance will be cloned if you change version!")
+    version = models.ForeignKey(ComponentVersionListModel, to_field='version',
+                                on_delete=models.PROTECT, blank = False)
+
+
     comments = models.TextField(blank=True, null=True)
     history = HistoricalRecords()
 
@@ -630,7 +638,7 @@ class ComponentVersionModel(models.Model):
         ordering = ['-version']
 
     def __str__(self):
-        return "%s - %s" % (self.component.name, self.version)
+        return "%s - %s" % (self.component.name, self.version.version)
 
 
 class ComponentDependencyModel(models.Model):
