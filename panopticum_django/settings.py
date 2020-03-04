@@ -163,7 +163,19 @@ ADMIN_REORDER = (
         ('panopticum.CountryModel', 'panopticum.OrganizationModel', 'panopticum.OrgDepartmentModel',
          'panopticum.PersonRoleModel', 'panopticum.User')
     },
-    {'app': 'panopticum', 'label': 'misc', 'models': ('panopticum.Requirement', 'panopticum.RequirementSet')}
+    {'app': 'panopticum', 'label': 'requirements',
+     'models': (
+         'panopticum.Requirement',
+         'panopticum.RequirementSet',
+     )},
+    {'app': 'panopticum', 'label': 'wheels',
+     'models': (
+         'panopticum.ProgrammingLanguageModel',
+         'panopticum.FrameworkModel',
+         'panopticum.ORMModel',
+         'panopticum.LoggerModel',
+
+     )}
 )
 
 
