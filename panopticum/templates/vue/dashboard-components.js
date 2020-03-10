@@ -56,7 +56,7 @@ Vue.component('dashboard-components', {
       loading = false
     },
     async fetchComponentsVersions(queryParams) {
-      let url = '/api/component_version/?format=json';
+      let url = '/api/component_version/?format=json&ordering=component__name';
       this.cancelSearch();
       this.cancelSource = axios.CancelToken.source();
       let queryString = Object.keys(queryParams || {}).map(k => `${k}=${queryParams[k]}`).join('&');
@@ -121,7 +121,7 @@ Vue.component('dashboard-components', {
       >
 
       <el-table-column
-        align="center"
+        align="left"
         prop="component"
         label="Component">
         <template slot="header" slot-scope="scope">
