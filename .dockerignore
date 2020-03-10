@@ -1,10 +1,9 @@
 .gitignore
-compose
 Dockerfile
 env
 venv
 *.sqlite3
 data
 panopticum_django/settings_local.py
-panopticum/migrations
+static
 media

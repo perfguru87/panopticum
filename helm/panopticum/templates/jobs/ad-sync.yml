@@ -1,0 +1,66 @@
+{{- if and .Values.ldap.enabled .Values.configsFromImage.enabled .Values.ldap.populate }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ template "panopticum.fullname" . }}-adsync
+  labels:
+    app: {{ template "panopticum.name" . }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
+    release: {{ .Release.Name }}
+    heritage: "{{ .Release.Service }}"
+    helm.sh/chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+  annotations:
+    "helm.sh/hook": post-install
+    "helm.sh/hook-delete-policy": before-hook-creation
+    "helm.sh/hook-weight": "5"
+spec:
+  template:
+    spec:
+      containers:
+      - name: ad-sync
+        image: {{ template "panopticum.image" . }}
+        imagePullPolicy: "{{ .Values.image.pullPolicy }}"
+        command:
+          - python
+          - manage.py
+          - ad-sync
+        env:
+          - name: LDAP_DN
+            valueFrom:
+              secretKeyRef:
+                name: {{ template "panopticum.fullname" . }}-ldap
+                key: dn
+          - name: LDAP_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: {{ template "panopticum.fullname" . }}-ldap
+                key: password
+{{ include "panopticum.dbvars" . | indent 10 }}
+        volumeMounts:
+          - name: configs
+            mountPath: /opt/acronis/panopticum/panopticum_django/settings_local.py
+            subPath: settings_local.py
+      restartPolicy: Never
+      initContainers:
+        - name: copy-settings
+          image: {{ template "panopticum.configsFromImage-image" . }}
+          imagePullPolicy: "{{ .Values.configsFromImage.image.pullPolicy }}"
+          command:
+            - cp
+            - settings_local.py
+            - /dest/settings_local.py
+          volumeMounts:
+            - name: configs
+              mountPath: /dest
+          resources:
+            requests:
+              memory: 64Mi
+              cpu: 100m
+            limits:
+              memory: 256Mi
+              cpu: 250m
+      volumes:
+      - name: configs
+        emptyDir: {}
+  backoffLimit: 2
+  {{- end }}
