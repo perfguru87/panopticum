@@ -1,15 +1,15 @@
 Vue.component('widget-components-list', {
-    props: ['requirementSetId'],
+    props: ['requirementSetId', 'filters', 'topfilters'],
     data: function() {
         return {
             componentVersions: [],
             statuses: [],
             tableData: [],
             requirements: [],
+            headerFilters: {},
             componentVersionSearch: null,
             statusDefinitions: {},
             componentSorting: '',
-            headerFilters: {},
             loading: true,
             products: [],
             locations: [],
@@ -32,19 +32,36 @@ Vue.component('widget-components-list', {
             this.fetchStatuses(),
         ])
         this.requirements = requirements;
-        await this.filterComponents()
-        this.loading = false
+        
+        if (this.topfilters) {
+            this.currentProduct = this.topfilters.product;
+            this.currentLocation = this.topfilters.location;
+            this.currentRuntime = this.topfilters.runtime;
+        }
+
+        if (this.filters && this.filters.length) {
+            this.handleDropdownCommand({
+                requirement: {id: Number(this.filters[0].requirement)},
+                status: {id: Number(this.filters[0].status)},
+                type: this.filters[0].type
+            });
+        } else {
+            await this.filterComponents();
+        }
+        this.loading = false;
     },
     watch: {
         componentVersionSearch: 'fetchSearchComponents',
         componentVersions: 'updateTable',
         currentProduct: 'handleChangeFilter',
-        currentLocation: 'handleChangeFilter'
+        currentLocation: 'handleChangeFilter',
+        currentRuntime: 'handleChangeFilter',
+        headerFilters: function() {this.$emit('update:header-filters', this.headerFilters)}
     },
 
     methods: {
         async fetchFilters() {
-            // fetch entries from REST API for filters at top page(product, location, runtime type) 
+            // fetch entries from REST API for filters at top page(product, location, runtime type)
             const [products, locations, runtimes] = await Promise.all([
                 axios.get('/api/product_version/?format=json').then(resp => resp.data.results),
                 axios.get('/api/location_class/?format=json').then(resp => resp.data.results),
@@ -65,8 +82,6 @@ Vue.component('widget-components-list', {
             this.products = products.sort(sortFunction);
             this.locations = locations.sort(sortFunction);
             this.runtimes = runtimes.sort(sortFunction);
-            this.currentProduct = 4; // hardcode for default 9.0 TODO: make setting per user\group
-            this.currentLocation = 1; // datacenters
         },
         fetchStatuses() {
             // fetch statuses to cache
@@ -114,6 +129,7 @@ Vue.component('widget-components-list', {
                            `&ordering=${this.componentSorting}component__name,${this.componentSorting}version`
             if (this.currentLocation) queryParams += `&deployments__location_class=${this.currentLocation}`
             if (this.currentProduct) queryParams += `&deployments__product_version=${this.currentProduct}`
+            if (this.currentRuntime) queryParams += `&component__runtime_type=${this.currentRuntime}`
             return axios.get(`/api/component_version/?format=json${queryParams}`, 
                     {cancelToken: this.cancelSource.token})
                 .then(resp => {
@@ -138,7 +154,7 @@ Vue.component('widget-components-list', {
         handleDropdownCommand(command) {
             // handle change dropdown filters
             let headerFilters = {};
-            let queryParams=''
+            let queryParams='';
             Object.keys(this.headerFilters).map(key => {headerFilters[key] = null} );
             const unknownOveralQuery = `&total_statuses!=${this.requirements.length}`;
             const notReadyOveralQuery = `&negative_status_count!=0&unknown_status_count=0&total_statuses=${this.requirements.length}`;
@@ -173,9 +189,9 @@ Vue.component('widget-components-list', {
             const idPattern = new RegExp("^.*/(\\d+)/(?:\\?.+)?$");
             return Number(idPattern.exec(href)[1]);
         },
-        getOwnerClass(status) { 
+        getOwnerClass(status) {
             return {
-                "owner el-icon-remove": status && status.status.id == 2, // TODO: move constant to separated module after migration to webpack 
+                "owner el-icon-remove": status && status.status.id == 2, // TODO: move constant to separated module after migration to webpack
                 "owner el-icon-circle-check": status && [3,4].includes(status.status.id)
             }
         },
@@ -188,7 +204,11 @@ Vue.component('widget-components-list', {
         },
         handleChangeFilter(id) {
             this.headerFilters = {};
-            this.filterComponents()
+            this.$emit('update:top-filters', {
+                location: this.currentLocation, 
+                product: this.currentProduct, 
+                runtime: this.currentRuntime});
+            this.filterComponents();
         },
         getOveralStatus(compVer) {
             let overal_status = 'unknown';
@@ -203,8 +223,8 @@ Vue.component('widget-components-list', {
         },
         updateTable: async function() {
             await this.fetchStatusEntries();
-            this.tableData = this.componentVersions.map(compVer => { 
-                
+            this.tableData = this.componentVersions.map(compVer => {
+
                 let data = {
                     id: compVer.id, 
                     name: compVer.component.name, 
@@ -238,7 +258,10 @@ Vue.component('widget-components-list', {
     <el-row>
         <div style="display: inline-block">
             <label class="el-form-item__label" for="product">Product</label>
-            <el-select v-model="currentProduct" :loading="!products" name='product' placeholder="product" clearable>
+            <el-select v-model="currentProduct" 
+            :loading="!products" name='product' 
+            placeholder="product" 
+            clearable>
                 <el-option v-for="product in products" 
                     :key="product.id" 
                     :label="product.name" 
@@ -249,7 +272,11 @@ Vue.component('widget-components-list', {
 
         <div style="display: inline-block">
             <label class="el-form-item__label" for="location">Location</label>
-            <el-select v-model="currentLocation" :loading="!locations" name="location" placeholder="location" clearable>
+            <el-select v-model="currentLocation" 
+            :loading="!locations" 
+            name="location" 
+            placeholder="location" 
+            clearable>
                 <el-option v-for="location in locations" 
                     :key="location.id" 
                     :label="location.name" 
@@ -260,10 +287,15 @@ Vue.component('widget-components-list', {
 
         <div style="display: inline-block">
             <label class="el-form-item__label" for="runtimes">Runtime type</label>
-            <el-select v-model="currentRuntime" :loading="!runtimes" name="Runtime Type" placeholder="runtime type" clearable>
-                <el-option v-for="runtime in runtimes" 
-                    :key="runtime.id" 
-                    :label="runtime.name" 
+            <el-select 
+            v-model="currentRuntime" 
+            :loading="!runtimes" 
+            name="Runtime Type" 
+            placeholder="runtime type" 
+            clearable>
+                <el-option v-for="runtime in runtimes"
+                    :key="runtime.id"
+                    :label="runtime.name"
                     :value="runtime.id"></el-option>
             </el-select>
         </div>
@@ -332,7 +364,7 @@ Vue.component('widget-components-list', {
                         <span class="word-wrap">{{ req.title }}</span>
                     </el-row>
 
-                    <el-row> 
+                    <el-row>
                          <!-- owner dropdown filter -->
                         <div style="position: absolute; left:0; bottom: 3px">
                             <el-dropdown trigger="click" @command="handleDropdownCommand">
