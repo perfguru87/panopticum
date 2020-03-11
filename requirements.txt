@@ -5,6 +5,7 @@ django-datatable-view
 django-extensions
 django-filter
 django-modeladmin-reorder
+django-loginas
 django-simple-history
 djangorestframework-datatables
 djangorestframework-filters==1.0.0.dev0
@@ -15,6 +16,4 @@ jira-python
 pygraphviz
 pillow
 scalpl
-gunicorn
-gevent
 iso3166
