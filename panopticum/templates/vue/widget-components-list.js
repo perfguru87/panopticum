@@ -132,7 +132,7 @@ Vue.component('widget-components-list', {
             if (this.currentLocation) queryParams += `&deployments__location_class=${this.currentLocation}`
             if (this.currentProduct) queryParams += `&deployments__product_version=${this.currentProduct}`
             if (this.currentRuntime) queryParams += `&component__runtime_type=${this.currentRuntime}`
-            return axios.get(`/api/component_version/?format=json&limit=${this.pageLimit}&${queryParams}`, 
+            return axios.get(`/api/component_version/?format=json&limit=${this.pageLimit}&fields=${fields}&${queryParams}`, 
                     {cancelToken: this.cancelSource.token})
                 .then(resp => {
                     this.componentVersions = resp.data.results;
