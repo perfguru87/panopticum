@@ -58,7 +58,7 @@ class DeploymentLocationClassViewSet(RelativeURLViewSet):
     serializer_class = DeploymentLocationClassSerializer
 
 
-class ComponentVersionViewSet(RelativeURLViewSet):
+class ComponentVersionViewSet(viewsets.ModelViewSet):  # relativeURLViewSet will broke fields query filtering
     queryset = ComponentVersionModel.objects.all()
     serializer_class = ComponentVersionSerializer
     filter_class = panopticum.filters.ComponentVersionFilter
