@@ -16,7 +16,8 @@ Vue.component('widget-components-list', {
             runtimes: [],
             currentProduct: null,
             currentLocation: null,
-            currentRuntime: null
+            currentRuntime: null,
+            pageLimit: 30
         }
     },
     computed: {
@@ -125,12 +126,13 @@ Vue.component('widget-components-list', {
             this.cancelSearch();
             this.loading = true;
             this.cancelSource = axios.CancelToken.source();
+            const fields = 'id,version,component,deployments'
             queryParams += `&requirement_set=${this.requirementSetId}` + 
                            `&ordering=${this.componentSorting}component__name,${this.componentSorting}version`
             if (this.currentLocation) queryParams += `&deployments__location_class=${this.currentLocation}`
             if (this.currentProduct) queryParams += `&deployments__product_version=${this.currentProduct}`
             if (this.currentRuntime) queryParams += `&component__runtime_type=${this.currentRuntime}`
-            return axios.get(`/api/component_version/?format=json${queryParams}`, 
+            return axios.get(`/api/component_version/?format=json&limit=${this.pageLimit}&${queryParams}`, 
                     {cancelToken: this.cancelSource.token})
                 .then(resp => {
                     this.componentVersions = resp.data.results;
@@ -311,7 +313,7 @@ Vue.component('widget-components-list', {
             <el-table-column label="Component" 
                     width="200" 
                     header-align="center" 
-                    align="center" >
+                    align="left" >
                 <template slot="header" scope="scope">
                     <span>{{ scope.column.label }}</span>
                     <el-input placeholder="component version" 
