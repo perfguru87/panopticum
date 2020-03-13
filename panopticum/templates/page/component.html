@@ -261,13 +261,7 @@ function vue_component_init() {
           let currentVersion = default_latest_version;
           let requests = [
               axios.get(url)
-                .then(response => {
-                   // we can't assign response.data directly to this.component, because it will trigger
-                   // rerender. We doesn't have component.latest_version at this moment and it will raise error at render.
-                   // We will get it component.latest_version later. Also if next request will be finished
-                   // first we will overwrite component.latest_version.
-                   component = response.data;
-                })
+                .then(response => response.data)
                 .catch(error => {
                    console.log(error);
                    this.errored = true
@@ -278,9 +272,7 @@ function vue_component_init() {
           // make parallel requests
           const [component, versions]= await Promise.all(requests)
           if (versions.length) {
-            const versionId = urlParams.get('version_id') || versions[0].id;
-
-            currentVersion  = await axios.get(`/api/component_version/${versionId}/?format=json`).then(resp => resp.data);
+            currentVersion  = await axios.get(`/api/component_version/${versions[0].id}/?format=json`).then(resp => resp.data);
             this.selectedVersion = currentVersion.id;
           }
           component.latest_version = currentVersion;
