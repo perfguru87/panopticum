@@ -154,7 +154,7 @@ Vue.component('widget-components-list', {
             loading = false
         },
         displayPopover(ownerStatus, signeeStatus) {
-            return [ownerStatus, signeeStatus].some(status => status) && (ownerStatus.status.id !=1 && signeeStatus.status !=1 );
+            return [ownerStatus, signeeStatus].some(status => status && status.status && status.status.id !=1);
         },
         handleDropdownCommand(command) {
             // handle change dropdown filters
@@ -423,6 +423,7 @@ Vue.component('widget-components-list', {
                             <span class="word-wrap" v-if="scope.row[req.title].owner && scope.row[req.title].owner.notes && scope.row[req.title].owner.status.name !='n/a'">
                             {{ scope.row[req.title].owner.notes }}
                             </span>
+                            <div class="fill-cell" v-else></div>
                         </div>
                 </widget-status-popover>
                 </template>
