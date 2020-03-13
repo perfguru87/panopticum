@@ -266,7 +266,7 @@ function vue_component_init() {
                    console.log(error);
                    this.errored = true
                 }),
-              axios.get(`/api/component_version/?format=json&fields=version,id&ordering=-release_date&component=${this.getIdFromHref(window.location.pathname)}`)
+              axios.get(`/api/component_version/?format=json&ordering=-release_date&component=${this.getIdFromHref(window.location.pathname)}`)
                 .then(response => response.data.results)
           ];
           // make parallel requests
