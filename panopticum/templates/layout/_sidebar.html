@@ -12,7 +12,7 @@
   <div class="profile clearfix">
   {% if user.is_authenticated %}
     <div class="profile_pic">
-      <img src="{% if user.photo %}{{user.photo_url}}{% else %}{% static 'images/default_avatar.png' %}{% endif %}"
+      <img src="{% if user.photo %}/api/user/{{user.id}}/photo/{% else %}{% static 'images/default_avatar.png' %}{% endif %}"
            alt="{{user.username}}"
            class="img-circle profile_img">
     </div>

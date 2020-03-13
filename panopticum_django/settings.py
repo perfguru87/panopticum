@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'rest_framework_filters',
     'django_extensions',
     'corsheaders',
+    'database_files',
     'admin_reorder',
     'simple_history',
     'loginas',
@@ -115,7 +116,7 @@ DATABASES = {
         'PASSWORD': os.environ.get('DB_PASSWORD', ''),
         'HOST': os.environ.get('DB_HOST', None),
         'PORT': os.environ.get('DB_PORT', None),
-        'CONN_MAX_AGE': 600,
+        'CONN_MAX_AGE': os.environ.get('DB_CONN_MAX_AGE', 0),
     }
 }
 
