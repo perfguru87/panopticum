@@ -198,6 +198,19 @@ class FrameworkModel(models.Model):
         return "%s" % self.name
 
 
+class RuntimeModel(models.Model):
+    name = models.CharField(max_length=64, help_text="Runtime: e.g. C++/Python/Go runtime")
+    language = models.ForeignKey(ProgrammingLanguageModel, on_delete=models.PROTECT)
+
+    class Meta:
+        verbose_name = 'Runtime'
+        verbose_name_plural = 'Runtimes'
+        ordering = ['name']
+
+    def __str__(self):
+        return "%s" % self.name
+
+
 class ORMModel(models.Model):
     name = models.CharField(max_length=64, help_text="ORM")
     language = models.ForeignKey(ProgrammingLanguageModel, on_delete=models.PROTECT)
@@ -648,6 +661,10 @@ class ComponentDeploymentModel(models.Model):
     component_version = models.ForeignKey(ComponentVersionModel,
                                           related_name='deployments',
                                           on_delete=models.PROTECT)
+    runtime = models.ForeignKey(RuntimeModel,
+                                related_name='deployments',
+                                on_delete=models.PROTECT,
+                                blank=True, null=True, default=None)
     service_name = models.CharField(max_length=64, help_text="accsrv, taskmngr", blank=True)
     binary_name = models.CharField(max_length=64, help_text="accsrv.exe", blank=True)
     open_ports = models.ManyToManyField(TCPPortModel, blank=True)

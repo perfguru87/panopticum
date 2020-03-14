@@ -178,9 +178,9 @@ ADMIN_REORDER = (
      'models': (
          'panopticum.ProgrammingLanguageModel',
          'panopticum.FrameworkModel',
+         'panopticum.RuntimeModel',
          'panopticum.ORMModel',
          'panopticum.LoggerModel',
-
      )}
 )
 
