@@ -7,7 +7,7 @@ Vue.component('dashboard-components', {
       categories: [],
       products: [],
       locations: [],
-      runtimes: [],
+      types: [],
       privacies: [],
       headerFilters: [
         {key: 'component', query: 'component__name__icontains', 'value': null},
@@ -15,7 +15,7 @@ Vue.component('dashboard-components', {
         {key: 'component.category.name', query: 'component__category'},
         {key: 'componentVersion.deployments.product_version', query: 'deployments__product_version'},
         {key: 'componentVersion.deployments.location_class', query: 'deployments__location_class'},
-        {key: 'component.runtime_type.name', query: 'component__runtime_type'},
+        {key: 'component.type.name', query: 'component__type'},
         {key: 'component.data_privacy_class.name', query: 'component__data_privacy_class'},
         {key: 'maintainer', query: 'owner_maintainer__username__icontains'}
       ],
@@ -26,17 +26,17 @@ Vue.component('dashboard-components', {
   },
   created: async function() {
     this.debouncedApplyFilters = _.debounce(this.applyFilters, 400)
-    const [categories, products, locations, runtimes, privacies] = await Promise.all([
+    const [categories, products, locations, types, privacies] = await Promise.all([
       this.fetchObject('component_category'),
       this.fetchObject('product_version'),
       this.fetchObject('location_class'),
-      this.fetchObject('component_runtime_type'),
+      this.fetchObject('component_type'),
       this.fetchObject('component_data_privacy_class'),
     ])
     this.categories = categories;
     this.products = products;
     this.locations = locations;
-    this.runtimes = runtimes;
+    this.types = types;
     this.privacies = privacies;
     if (this.filters && this.filters.length) {
       this.headerFilters = this.filters;
@@ -227,18 +227,18 @@ Vue.component('dashboard-components', {
       </el-table-column>
 
       <el-table-column 
-        label="Runtime type"
-        prop="component.runtime_type.name">
+        label="Type"
+        prop="component.type.name">
         <template slot="header" slot-scope="scope">
               <span>{{ scope.column.label }}</span>
               <el-select v-model="headerFilters.find(i => i.key == scope.column.property).value" 
               @change="watchFilters()"  
               clearable
               size="mini">
-                  <el-option v-for="runtime in runtimes" 
-                  :key="runtime.id" 
-                  :label="runtime.name" 
-                  :value="runtime.id">
+                  <el-option v-for="type in types"
+                  :key="type.id"
+                  :label="type.name"
+                  :value="type.id">
                   </el-option>
               </el-select>
         </template>
@@ -287,8 +287,8 @@ Vue.component('dashboard-components', {
         width="60" 
         label="RAML">
         <template slot-scope="scope">
-          <a :href="scope.row.componentVersion.dev_raml" 
-          class="el-icon-link" 
+          <a :href="scope.row.componentVersion.dev_raml"
+          class="el-icon-link"
           v-if="scope.row.componentVersion.dev_raml && scope.row.componentVersion.dev_raml.startsWith('http')"></a>
         </template>
       </el-table-column>

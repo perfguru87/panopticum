@@ -39,9 +39,9 @@ class ComponentDataPrivacyClassSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class ComponentRuntimeTypeSerializer(serializers.ModelSerializer):
+class ComponentTypeSerializer(serializers.ModelSerializer):
     class Meta:
-        model = ComponentRuntimeTypeModel
+        model = ComponentTypeModel
         fields = '__all__'
 
 
@@ -109,7 +109,7 @@ class ComponentDeploymentSerializer(serializers.ModelSerializer):
 
 
 class ComponentSerializerSimple(serializers.ModelSerializer):
-    runtime_type = ComponentRuntimeTypeSerializer(read_only=True)
+    type = ComponentTypeSerializer(read_only=True)
     data_privacy_class = ComponentDataPrivacyClassSerializer(read_only=True)
     category = ComponentCategorySerializer(read_only=True)
     subcategory = ComponentSubcategorySerializer(read_only=True)
