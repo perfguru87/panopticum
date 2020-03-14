@@ -9,6 +9,8 @@
           <th>Location</th>
           <th>Env</th>
           <th>Service</th>
+          <th>Binary</th>
+          <th>Runtime</th>
           <th>Ports</th>
           <th>Notes</th>
         </tr>
@@ -19,7 +21,9 @@
           <td v-tooltip:right="[[ d.product_version.name ]]">[[ d.product_version.shortname]]</td>
           <td>[[ d.location_class.name ]]</td>
           <td>[[ d.environment.name ]]</td>
-          <td>[[ d.service_name ]] [[ d.binary_name ]]</td>
+          <td>[[ d.service_name ]]</td>
+          <td>[[ d.binary_name ]]</td>
+          <td>[[ d.runtime ]]</td>
           <td>[[ d.open_ports ]]</td>
           <td class='pa-replace-urls'>[[ d.notes ]]</td>
         </tr>
