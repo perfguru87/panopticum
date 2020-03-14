@@ -12,7 +12,7 @@
     "model": "panopticum.requirementstatus",
     "pk": 2,
     "fields": {
-      "name": "no",
+      "name": "not ready",
       "description": "Requirement declined by approver",
       "allow_for": [1, 2 ]
     }
@@ -21,7 +21,7 @@
     "model": "panopticum.requirementstatus",
     "pk": 3,
     "fields": {
-      "name": "yes",
+      "name": "ready",
       "description": "Requirement approved",
       "allow_for": [1, 2 ]
     }

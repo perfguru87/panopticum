@@ -30,7 +30,8 @@ router.register(r'product_version', views.ProductVersionViewSet)
 router.register(r'component', views.ComponentViewSet)
 router.register(r'component_history', views.HistoryComponentVersionViewSet)
 router.register(r'requirement', views.RequirementViewSet)
-router.register(r'requirement_status', views.RequirementStatusViewSet)
+router.register(r'requirement_status', views.RequirementStatusEntryViewSet)
+router.register(r'status', views.StatusViewSet)
 router.register(r'requirement_set', views.RequirementSetViewSet)
 router.register(r'component_version', views.ComponentVersionViewSet)
 router.register(r'location_class', views.DeploymentLocationClassViewSet)
@@ -45,10 +46,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     url('^component/', views.component, name='Component'),
     url('^dashboard/components.html', views.dashboard_components, name='Components'),
-    url('^dashboard/operations.html', views.dashboard_operations, name='Operations'),
-    url('^dashboard/quality_assurance.html', views.dashboard_quality_assurance, name='Quality Assurance'),
-    url('^dashboard/maintenance.html', views.dashboard_maintenance, name='Maintenance'),
-    url('^dashboard/compliance.html', views.dashboard_compliance, name='Compliance'),
+    url('^dashboard/team/', views.dashboard_team, name='team'),
     url('^dashboard/links.html', views.dashboard_components, name='Links'),
     path('api/login/', rest_framework.authtoken.views.obtain_auth_token),
     re_path(r'^api/jira/([A-Z]*-\d+)', views.JiraIssueView.as_view(), name='jira'),
@@ -59,4 +57,5 @@ urlpatterns = [
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+urlpatterns += (path("admin/", include('loginas.urls')),)
 urlpatterns += (url('', views.dashboard_components, name='Components'), )

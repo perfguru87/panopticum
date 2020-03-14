@@ -12,7 +12,7 @@
   <div class="profile clearfix">
   {% if user.is_authenticated %}
     <div class="profile_pic">
-      <img src="{% if user.photo %}{{user.photo_url}}{% else %}{% static 'images/default_avatar.png' %}{% endif %}"
+      <img src="{% if user.photo %}/api/user/{{user.id}}/photo/{% else %}{% static 'images/default_avatar.png' %}{% endif %}"
            alt="{{user.username}}"
            class="img-circle profile_img">
     </div>
@@ -39,10 +39,9 @@
         <li><a><i class="fa fa-table"></i>Dashboards<span class="fa fa-chevron-down"></span></a>
           <ul class="nav child_menu">
             <li><a href="/dashboard/components.html">Components</a></li>
-            <li><a href="/dashboard/operations.html">Operations</a></li>
-            <li><a href="/dashboard/quality_assurance.html">Quality Assurance</a></li>
-            <li><a href="/dashboard/maintenance.html">Maintenance</a></li>
-            <li><a href="/dashboard/compliance.html">Compliance</a></li>
+            <li><a href='/dashboard/team/?requirementset=1#topfilters={"location"%3A1%2C"product"%3A4%2C"runtime"%3A""}&filters=[]'>Operations</a></li>
+            <li><a href='/dashboard/team/?requirementset=2#topfilters={"location"%3A1%2C"product"%3A4%2C"runtime"%3A""}&filters=[]'>Maintenance</a></li>
+            <li><a href="/dashboard/team/?requirementset=3">Compliance</a></li>
 <!--
             <li><a href="/dashboard/links.html">Links</a></li>
             <li><a href="/dashboard/databases.html">Databases</a></li>
@@ -102,19 +101,14 @@
 
   <!-- /menu footer buttons -->
   <div class="sidebar-footer hidden-small">
-    <a data-toggle="tooltip" data-placement="top" title="Settings">
+    <a data-toggle="tooltip" data-placement="top" title="Admin" href='/admin/'>
       <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
-    </a>
-    <a data-toggle="tooltip" data-placement="top" title="FullScreen">
-      <span class="glyphicon glyphicon-fullscreen" aria-hidden="true"></span>
-    </a>
-    <a data-toggle="tooltip" data-placement="top" title="Lock">
-      <span class="glyphicon glyphicon-eye-close" aria-hidden="true"></span>
     </a>
     <a data-toggle="tooltip" data-placement="top" title="{% if user.is_authenticated %}Logout{% else %}Login{% endif %}"
        href="{% if user.is_authenticated %}{% url 'logout' %}{% else %}{% url 'login' %}{% endif %}?next={{ request.get_full_path }}">
       <span class="glyphicon glyphicon-off" aria-hidden="true"></span>
     </a>
+    <a style="width: 50%; height: 35px;"></a>
   </div>
   <!-- /menu footer buttons -->
 </div>

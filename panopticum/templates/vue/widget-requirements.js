@@ -7,7 +7,8 @@ Vue.component('widget-requirements', {
             statuses: [],
             table: [],
             title: "",
-            description: ""
+            description: "",
+            statusDefinitions: []
         }
     },
     computed: {
@@ -20,9 +21,23 @@ Vue.component('widget-requirements', {
             return axios.get(`${this.apiUrl}/requirement_set/${this.setid}/`)
                 .then(resp => resp.data)
         },
+        fetchStatusesDefinition() {
+            return axios.get('/api/status/?format=json&allow_for=1&allow_for=2').then(resp => {
+                this.statusDefinitions = resp.data.results;
+            })
+        },
+        getIDfromHref(href) {
+            const idPattern = new RegExp("^.*/(\\d+)/(?:\\?.+)?$");
+            return Number(idPattern.exec(href)[1]);
+        },
         getStatuses: function () {
             return axios.get(`${this.apiUrl}/requirement_status/?component_version=${this.component_version.id}&requirement__requrementset_set=${this.setid}`)
-                .then(resp => resp.data.results)
+                .then(resp => {
+                    return resp.data.results.map(status => { 
+                        status.status = this.statusDefinitions.find(s=> this.getIDfromHref(status.status) == s.id)
+                        return status;
+                    })
+                })
         },
         getId: function (href) {
             return Number(href.split('/').slice(-2)[0])
@@ -35,18 +50,19 @@ Vue.component('widget-requirements', {
             })
         },
         updateTable: function() {
+            this.table = [];
             for (let requirement of this.requirements) {
                 let ownerStatus = this.statuses.find(el => requirement.id == this.getId(el.requirement) && el.type == "component owner")
                 if (ownerStatus == undefined) {
                     this.table.push({title: requirement.title, status: null, signoffStatus: null, notes: ''})
                 } else {
-                    let signeeStatus = this.statuses.find(el => requirement.id == this.getId(el.requirement) && el.type == "requirement reviewer")
+                    let signeeStatus = this.statuses.find(el => requirement.id == this.getId(el.requirement) && el.type == "requirement reviewer");
                     this.table.push({
                         title: requirement.title,
                         status: ownerStatus, 
                         notes: ownerStatus.notes,
                         signoffStatus: signeeStatus,
-                        signoffNotes: signeeStatus.notes
+                        signoffNotes: signeeStatus ? signeeStatus.notes : ""
                     })
                 }
             }
@@ -57,6 +73,7 @@ Vue.component('widget-requirements', {
         }
     },
     mounted: function() {
+        this.fetchStatusesDefinition();
         this.updateRequirements();
     },
     watch: {

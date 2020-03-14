@@ -38,6 +38,7 @@ formfields_small = {models.ForeignKey: {'widget': Select(attrs={'width': '200px'
 class UserAdmin(django.contrib.auth.admin.UserAdmin):
     readonly_fields = ['image', ]
     list_display = ('username', 'first_name', 'last_name', 'is_staff', 'title', 'department')
+    change_form_template = 'loginas/change_form.html'
 
     fieldsets = (
         (None, {'fields': ('username', 'password')}),
@@ -270,6 +271,14 @@ class RequirementSetAdmin(admin.ModelAdmin):
 
 class ComponentVersionAdmin(admin.ModelAdmin):
     formfield_overrides = formfields_large
+    search_fields = ['component__name', 'version']
+    autocomplete_fields = ['owner_maintainer',
+                           'owner_responsible_qa',
+                           'owner_product_manager',
+                           'owner_program_manager',
+                           'owner_expert',
+                           'owner_escalation_list',
+                           'owner_architect']
 
     inlines = (ComponentDependencyAdmin, ComponentDeploymentAdmin, RequirementStatusEntryAdmin)
 
@@ -318,7 +327,7 @@ class ComponentVersionAdmin(admin.ModelAdmin):
         if db_field.name in ("owner_product_manager", "owner_program_manager", "owner_expert",
                              "owner_escalation_list", "owner_architect"):
             kwargs["queryset"] = User.objects.filter(hidden=False)
-        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+        return super().formfield_for_manytomany(db_field, request, **kwargs)
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name in ("owner_maintainer", "owner_responsible_qa"):
@@ -338,6 +347,7 @@ class ComponentVersionAdmin(admin.ModelAdmin):
                 has_add_permission = inline._has_add_permission(request, obj)
                 has_change_permission = inline.has_change_permission(request, obj)
                 has_delete_permission = inline.has_delete_permission(request, obj)
+
             else:
                 # Disable all edit-permissions, and overide formset settings.
                 has_add_permission = has_change_permission = has_delete_permission = False

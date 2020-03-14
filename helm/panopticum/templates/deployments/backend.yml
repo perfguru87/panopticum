@@ -1,0 +1,102 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "panopticum.fullname" . }}-backend
+  labels:
+    type: backend
+    app: {{ template "panopticum.name" . }}
+    chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  strategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app: panopticum
+      type: backend
+  template:
+    metadata:
+      labels:
+        type: backend
+        app: {{ template "panopticum.name" . }}
+        chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
+        release: {{ .Release.Name }}
+        heritage: {{ .Release.Service }}
+    spec:
+      restartPolicy: Always
+      containers:
+        - name: django
+          image: {{ template "panopticum.image" . }}
+          imagePullPolicy: "{{ .Values.image.pullPolicy }}"
+          ports:
+            - name: http
+              containerPort: 8000
+              protocol: TCP
+          env:
+{{ include "panopticum.dbvars" . | indent 12 }}
+            {{- if and .Values.ldap.enabled .Values.ldap.bind_dn .Values.ldap.bind_password }}
+            - name: LDAP_DN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ template "panopticum.fullname" . }}-ldap
+                  key: dn
+            - name: LDAP_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ template "panopticum.fullname" . }}-ldap
+                  key: password
+            {{- end }}
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /api/v1/?format=json
+              scheme: HTTP
+              port: 8000
+            periodSeconds: 15
+            successThreshold: 1
+            timeoutSeconds: 2
+          volumeMounts:
+          {{- if .Values.settingsLocalFile }}
+          - name: settings
+            mountPath: /opt/aronis/panopticum/panopticum_django/settings_local.py
+            subPath: settings_local.py
+          {{- end }}
+          {{- if .Values.configsFromImage.enabled }}
+          - name: configs
+            mountPath: /opt/acronis/panopticum/panopticum_django/settings_local.py
+            subPath: settings_local.py
+          {{- end }}
+          {{- if .Values.backend.resources }}
+          resources: {{- toYaml .Values.backend.resources | nindent 12 }}
+          {{- end }}
+      initContainers:
+        {{- if .Values.configsFromImage.enabled }}
+        - name: copy-settings
+          image: {{ template "panopticum.configsFromImage-image" . }}
+          imagePullPolicy: "{{ .Values.configsFromImage.image.pullPolicy }}"
+          command:
+            - cp
+            - settings_local.py
+            - /dest/settings_local.py
+          volumeMounts:
+            - name: configs
+              mountPath: /dest
+          resources:
+            requests:
+              memory: 64Mi
+              cpu: 100m
+            limits:
+              memory: 256Mi
+              cpu: 250m
+        {{- end }}
+      volumes:
+      {{- if .Values.settingsLocalFile }}
+      - name: settings
+        configMap:
+          name: {{ template "panopticum.fullname" . }}-settings
+      {{- end }}
+      {{- if .Values.configsFromImage.enabled }}
+      - name: configs
+        emptyDir: {}
+      {{- end }}

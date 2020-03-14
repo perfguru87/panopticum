@@ -1,0 +1,9 @@
+{{ if .Values.settingsLocalFile }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "panopticum.fullname" . }}-settings
+data:
+  settings_local.py: |-
+{{ .Values.settingsLocalFile| indent 4 }}
+{{- end }}

@@ -1,7 +1,14 @@
-         <div class="title_left">
+{% verbatim %}<div class="title_left">
            <h3 style='margin-bottom: 3px;'>
              <span v-cloak>[[ component.name ]]
-               <small v-cloak>[[ component.latest_version.version ]]</small>
+              <el-select v-model="selectedVersion" placeholder="no versions" size="mini" style="width: 90px;">
+                <el-option
+                  v-for="version in versions"
+                  :key="version.id"
+                  :label="version.version"
+                  :value="version.id">
+                </el-option>
+              </el-select>
              </span>
              &nbsp;
            </h3>
@@ -9,4 +16,4 @@
              <span v-cloak>[[ component.runtime_type.name ]]</span>
              <span v-cloak>[[ component.category.name ]]</span>&nbsp;
            </p>
-         </div>
+         </div>{% endverbatim %}

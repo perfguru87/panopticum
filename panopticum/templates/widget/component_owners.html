@@ -10,7 +10,8 @@
         <td class='owner'>
           <div class='block'>
             <div class='image'>
-              <img v-bind:src="component.latest_version.owner_maintainer.photo" v-if="component.latest_version.owner_maintainer">
+              <img :src="`/api/user/${component.latest_version.owner_maintainer.id}/photo/`"
+                   v-if="component.latest_version.owner_maintainer && component.latest_version.owner_maintainer.id">
               <img v-else src="{% static '/images/default_avatar.png' %}">
             </div>
             <div class='details'>
@@ -30,7 +31,8 @@
         <td class='owner'>
           <div class='block'>
             <div class='image'>
-              <img v-bind:src="component.latest_version.owner_responsible_qa.photo" v-if="component.latest_version.owner_responsible_qa">
+              <img :src="`/api/user/${component.latest_version.owner_responsible_qa.id}/photo/`"
+                   v-if="component.latest_version.owner_responsible_qa && component.latest_version.owner_responsible_qa.id ">
               <img v-else src="{% static '/images/default_avatar.png' %}">
             </div>
             <div class='details'>
@@ -49,7 +51,8 @@
       <tr v-for="p in component.latest_version.owner_product_manager">
         <td class='owner'>
           <div class='block'>
-            <div class='image'><img v-bind:src="p.photo"></div>
+            <div class='image'><img v-bind:src="`/api/user/${p.id}/photo/`"
+                                    v-if="p.id"></div>
             <div class='details'>
               <b>[[ p.name ]]</b> - Product Manager<br>
               <a v-bind:href="`mailto:${p.email}`">[[ p.email ]]</a>, [[ p.mobile_phone ]]
@@ -61,7 +64,8 @@
       <tr v-for="p in component.latest_version.owner_program_manager">
         <td class='owner'>
           <div class='block'>
-            <div class='image'><img v-bind:src="p.photo"></div>
+            <div class='image'><img v-bind:src="`/api/user/${p.id}/photo/`"
+                                    v-if="p.id"></div>
             <div class='details'>
               <b>[[ p.name ]]</b> - Program Manager<br>
               <a v-bind:href="`mailto:${p.email}`">[[ p.email ]]</a>, [[ p.mobile_phone ]]
@@ -73,7 +77,8 @@
       <tr v-for="p in component.latest_version.owner_architect">
         <td class='owner'>
           <div class='block'>
-            <div class='image'><img v-bind:src="p.photo"></div>
+            <div class='image'><img v-bind:src="`/api/user/${p.id}/photo/`"
+                                    v-if="p.id"></div>
             <div class='details'>
               <b>[[ p.name ]]</b> - Architect<br>
               <a v-bind:href="`mailto:${p.email}`">[[ p.email ]]</a>, [[ p.mobile_phone ]]

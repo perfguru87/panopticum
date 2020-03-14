@@ -1,6 +1,6 @@
 {% extends "layout/_base.html" %}
 
-{% block title %} [[ component.name ]] {% endblock title %}
+{% block title %} Component view {% endblock title %}
 
 {% block scripts %}
   {{ block.super }}
@@ -217,6 +217,7 @@ function update_component_page_elements(component) {
 function vue_component_init() {
 
     var url = `/api${window.location.pathname}/?format=json`
+    {% include "vue/status.js" %}
     {% include "vue/widget-requirements.js" %}
     {% include "vue/widget-signoff.js" %}
 
@@ -231,41 +232,55 @@ function vue_component_init() {
                 'vendor':{},
                 'data_privacy_class':{},
             },
+            versions: [],
+            selectedVersion: null,
             loading: true,
             erroed: false
         },
-        created: function() {
-          let component;
-          let latest_version = default_latest_version;
+        methods: {
+          getIdFromHref(href) {
+            const idPattern = new RegExp("^.*/(\\d+)/?(?:\\?.+)?$");
+              return Number(idPattern.exec(href)[1]);
+
+          },
+          changeVersion() {
+            if (this.component) {
+              this.component.latest_version = this.versions.find(v => v.id == this.selectedVersion);
+              const urlParams = new URLSearchParams(window.location.search);
+              urlParams.set("version_id", this.selectedVersion);
+              const newRelativePathQuery = window.location.pathname + '?' + urlParams.toString();
+              history.pushState(null, '', newRelativePathQuery);
+            }
+          }
+        },
+        watch: {
+          selectedVersion: 'changeVersion'
+        },
+        created: async function() {
+          const urlParams = new URLSearchParams(window.location.search);
+          let currentVersion = default_latest_version;
           let requests = [
               axios.get(url)
-                .then(response => {
-                   // we can't assign response.data directly to this.component, because it will trigger
-                   // rerender. We doesn't have component.latest_version at this moment and it will raise error at render.
-                   // We will get it component.latest_version later. Also if next request will be finished
-                   // first we will overwrite component.latest_version.
-                   component = response.data;
-                })
+                .then(response => response.data)
                 .catch(error => {
                    console.log(error);
                    this.errored = true
                 }),
-              axios.get(`/api${window.location.pathname}/latest_version/?format=json`)
-                .then(response => {
-                    latest_version = response.data;
-                })
-                .catch(error => {
-                })
+              axios.get(`/api/component_version/?format=json&ordering=-release_date&component=${this.getIdFromHref(window.location.pathname)}`)
+                .then(response => response.data.results)
           ];
           // make parallel requests
-          axios.all(requests).then(_ => {
-               // when all requests is finished and all required data obtained, we can trigger rerender
-               component.latest_version = latest_version;
-               this.component = component;
-               this.loading = false;
-               this.$nextTick(function () {
-                    update_component_page_elements(this.component);
-               });
+          const [component, versions]= await Promise.all(requests)
+          if (versions.length) {
+            currentVersion  = await axios.get(`/api/component_version/${versions[0].id}/?format=json`).then(resp => resp.data);
+            this.selectedVersion = currentVersion.id;
+          }
+          component.latest_version = currentVersion;
+          this.versions=versions;
+          this.component = component;
+          this.loading = false;
+          this.$nextTick(function () {
+              update_component_page_elements(this.component);
           });
         },
     });

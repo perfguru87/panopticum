@@ -45,8 +45,10 @@ INSTALLED_APPS = [
     'rest_framework_filters',
     'django_extensions',
     'corsheaders',
+    'database_files',
     'admin_reorder',
     'simple_history',
+    'loginas',
     'panopticum'
 ]
 
@@ -62,9 +64,10 @@ REST_FRAMEWORK = {
     ),
     'DEFAULT_FILTER_BACKENDS': (
         'rest_framework_filters.backends.RestFrameworkFilterBackend',
+        'rest_framework.filters.OrderingFilter',
         'rest_framework_datatables.filters.DatatablesFilterBackend',
     ),
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    'DEFAULT_PAGINATION_CLASS': 'panopticum.pagination.CustomPagination',
     'PAGE_SIZE': 50,
 }
 
@@ -105,11 +108,15 @@ WSGI_APPLICATION = 'panopticum_django.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
-
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': os.environ.get('APP_DB_ENGINE', 'django.db.backends.sqlite3'),
+        'NAME': os.environ.get('DB_NAME', os.path.join(BASE_DIR, 'db.sqlite3')),
+        'USER': os.environ.get('DB_USER', ''),
+        'PASSWORD': os.environ.get('DB_PASSWORD', ''),
+        'HOST': os.environ.get('DB_HOST', None),
+        'PORT': os.environ.get('DB_PORT', None),
+        'CONN_MAX_AGE': os.environ.get('DB_CONN_MAX_AGE', 0),
     }
 }
 
@@ -162,7 +169,19 @@ ADMIN_REORDER = (
         ('panopticum.CountryModel', 'panopticum.OrganizationModel', 'panopticum.OrgDepartmentModel',
          'panopticum.PersonRoleModel', 'panopticum.User')
     },
-    {'app': 'panopticum', 'label': 'misc', 'models': ('panopticum.Requirement', 'panopticum.RequirementSet')}
+    {'app': 'panopticum', 'label': 'requirements',
+     'models': (
+         'panopticum.Requirement',
+         'panopticum.RequirementSet',
+     )},
+    {'app': 'panopticum', 'label': 'wheels',
+     'models': (
+         'panopticum.ProgrammingLanguageModel',
+         'panopticum.FrameworkModel',
+         'panopticum.ORMModel',
+         'panopticum.LoggerModel',
+
+     )}
 )
 
 
@@ -195,6 +214,10 @@ MEDIA_URL = '/media/'
 
 
 AUTH_USER_MODEL = 'panopticum.User'
+
+# This will only allow admins to log in as other users, as long as
+# those users are not admins themselves:
+CAN_LOGIN_AS = lambda request, target_user: request.user.is_superuser and not target_user.is_superuser
 
 curr_dir = os.path.abspath(os.path.dirname(__file__))
 if os.path.exists(os.path.join(curr_dir, "settings_local.py")):

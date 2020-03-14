@@ -1,4 +1,4 @@
-<el-card v-if="component.latest_version.depends_on && component.latest_version.depends_on.length">
+<el-card>
   <div slot="header" class="clearfix">
     <h2>Dependencies</h2>
   </div>
@@ -13,7 +13,7 @@
       </tr>
     </thead>
     <tbody>
-      <tr v-for='item in component.latest_version.depends_on' v-if="item.type !== 'includes'" v-cloak>
+      <tr v-for='item in component.latest_version.depends_on' v-cloak>
         <td><a v-bind:href="'/component/' + item.component.id">[[ item.component.name ]]</a></td>
         <td class='pa-dependency'>[[ item.type ]]</td>
         <td class='pa-replace-urls'>[[ item.notes ]]</td>
