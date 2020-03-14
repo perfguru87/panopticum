@@ -26,11 +26,11 @@ formfields_large = {models.ForeignKey: {'widget': Select(attrs={'width': '300px'
                     models.TextField: {'widget': Textarea(attrs={'rows': 2, 'cols': 60})},
                     }
 
-formfields_small = {models.ForeignKey: {'widget': Select(attrs={'width': '200px', 'style': 'width:200px'})},
+formfields_small = {models.ForeignKey: {'widget': Select(attrs={'width': '150px', 'style': 'width:150px'})},
                     models.ManyToManyField: {'widget': SelectMultiple(attrs={'size': '3', 'width': '150px', 'style': 'width:150px'})},
                     models.IntegerField: {'widget': NumberInput(attrs={'width': '150px', 'style': 'width:150px'})},
                     models.CharField: {'widget': TextInput(attrs={'width': '150px', 'style': 'width:150px'})},
-                    models.URLField: {'widget': TextInput(attrs={'width': '180px', 'style': 'width:180px'})},
+                    models.URLField: {'widget': TextInput(attrs={'width': '150px', 'style': 'width:150px'})},
                     models.TextField: {'widget': Textarea(attrs={'rows': 2, 'cols': 30})},
                     }
 
@@ -407,6 +407,7 @@ admin.site.register(ProductFamilyModel)
 admin.site.register(ProductVersionModel)
 admin.site.register(ProgrammingLanguageModel)
 admin.site.register(FrameworkModel)
+admin.site.register(RuntimeModel)
 admin.site.register(ORMModel)
 admin.site.register(LoggerModel)
 admin.site.register(ComponentTypeModel)
