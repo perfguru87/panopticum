@@ -43,7 +43,7 @@ class Utility:
         {'Framework': {'order': 1},
          'Infrastructure': {'order': 2}}  # Order can be same across records.
 
-    comp_runtimes = ['Component', 'Driver']
+    comp_types = ['Component', 'Driver']
 
     loggers = {'Logf'}
 
@@ -111,7 +111,7 @@ class Utility:
     default_prod_version = 'My Cloud Product 1.0'
     default_prod_family = 'Cloud Services'
     default_port = 'HTTPS-443'
-    default_runtime = 'Component'
+    default_type = 'Component'
     default_app_vendor = 'OpenSource'
     default_dep_type = 'sync_rw'
     default_privacy = 'Application'
@@ -211,14 +211,14 @@ class Utility:
                 logging.error("Ignoring exception [%s] for name [%s].", e, name)
 
     @staticmethod
-    def get_comp_runtimetypes(name, order=1):  # Creates record in DB if doesn't exists.
-        return Utility.alloc_obj_by_name(ComponentRuntimeTypeModel, name, order=order)
+    def get_comp_types(name, order=1):  # Creates record in DB if doesn't exists.
+        return Utility.alloc_obj_by_name(ComponentTypeModel, name, order=order)
 
     @staticmethod
-    def seed_comp_runtimetypes():
-        for name in Utility.comp_runtimes:
+    def seed_comp_types():
+        for name in Utility.comp_types:
             try:
-                Utility.get_comp_runtimetypes(name, 1)
+                Utility.get_comp_types(name, 1)
             except Exception as e:
                 logging.error("Ignoring exception [%s] for name [%s].", e, name)
 
@@ -423,25 +423,25 @@ class Utility:
 
     @staticmethod
     def get_comp(name, description, category_obj, privacy_obj, sub_category_obj,
-                 vendor_obj, runtime_obj, life_status):
+                 vendor_obj, type_obj, life_status):
         return Utility.alloc_obj_by_name(ComponentModel, name,
                                          description=description,
                                          category_id=category_obj.id,
                                          data_privacy_class_id=privacy_obj.id,
                                          subcategory_id=sub_category_obj.id,
                                          vendor_id=vendor_obj.id,
-                                         runtime_type_id=runtime_obj.id,
+                                         type_id=type_obj.id,
                                          life_status=life_status)
 
     @staticmethod
-    def seed_comp(comp_name, description, category, subcategory, privacy, vendor, runtime_type,
+    def seed_comp(comp_name, description, category, subcategory, privacy, vendor, type,
                   life_status):
         logging.info('begin for name [%s]', comp_name)
         category_obj = Utility.get_comp_category(category)
         sub_category_obj = Utility.get_comp_subcategory(subcategory, category_obj.id)
         privacy_obj = Utility.get_comp_privacy(privacy, 1)
         vendor_obj = Utility.get_app_vendor(vendor)
-        runtime_obj = Utility.get_comp_runtimetypes(runtime_type)
+        type_obj = Utility.get_comp_types(type)
 
         try:
             # Now we have all the supporting objects ready, we can create DB record
@@ -451,7 +451,7 @@ class Utility:
                                         privacy_obj,
                                         sub_category_obj,
                                         vendor_obj,
-                                        runtime_obj,
+                                        type_obj,
                                         life_status)
             if comp_obj.category.name == 'SEED':
                 # Update record with provided values since it was created with default values earlier.
@@ -461,7 +461,7 @@ class Utility:
                 comp_obj.data_privacy_class = privacy_obj
                 comp_obj.subcategory = sub_category_obj
                 comp_obj.vendor = vendor_obj
-                comp_obj.runtime_type = runtime_obj
+                comp_obj.type = type_obj
                 comp_obj.life_status = life_status
                 comp_obj.save()
 
@@ -646,8 +646,8 @@ class Utility:
                                                               Utility.get_comp_subcategory('SEED', category_obj.id),
                                                               Utility.get_app_vendor(
                                                                   Utility.default_app_vendor),
-                                                              Utility.get_comp_runtimetypes(
-                                                                  Utility.default_runtime),
+                                                              Utility.get_comp_types(
+                                                                  Utility.default_type),
                                                               'unknown')
 
                         Utility.get_comp_dependency(dependent_comp_obj,
@@ -762,7 +762,7 @@ class Utility:
             Utility.comp_categories = jsondata['ComponentCategories']
             Utility.comp_subcategories = jsondata['ComponentSubCategories']
             Utility.comp_dataprivacies = jsondata['ComponentDataPrivacies']
-            Utility.comp_runtimes = jsondata['ComponentRuntimes']
+            Utility.comp_types = jsondata['ComponentTypes']
             Utility.loggers = jsondata['Loggers']
             # Utility.countries = jsondata['Countries']
             Utility.data_centers = jsondata['DataCenters']
@@ -783,7 +783,7 @@ class Utility:
             Utility.default_prod_family = jsondata['Defaults']['ProductFamily']
             Utility.default_prod_version = jsondata['Defaults']['ProductVersion']
             Utility.default_port = jsondata['Defaults']['Port']
-            Utility.default_runtime = jsondata['Defaults']['ComponentRuntime']
+            Utility.default_type = jsondata['Defaults']['ComponentType']
             Utility.default_app_vendor = jsondata['Defaults']['ApplicationVendor']
             Utility.default_dep_type = jsondata['Defaults']['DependencyType']
             Utility.default_privacy = jsondata['Defaults']['ComponentDataPrivacy']
@@ -825,7 +825,7 @@ class SeedDataImporter:
         Utility.seed_comp_categories()
         Utility.seed_comp_privacies()
         Utility.seed_comp_subcategories()
-        Utility.seed_comp_runtimetypes()
+        Utility.seed_comp_types()
         Utility.seed_countries()
         Utility.seed_db_vendors()
         Utility.seed_datacenters()
@@ -882,7 +882,7 @@ class SeedDataImporter:
                     if depl_env in ('-', 'N/A'):
                         depl_env = 'N/A'
                     binary_name = Utility.get_str_data_from_list(row, 'Binary name')
-                    runtime_type = Utility.get_str_data_from_list(row, 'Runtime Type')
+                    type = Utility.get_str_data_from_list(row, 'Component Type')
                     description = Utility.get_str_data_from_list(row, 'Description')
                     dep_str = Utility.get_str_data_from_list(row, 'Dependency')
                     dev_docs = Utility.get_str_data_from_list(row, 'Wiki')
@@ -911,7 +911,7 @@ class SeedDataImporter:
                                                       subcategory=comp_subcategory,
                                                       privacy=Utility.default_privacy,
                                                       vendor=vendor,
-                                                      runtime_type=runtime_type,
+                                                      type=type,
                                                       life_status=life_status)
 
                     status = Utility.seed_comp_versions(Utility.default_comp_version,
