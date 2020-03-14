@@ -26,6 +26,10 @@ hr {
   border-top: 1px solid rgba(0, 0, 0, 0.1);
 }
 
+h2 { font-weight: 500; font-size: 18px; }
+h3 { font-weight: 600; font-size: 15px; }
+h4 { font-weight: 600; font-size: 14px; }
+
 .x_title h2 { overflow: visible; }
 .x_content h3 { overflow: visible; font-size: 16px; padding: 10px 0px 5px 0px; margin: 10px 0px 0px 0px; }
 .x_content h3:first-child { margin-top: 0px; padding-top: 0px; }
@@ -67,7 +71,6 @@ hr {
 
 /* Panopticum side-by-side table */
 
-.panopticum-side-by-side-table { margin: -5px; }
 .panopticum-side-by-side-table div { padding: 0px; }
 .panopticum-side-by-side-table div div { width: 100%; }
 .panopticum-side-by-side-table div div h4 { padding: 0px; margin: 0px; width: 100%; padding: 10px 0px; text-align: center;}
@@ -447,10 +450,6 @@ span.pa-component-stars i {
     cursor: pointer;
 }
 
-.el-card__header {
-    padding: 5px 20px;
-}
-
 .table-header, .word-wrap {
     word-break: break-word;
     white-space: normal;
@@ -501,14 +500,12 @@ div.owner {
     margin: 12px 0 4px;
 }
 
-.el-table td {
-    padding: 0;
-}
-
-.el-table th {
-    padding-bottom: 5px;
-}
-
+/* Element UI */
+.el-card__header { padding: 5px 15px; }
+.el-card__body { padding: 10px 15px 10px 15px; }
+.el-card { margin-bottom: 15px; }
+.el-table td { padding: 0; }
+.el-table th { padding-bottom: 5px; }
 .el-table .cell {
     padding-left: 2px !important;
     word-break: break-word !important;
