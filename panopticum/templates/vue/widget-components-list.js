@@ -33,7 +33,7 @@ Vue.component('widget-components-list', {
             this.fetchStatuses(),
         ])
         this.requirements = requirements;
-        
+
         if (this.topfilters) {
             this.currentProduct = this.topfilters.product;
             this.currentLocation = this.topfilters.location;
@@ -153,6 +153,9 @@ Vue.component('widget-components-list', {
             }
             loading = false
         },
+        displayPopover(ownerStatus, signeeStatus) {
+            return [ownerStatus, signeeStatus].some(status => status) && (ownerStatus.status.id !=1 && signeeStatus.status !=1 );
+        },
         handleDropdownCommand(command) {
             // handle change dropdown filters
             let headerFilters = {};
@@ -207,8 +210,8 @@ Vue.component('widget-components-list', {
         handleChangeFilter(id) {
             this.headerFilters = {};
             this.$emit('update:top-filters', {
-                location: this.currentLocation, 
-                product: this.currentProduct, 
+                location: this.currentLocation,
+                product: this.currentProduct,
                 runtime: this.currentRuntime});
             this.filterComponents();
         },
@@ -260,9 +263,9 @@ Vue.component('widget-components-list', {
     <el-row>
         <div style="display: inline-block">
             <label class="el-form-item__label" for="product">Product</label>
-            <el-select v-model="currentProduct" 
-            :loading="!products" name='product' 
-            placeholder="product" 
+            <el-select v-model="currentProduct"
+            :loading="!products" name='product'
+            placeholder="product"
             clearable>
                 <el-option v-for="product in products" 
                     :key="product.id" 
@@ -274,10 +277,10 @@ Vue.component('widget-components-list', {
 
         <div style="display: inline-block">
             <label class="el-form-item__label" for="location">Location</label>
-            <el-select v-model="currentLocation" 
-            :loading="!locations" 
-            name="location" 
-            placeholder="location" 
+            <el-select v-model="currentLocation"
+            :loading="!locations"
+            name="location"
+            placeholder="location"
             clearable>
                 <el-option v-for="location in locations" 
                     :key="location.id" 
@@ -289,11 +292,11 @@ Vue.component('widget-components-list', {
 
         <div style="display: inline-block">
             <label class="el-form-item__label" for="runtimes">Runtime type</label>
-            <el-select 
-            v-model="currentRuntime" 
-            :loading="!runtimes" 
-            name="Runtime Type" 
-            placeholder="runtime type" 
+            <el-select
+            v-model="currentRuntime"
+            :loading="!runtimes"
+            name="Runtime Type"
+            placeholder="runtime type"
             clearable>
                 <el-option v-for="runtime in runtimes"
                     :key="runtime.id"
@@ -411,13 +414,17 @@ Vue.component('widget-components-list', {
                 </template>
 
                 <template slot-scope="scope">
-                    
                     <div :class="getOwnerClass(scope.row[req.title].owner)"></div>
-                    <div class="inner-cell">
-                        <span class="word-wrap" v-if="scope.row[req.title].owner && scope.row[req.title].owner.notes && scope.row[req.title].owner.status.name !='n/a'">
-                        {{ scope.row[req.title].owner.notes }}
-                        </span>
-                    </div>
+                    <widget-status-popover
+                     :owner-status="scope.row[req.title].owner"
+                     :signee-status="scope.row[req.title].signee"
+                     v-if="displayPopover(scope.row[req.title].owner, scope.row[req.title].signee)">
+                        <div class="inner-cell">
+                            <span class="word-wrap" v-if="scope.row[req.title].owner && scope.row[req.title].owner.notes && scope.row[req.title].owner.status.name !='n/a'">
+                            {{ scope.row[req.title].owner.notes }}
+                            </span>
+                        </div>
+                </widget-status-popover>
                 </template>
             </el-table-column>
 

@@ -349,8 +349,8 @@ i.yes { color: green; }
 i.no { color: rgb(209, 58, 58);}
 i.unknown { color: #aaa; }
 
-.el-popper[x-placement^=top] .popper__arrow  {
-    border-top-color: #777;
+.el-popper[x-placement^=bottom] .popper__arrow  {
+    border-bottom-color: #777;
 }
 
 div.signoff-popover {
