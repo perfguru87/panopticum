@@ -223,7 +223,7 @@ class LoggerModel(models.Model):
         return "%s" % self.name
 
 
-class ComponentRuntimeTypeModel(models.Model):
+class ComponentTypeModel(models.Model):
     name = models.CharField(max_length=64, help_text="Library, Framework, Driver, OS Service, OS Process, Web Service, Database, MQ")
     order = models.IntegerField(help_text="sorting order")
 
@@ -239,7 +239,7 @@ class ComponentModel(models.Model):
     description = models.TextField(blank=True, null=True)
 
     life_status = models.CharField(max_length=16, choices=LIFE_STATUS, default=LIFE_STATUS[0][0])
-    runtime_type = models.ForeignKey(ComponentRuntimeTypeModel, on_delete=models.PROTECT)
+    type = models.ForeignKey(ComponentTypeModel, on_delete=models.PROTECT)
     data_privacy_class = models.ForeignKey(ComponentDataPrivacyClassModel, on_delete=models.PROTECT)
     category = models.ForeignKey(ComponentCategoryModel, on_delete=models.PROTECT)
     subcategory = models.ForeignKey(ComponentSubcategoryModel, blank=True, null=True, on_delete=models.PROTECT)

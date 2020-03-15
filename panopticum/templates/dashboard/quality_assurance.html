@@ -25,8 +25,8 @@
          <select class="form-control update-table" id="location_class"></select>
     </div>
     <div class="col-sm-3">
-         <label for="component_runtime_type">Runtime type</label>
-         <select class="form-control update-table" id="component_runtime_type"></select>
+         <label for="component_type">Type</label>
+         <select class="form-control update-table" id="component_type"></select>
     </div>
 </div>
 <div class="row">
@@ -41,7 +41,7 @@
                     <th class='colId'>ID</th>
                     <th class='colProductVersion'></th>
                     <th class='colLocationClass'></th>
-                    <th class='colRuntimeType'></th>
+                    <th class='colType'></th>
                     <th class='colComponent searchable'>Component</th>
                     <th class='colManual'>Manual</th>
                     <th class='colUnit'>Unit</th>
@@ -67,7 +67,7 @@
 function load_table(table) {
     var product_version = meta_searchstr_wrap($("#product_version").children("option:selected").text());
     var location_class = meta_searchstr_wrap($("#location_class").children("option:selected").text());
-    var runtime_type = $("#component_runtime_type").children("option:selected").text();
+    var type = $("#component_type").children("option:selected").text();
     var filter = $("#components_filter").children("input").text();
 
     var values = {}
@@ -83,7 +83,7 @@ function load_table(table) {
 
     table.columns(1 /*"colProductVersion"*/).search(product_version).
           columns(2 /*"colLocationClass"*/).search(location_class).
-          columns(3 /*"colRuntimeType"*/).search(runtime_type).
+          columns(3 /*"colType"*/).search(type).
           columns(4, /*"colComponent"*/).search(filter).
           columns(5, /*"colManual"*/).search(values['qa_manual_tests_status'], true, false).
           columns(6, /*"colUnit"*/).search(values['qa_unit_tests_status'], true, false).
@@ -112,7 +112,7 @@ function create_table() {
             {"data": "id", "searchable": false},
             {"data": "meta_searchstr_product_versions"},
             {"data": "meta_searchstr_locations"},
-            {"data": "component.runtime_type.name"},
+            {"data": "component.type.name"},
             {"data": "component.name"},
             {"data": "qa_manual_tests_status"},
             {"data": "qa_unit_tests_status"},
@@ -127,7 +127,7 @@ function create_table() {
         ],
         "columnDefs": [
             {
-                "targets": ["colProductVersion", "colLocationClass", "colRuntimeType"],
+                "targets": ["colProductVersion", "colLocationClass", "colType"],
                 "type": "string",
                 "visible": false,
             },
@@ -185,7 +185,7 @@ $(document).ready(function() {
 
     pa_populate_options(refc, "#product_version", "/api/product_version/?format=json", false);
     pa_populate_options(refc, "#location_class", "/api/location_class/?format=json", false);
-    pa_populate_options(refc, "#component_runtime_type", "/api/component_runtime_type/?format=json", false);
+    pa_populate_options(refc, "#component_type", "/api/component_type/?format=json", false);
 
     // Setup - add a text input to each footer cell
 

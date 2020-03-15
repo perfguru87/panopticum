@@ -13,10 +13,10 @@ Vue.component('widget-components-list', {
             loading: true,
             products: [],
             locations: [],
-            runtimes: [],
+            types: [],
             currentProduct: null,
             currentLocation: null,
-            currentRuntime: null,
+            currentType: null,
             pageLimit: 30
         }
     },
@@ -37,7 +37,7 @@ Vue.component('widget-components-list', {
         if (this.topfilters) {
             this.currentProduct = this.topfilters.product;
             this.currentLocation = this.topfilters.location;
-            this.currentRuntime = this.topfilters.runtime;
+            this.currentType = this.topfilters.type;
         }
 
         if (this.filters && this.filters.length) {
@@ -56,17 +56,17 @@ Vue.component('widget-components-list', {
         componentVersions: 'updateTable',
         currentProduct: 'handleChangeFilter',
         currentLocation: 'handleChangeFilter',
-        currentRuntime: 'handleChangeFilter',
+        currentType: 'handleChangeFilter',
         headerFilters: function() {this.$emit('update:header-filters', this.headerFilters)}
     },
 
     methods: {
         async fetchFilters() {
-            // fetch entries from REST API for filters at top page(product, location, runtime type)
-            const [products, locations, runtimes] = await Promise.all([
+            // fetch entries from REST API for filters at top page(product, location, type)
+            const [products, locations, types] = await Promise.all([
                 axios.get('/api/product_version/?format=json').then(resp => resp.data.results),
                 axios.get('/api/location_class/?format=json').then(resp => resp.data.results),
-                axios.get('/api/component_runtime_type/?format=json').then(resp => resp.data.results),
+                axios.get('/api/component_type/?format=json').then(resp => resp.data.results),
             ])
             const sortFunction = function(a, b) {
                 if (a.order < b.order) {
@@ -82,7 +82,7 @@ Vue.component('widget-components-list', {
 
             this.products = products.sort(sortFunction);
             this.locations = locations.sort(sortFunction);
-            this.runtimes = runtimes.sort(sortFunction);
+            this.types = types.sort(sortFunction);
         },
         fetchStatuses() {
             // fetch statuses to cache
@@ -131,7 +131,7 @@ Vue.component('widget-components-list', {
                            `&ordering=${this.componentSorting}component__name,${this.componentSorting}version`
             if (this.currentLocation) queryParams += `&deployments__location_class=${this.currentLocation}`
             if (this.currentProduct) queryParams += `&deployments__product_version=${this.currentProduct}`
-            if (this.currentRuntime) queryParams += `&component__runtime_type=${this.currentRuntime}`
+            if (this.currentType) queryParams += `&component__type=${this.currentType}`
             return axios.get(`/api/component_version/?format=json&limit=${this.pageLimit}&fields=${fields}&${queryParams}`, 
                     {cancelToken: this.cancelSource.token})
                 .then(resp => {
@@ -212,7 +212,7 @@ Vue.component('widget-components-list', {
             this.$emit('update:top-filters', {
                 location: this.currentLocation,
                 product: this.currentProduct,
-                runtime: this.currentRuntime});
+                type: this.currentType});
             this.filterComponents();
         },
         getOveralStatus(compVer) {
@@ -291,17 +291,17 @@ Vue.component('widget-components-list', {
         <el-divider direction="vertical"></el-divider>
 
         <div style="display: inline-block">
-            <label class="el-form-item__label" for="runtimes">Runtime type</label>
+            <label class="el-form-item__label" for="types">Type</label>
             <el-select
-            v-model="currentRuntime"
-            :loading="!runtimes"
-            name="Runtime Type"
-            placeholder="runtime type"
+            v-model="currentType"
+            :loading="!types"
+            name="Type"
+            placeholder="type"
             clearable>
-                <el-option v-for="runtime in runtimes"
-                    :key="runtime.id"
-                    :label="runtime.name"
-                    :value="runtime.id"></el-option>
+                <el-option v-for="type in types"
+                    :key="type.id"
+                    :label="type.name"
+                    :value="type.id"></el-option>
             </el-select>
         </div>
     </el-row>

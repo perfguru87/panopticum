@@ -1,4 +1,4 @@
-Category,Sub-Category,Vendor,Deployment Container,Deployment Environment,Binary name,Runtime Type,Name,Description,Dependency,Wiki,Repo,Deployment Location,Language,Framework,DB,Logging,REST API RAML,Ports,Additional Comments,KLOC,Is legacy?,Is duplicated?,PM,Owner,Architect,release1,release2
+Category,Sub-Category,Vendor,Deployment Container,Deployment Environment,Binary name,Type,Name,Description,Dependency,Wiki,Repo,Deployment Location,Language,Framework,DB,Logging,REST API RAML,Ports,Additional Comments,KLOC,Is legacy?,Is duplicated?,PM,Owner,Architect,release1,release2
 Platform,Services,MyCompany,account-srv,K8S,account-srv,Component,Account Manager,"* Account Manager (Identity Access Management). Central piece that owns details of users, admins, resources within the system and manages the access per user of the system.","* Percona
 * RabbitMQ
 * NGINX",https://wiki.mycompany.com/comcloud/iam.html,https://github.com/mycompany/ComCloud/tree/master/iam,AWS,Python,"tornado,sqlalchemy, aiohttp",Percona,TBD,https://git.company.com/projects/RAML/repos/iam,HTTP: 8080,,TBD,TBD,partial,Sergey.S@company.com,Hiten@company.com,"at@company.com,vlads@company.com",yes,yes

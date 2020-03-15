@@ -71,9 +71,9 @@ class ComponentVersionViewSet(viewsets.ModelViewSet):  # relativeURLViewSet will
         return ComponentVersionModel.objects.with_rating(req_set)
 
 
-class ComponentRuntimeTypeViewSet(RelativeURLViewSet):
-    queryset = ComponentRuntimeTypeModel.objects.all()
-    serializer_class = ComponentRuntimeTypeSerializer
+class ComponentTypeViewSet(RelativeURLViewSet):
+    queryset = ComponentTypeModel.objects.all()
+    serializer_class = ComponentTypeSerializer
 
 
 class ComponentDataPrivacyClassViewSet(RelativeURLViewSet):

@@ -33,7 +33,7 @@
    ],
    "ComponentDataPrivacies":{"Framework": {"order": 1}, "Infrastructure": {"order": 2}},
 
-   "ComponentRuntimes":["Component", "Database", "Database", "Driver", "Framework", "Library", "MQ Service",
+   "ComponentTypes":["Component", "Database", "Database", "Driver", "Framework", "Library", "MQ Service",
       "OS Process", "OS Service", "Web Service"],
    "Loggers":[
       "Logf"
@@ -207,7 +207,7 @@
       "ApplicationVendor":"OpenSource",
       "DependencyType":"sync_rw",
       "ComponentDataPrivacy":"Application",
-      "ComponentRuntime":"Component",
+      "ComponentType":"Component",
       "ComponentVersion":"1.0"
    }
 }
