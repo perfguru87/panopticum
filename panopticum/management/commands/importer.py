@@ -212,7 +212,7 @@ class Utility:
 
     @staticmethod
     def get_comp_types(name, order=1):  # Creates record in DB if doesn't exists.
-        return Utility.alloc_obj_by_name(ComponentTypeModel, name, order=order)
+        return Utility.alloc_obj_by_name(ComponentType, name, order=order)
 
     @staticmethod
     def seed_comp_types():
