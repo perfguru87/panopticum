@@ -176,20 +176,27 @@ class LoginAPIView(APIView):
             return Response({"error": "not valid credentials"}, 401)
 
 
+def render_page(request, template):
+    context = {
+        'categories': ComponentCategoryModel.objects.all()
+    }
+    return render(request, template, context)
+
+
 def component(request):
-    return render(request, 'page/component.html')
+    return render_page(request, 'page/component.html')
 
 
 def dashboard_components(request):
-    return render(request, 'dashboard/components.html')
+    return render_page(request, 'dashboard/components.html')
 
 
 def dashboard_operations(request):
-    return render(request, 'dashboard/operations.html')
+    return render_page(request, 'dashboard/operations.html')
 
 
 def dashboard_team(request):
-    return render(request, 'dashboard/team.html')
+    return render_page(request, 'dashboard/team.html')
 
 
 class JiraIssueView(views.APIView):

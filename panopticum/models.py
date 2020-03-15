@@ -135,7 +135,7 @@ class ComponentCategoryModel(models.Model):
     order = models.IntegerField(help_text="sorting order")
 
     class Meta:
-        ordering = ['order']
+        ordering = ['order', 'name']
 
     def __str__(self):
         return "%s (order %d)" % (self.name, self.order)
@@ -254,7 +254,7 @@ class ComponentModel(models.Model):
     life_status = models.CharField(max_length=16, choices=LIFE_STATUS, default=LIFE_STATUS[0][0])
     type = models.ForeignKey(ComponentTypeModel, on_delete=models.PROTECT)
     data_privacy_class = models.ForeignKey(ComponentDataPrivacyClassModel, on_delete=models.PROTECT)
-    category = models.ForeignKey(ComponentCategoryModel, on_delete=models.PROTECT)
+    category = models.ForeignKey(ComponentCategoryModel, on_delete=models.PROTECT, related_name='components')
     subcategory = models.ForeignKey(ComponentSubcategoryModel, blank=True, null=True, on_delete=models.PROTECT)
 
     vendor = models.ForeignKey(SoftwareVendorModel, on_delete=models.PROTECT)

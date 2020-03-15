@@ -340,6 +340,10 @@ table.last-td-left td:last-child {
 .nav-md .navbar.nav_title a i { margin: 0px 12px 0px 18px; font-size: 24px; }
 .nav-sm .navbar.nav_title a i span, .nav-md .navbar.nav_title a i { font-size: 24px; }
 
+.nav.child_menu li.active, .nav li.active { background: none; }
+.nav li li li.current-page, .nav li.current-page { background-color: rgba(255, 255, 255, 0.25); }
+.nav.child_menu li li:hover { background-color: rgba(255, 255, 255, 0.05); }
+
 /* Yes/No ckecks */
 i.yes, i.no, i.unknown {
     font-size: 16px;
