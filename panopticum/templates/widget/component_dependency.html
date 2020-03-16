@@ -1,9 +1,9 @@
 <el-card>
   <div slot="header" class="clearfix">
-    <h2>Dependencies</h2>
+    <h2>Dependends on</h2>
   </div>
 
-  <h4>Services</h4>
+  <h4>Services:</h4>
   <table class='status-table' v-cloak>
     <thead>
       <tr>
@@ -21,7 +21,25 @@
     </tbody>
   </table>
 
-  <h4>Libraries</h4>
+  <h4>Frameworks:</h4>
+  <table class='status-table' v-cloak>
+    <thead>
+      <tr>
+        <th>Framework</th>
+        <th>Language</th>
+        <th>Notes</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr v-for='item in component.latest_version.dev_framework' v-cloak>
+        <td>[[ item.name ]]</td>
+        <td>[[ item.language.name ]]</td>
+        <td>[[ item.notes ]]</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h4>Libraries:</h4>
   <table class='status-table' v-cloak>
     <thead>
       <tr>
