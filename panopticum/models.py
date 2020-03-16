@@ -655,6 +655,8 @@ class ComponentDeploymentModel(models.Model):
     product_version = models.ForeignKey(ProductVersionModel,
                                         related_name='deployments',
                                         on_delete=models.PROTECT)
+    is_new_deployment = models.BooleanField(help_text="This component is new in given product", db_index=True, default=False)
+
     environment = models.ForeignKey(DeploymentEnvironmentModel,
                                     related_name='deployments',
                                     on_delete=models.PROTECT)
