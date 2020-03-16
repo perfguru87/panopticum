@@ -1,0 +1,29 @@
+<el-card>
+  <div slot="header" class="clearfix">
+    <h2 v-cloak>Quality Assurance
+      <span class='pa-component-rating' v-cloak v-if='component.latest_version.qa_applicable'>
+        [[ component.latest_version.meta_qa_rating ]]%
+      </span>
+      <span class='pa-component-stars' v-cloak v-if='component.latest_version.qa_applicable'>
+        [[ component.latest_version.meta_qa_rating ]]
+      </span>
+    </h3>
+  </div>
+
+  <table class='status-table' v-bind:class="[ component.latest_version.qa_applicable ? '' : 'status-table-na']" v-cloak>
+    <thead>
+      <tr>
+        <th>Test type</th>
+        <th>Rating</th>
+        <th>Notes</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr v-for='item in component.latest_version.quality_assurance' v-cloak>
+        <td>[[ item.title ]]</td>
+        <td class='pa-quality'>[[ item.status ]]</td>
+        <td class='pa-replace-urls'>[[ item.notes ]]</td>
+      </tr>
+    </tbody>
+  </table>
+</el-card>
