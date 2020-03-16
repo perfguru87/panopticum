@@ -41,7 +41,7 @@ class ComponentDataPrivacyClassSerializer(serializers.ModelSerializer):
 
 class ComponentTypeSerializer(serializers.ModelSerializer):
     class Meta:
-        model = ComponentTypeModel
+        model = ComponentType
         fields = '__all__'
 
 
