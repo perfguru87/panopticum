@@ -72,7 +72,7 @@ class ComponentVersionViewSet(viewsets.ModelViewSet):  # relativeURLViewSet will
 
 
 class ComponentTypeViewSet(RelativeURLViewSet):
-    queryset = ComponentTypeModel.objects.all()
+    queryset = ComponentType.objects.all()
     serializer_class = ComponentTypeSerializer
 
 
