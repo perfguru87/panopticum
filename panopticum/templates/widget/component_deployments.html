@@ -6,6 +6,7 @@
       <thead>
         <tr>
           <th>Product</th>
+          <th title='This deployment has appeared in this product version'>Is new</th>
           <th>Location</th>
           <th>Env</th>
           <th>Service</th>
@@ -19,6 +20,7 @@
       <tbody>
         <tr v-for='d in component.latest_version.deployments'>
           <td v-tooltip:right="[[ d.product_version.name ]]">[[ d.product_version.shortname]]</td>
+          <td>[[ d.is_new_deployment]]</td>
           <td>[[ d.location_class.name ]]</td>
           <td>[[ d.environment.name ]]</td>
           <td>[[ d.service_name ]]</td>
