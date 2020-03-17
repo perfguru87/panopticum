@@ -256,6 +256,14 @@ class ComponentVersionSerializer(QueryFieldsMixin, ComponentVersionSerializerSim
     negative_status_count = serializers.IntegerField(read_only=True)
     unknown_status_count = serializers.IntegerField(read_only=True)
 
+    dependent = serializers.SerializerMethodField()
+
+    def get_dependent(self, obj):
+        ret = []
+        for v in ComponentVersionModel.objects.filter(depends_on=obj.component):
+            ret.append(ComponentSerializerSimple(v.component, read_only=True).data)
+        return ret
+
 
 class TokenSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)
