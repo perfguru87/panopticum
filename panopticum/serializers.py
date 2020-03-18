@@ -129,6 +129,21 @@ class ComponentDependencySerializerSimple(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class ProgrammingLanguageSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = ProgrammingLanguageModel
+        fields = '__all__'
+
+
+class FrameworkSerializer(serializers.ModelSerializer):
+    language = ProgrammingLanguageSerializer(read_only=True)
+
+    class Meta:
+        model = FrameworkModel
+        fields = '__all__'
+
+
 class RequirementSetSimpleSerializer(serializers.ModelSerializer):
 
     class Meta:
@@ -196,7 +211,7 @@ class ComponentVersionSerializerSimple(serializers.ModelSerializer):
     owner_architect = UserSerializer(read_only=True, many=True)
 
     dev_languages = serializers.SerializerMethodField()
-    dev_frameworks = serializers.SerializerMethodField()
+    dev_framework = FrameworkSerializer(many=True, read_only=True)
 
     quality_assurance = serializers.SerializerMethodField()
 
@@ -205,13 +220,8 @@ class ComponentVersionSerializerSimple(serializers.ModelSerializer):
     meta_locations = DeploymentLocationClassSerializer(read_only=True, many=True)
     meta_product_versions = ProductVersionSerializer(read_only=True, many=True)
 
-
     def get_dev_languages(self, component):
         objs = component.dev_language.get_queryset()
-        return ", ".join([o.name for o in objs])
-
-    def get_dev_frameworks(self, component):
-        objs = component.dev_framework.get_queryset()
         return ", ".join([o.name for o in objs])
 
     def _serialize_fields(self, component, applicable, fields):
@@ -245,6 +255,14 @@ class ComponentVersionSerializer(QueryFieldsMixin, ComponentVersionSerializerSim
     positive_status_count = serializers.IntegerField(read_only=True)
     negative_status_count = serializers.IntegerField(read_only=True)
     unknown_status_count = serializers.IntegerField(read_only=True)
+
+    dependent = serializers.SerializerMethodField()
+
+    def get_dependent(self, obj):
+        ret = []
+        for v in ComponentVersionModel.objects.filter(depends_on=obj.component):
+            ret.append(ComponentSerializerSimple(v.component, read_only=True).data)
+        return ret
 
 
 class TokenSerializer(serializers.ModelSerializer):

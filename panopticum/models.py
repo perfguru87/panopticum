@@ -188,6 +188,7 @@ class ProgrammingLanguageModel(models.Model):
 class FrameworkModel(models.Model):
     name = models.CharField(max_length=64, help_text="Framework")
     language = models.ForeignKey(ProgrammingLanguageModel, on_delete=models.PROTECT)
+    notes = panopticum.fields.SmartTextField("Notes", help_text="Framework notes")
 
     class Meta:
         verbose_name = 'Framework'

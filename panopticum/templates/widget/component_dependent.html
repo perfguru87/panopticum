@@ -1,0 +1,20 @@
+<el-card>
+  <div slot="header" class="clearfix">
+    <h2>Dependent components</h2>
+  </div>
+
+  <table class='status-table' v-cloak>
+    <thead>
+      <tr>
+        <th>Service</th>
+        <th style='width: 40%;'>Category</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr v-for='item in component.latest_version.dependent' v-cloak>
+        <td><a v-bind:href="'/component/' + item.id">[[ item.name ]]</a></td>
+        <td class='pa-dependency'>[[ item.category.name ]]</td>
+      </tr>
+    </tbody>
+  </table>
+</el-card>
