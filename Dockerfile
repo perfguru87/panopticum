@@ -4,7 +4,7 @@ RUN apk --no-cache add alpine-sdk postgresql-dev graphviz-dev openldap-dev jpeg-
 RUN pip wheel gevent psycopg2-binary pygraphviz python-ldap pillow -w /whl
 
 FROM python:3.6-alpine
-WORKDIR /usr/src/app
+WORKDIR /opt/acronis/panopticum
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 RUN pip install --upgrade pip
@@ -13,5 +13,4 @@ COPY ./requirements.txt .
 RUN apk add openldap jpeg zlib libpq
 RUN pip install /whl/*.whl && pip install -r requirements.txt
 COPY . .
-RUN python manage.py makemigrations panopticum
-CMD gunicorn panopticum_django.wsgi:application --bind 0.0.0.0:8000 -k gevent
+CMD python manage.py migrate  && gunicorn panopticum_django.wsgi:application --bind 0.0.0.0:8000 -k gevent
