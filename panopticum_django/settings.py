@@ -212,7 +212,7 @@ STATIC_URL = '/static/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
 
-
+DEFAULT_FILE_STORAGE = 'database_files.storage.DatabaseStorage'
 AUTH_USER_MODEL = 'panopticum.User'
 
 # This will only allow admins to log in as other users, as long as
