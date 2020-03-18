@@ -7,7 +7,7 @@ import panopticum.fields
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('panopticum', '0005_auto_20200317_0227'),
+        ('panopticum', '0002_auto_20200318_1116')
     ]
 
     operations = [
