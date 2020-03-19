@@ -1,13 +1,14 @@
 import logging
 
 from django.core.management.base import BaseCommand, CommandError
+from django.contrib.auth.models import Group
 from django_auth_ldap.config import LDAPSearch
 from panopticum.ldap import PanopticumLDAPBackend
 
 logger = logging.getLogger(__name__)
 
 
-def fetch_users():
+def fetch_users(force_group=False, group=None):
     """ Copy some behavior from django-auth-ldap login. Unfortunately django-auth-ldap library allow
      populate users only by username. But user LDAP structure can contain user foreign key with different
      value, for example DN instead username. For example LDAP attrs:
@@ -45,6 +46,9 @@ def fetch_users():
         logger.debug("Initiating TLS")
         connection.start_tls_s()
 
+    if group:
+        managers_group, _ = Group.objects.get_or_create(name=group)
+
     ldap_attrs = search.execute(connection)
     logger.info(f'Found {len(ldap_attrs)} entries')
     for ldap_attr in ldap_attrs:
@@ -57,6 +61,9 @@ def fetch_users():
             updated += 1
             logger.info(f'Update {user.username}')
 
+        if group and (force_group or built):
+            managers_group.user_set.add(user)
+
     logger.info(f'added {added} users')
     logger.info(f'updated {updated} users')
 
@@ -65,7 +72,18 @@ class Command(BaseCommand):
     def handle(self, **options):
 
         try:
-            fetch_users()
+            fetch_users(force_group=options.get('force_group'),
+                        group=options.get('group'))
         except RuntimeError as err:
             raise CommandError(err)
+
+    def add_arguments(self, parser):
+        parser.add_argument('--force_group',
+                            action='store_true',
+                            help='Force adding all users to group.',
+                            )
+        parser.add_argument('--group',
+                            default='All',
+                            help='Add new users to group.',
+                            )
 
