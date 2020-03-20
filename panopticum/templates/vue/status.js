@@ -15,9 +15,9 @@ Vue.component('app-status', {
         }
     },
     template: `{% verbatim %}
-    <span class='panopticum-req-status'>
-        <i v-if="status && [3, 2].includes(status.id)" v-bind:class="classObject" ></i>
-        <i v-else-if="status && [4].includes(status.id)" v-bind:class="classObject" style="font-size: 12px;">
+    <span style='margin: 0px;'>
+        <i v-if="status && [3, 2].includes(status.id)" v-bind:class="classObject"></i>
+        <i v-else-if="status && [4].includes(status.id)" v-bind:class="classObject" style="font-size: 10px;">
         N/A
         </i>
         <i v-else class="el-icon-question" style="color: grey;"></i>

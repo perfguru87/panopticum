@@ -112,9 +112,11 @@ h4 { font-weight: 600; font-size: 14px; }
 .panopticum-req-status i {
     font-size: 16px;
     width: 16px;
-    padding: 0px 0px 0px 4px;
+    padding: 0px;
     display: inline;
 }
+.panopticum-status-left i { margin-right: 4px; font-size: 14px; }
+.panopticum-status-right i { margin-left: 4px; font-size: 14px; }
 
 .panopticum-table-input input { height: 28px; line-height: 28px; }
 
@@ -357,10 +359,10 @@ table.last-td-left td:last-child {
 
 /* Yes/No ckecks */
 i.yes, i.no, i.unknown {
-    font-size: 16px;
+    font-size: 14px;
     position: relative;
     top: 1px;
-    width: 16px;
+    width: 14px;
     text-align: center;
 }
 i.yes { color: green; }
@@ -522,11 +524,12 @@ div.owner {
 .el-table td { padding: 0; }
 .el-table th { padding-bottom: 5px; vertical-align: top; }
 .el-table .cell {
-    padding: 1px 2px !important;
+    padding: 1px 4px !important;
     word-break: break-word !important;
     white-space: normal;
 }
 .el-table thead, .el-dropdown-menu h5 { color: #4a5159; }
+.el-divider--horizontal { margin: 10px 0px; }
 .table-team-dashboard .el-table thead th { vertical-align: top; }
 .table-team-dashboard .el-table thead th .cell span {
     width: 78%;
@@ -542,3 +545,4 @@ div.owner {
 .table-team-dashboard .el-select input,
 .table-team-dashboard .el-form-item__label,
 .table-team-dashboard .el-select .el-input__icon { height: 28px; line-height: 28px; }
+.table-team-dashboard .el-dropdown { display: inline-block; }
