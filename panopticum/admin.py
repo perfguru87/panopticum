@@ -196,9 +196,9 @@ class RequirementStatusEntryAdmin(admin.TabularInline):
     model = RequirementStatusEntry
     form = RequirementForm
     fields = ('requirement', 'owner_status', 'owner_notes', 'approve_status', 'approve_notes')
-    # classes = ('collapse', 'requirements-admin', 'no-upper')
-    classes = ('requirements-admin', 'no-upper')
+    classes = ('collapse', 'requirements-admin', 'no-upper')
     extra = 1
+    verbose_name_plural = "Requirements"
 
     def requirement(self, obj):
         return obj.name
