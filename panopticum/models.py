@@ -317,6 +317,7 @@ class RequirementSet(models.Model):
     name = models.CharField(max_length=30, unique=True)
     requirements = models.ManyToManyField(Requirement, related_name='sets')
     description = models.TextField(null=True, blank=True)
+    doc_link = models.URLField("Documentation link URL", max_length=4096, blank=True)
     #
     owner_groups = models.ManyToManyField(Group, related_name='owner_groups', blank=True)
 
