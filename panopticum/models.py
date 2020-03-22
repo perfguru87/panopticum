@@ -366,7 +366,7 @@ class ComponentVersionModel(models.Model):
 
     version = models.CharField(max_length=64, verbose_name="Version or build",
                                help_text="note: component version instance will be cloned if you change version!")
-    comments = models.TextField(blank=True, null=True)
+    comments = models.TextField(blank=True, verbose_name="Version description", null=True)
     history = HistoricalRecords()
     objects = ComponentManager()
 
