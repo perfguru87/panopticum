@@ -13,7 +13,7 @@ Vue.component('dashboard-components', {
         {key: 'component', query: 'component__name__icontains', 'value': null},
         {key: 'componentVersion.version', query: 'version__istartswith', value: null},
         {key: 'component.category.name', query: 'component__category'},
-        {key: 'componentVersion.deployments.product_version', query: 'deployments__product_version'},
+        {key: 'product_version', query: 'deployments__product_version'},
         {key: 'componentVersion.deployments.location_class', query: 'deployments__location_class'},
         {key: 'component.type.name', query: 'component__type'},
         {key: 'component.data_privacy_class.name', query: 'component__data_privacy_class'},
@@ -114,6 +114,22 @@ Vue.component('dashboard-components', {
   template: `{% verbatim %}
 <el-card>
   <el-row>
+    <div style="display: inline-block">
+              <label class="el-form-item__label" for="product">Product</label>
+              <el-select v-model="headerFilters.find(i => i.key == 'product_version').value"
+              :loading="!products" 
+              name='product'
+              placeholder="product"
+              @change="watchFilters()" 
+              clearable>
+                  <el-option v-for="product in products" 
+                      :key="product.id" 
+                      :label="product.name" 
+                      :value="product.id"></el-option>
+              </el-select>
+    </div>
+  </el-row>
+  <el-row>
     <el-table :data="tableData"
       style="width: 100%"
       cell-class-name="word-wrap"
@@ -178,29 +194,6 @@ Vue.component('dashboard-components', {
                   </el-option>
               </el-select>
           </template>
-      </el-table-column>
-
-      <el-table-column
-        prop="componentVersion.deployments.product_version"
-        label="Products">
-        <template slot="header" slot-scope="scope">
-              <span>{{ scope.column.label }}</span>
-              <el-select v-model="headerFilters.find(i => i.key == scope.column.property).value" 
-              @change="watchFilters()"  
-              clearable
-              size="mini">
-                  <el-option v-for="product in products" 
-                  :key="product.id" 
-                  :label="product.shortname" 
-                  :value="product.id">
-                  </el-option>
-              </el-select>
-          </template>
-        <template slot-scope="scope">
-          <el-row v-for="deployment in scope.row.componentVersion.deployments" :key="deployment.id">
-            <span>{{ deployment.product_version.shortname }}</span>
-          </el-row>
-        </template>
       </el-table-column>
 
       <el-table-column 
