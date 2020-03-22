@@ -315,14 +315,13 @@ Vue.component('widget-components-list', {
         border>
             <el-table-column label="Component" 
                     width="200" 
-                    header-align="center" 
+                    header-align="center"
                     align="left" >
                 <template slot="header" scope="scope">
-                    <span>{{ scope.column.label }}</span>
+                    <span style='height: 15px; margin-bottom: 4px;'>{{ scope.column.label }}</span>
                     <el-input placeholder="component version" 
-                    suffix-icon="el-icon-search" 
                     v-model="componentVersionSearch"
-                    style="display: inline-block;"
+                    class="panopticum-table-input"
                     clearable></el-input>
                 </template>
                 <template slot-scope="scope">
@@ -339,16 +338,18 @@ Vue.component('widget-components-list', {
                     <span class="word-wrap">Overal status</span>
                     <div>
                             <el-dropdown trigger="click" placement="bottom-start" @command="handleDropdownCommand">
-                                <span>
+                                <span style='height: 10px; margin: 0px;'>
                                     <app-status v-if="headerFilters && headerFilters['overal']" :status='headerFilters["overal"].status' lightIcon/>
                                     <i v-else class="el-icon-arrow-down" style="font-size: 9px; display: inline-block; margin-left: 0"></i>
                                 </span>
-                                <el-dropdown-menu slot="dropdown">
+                                <el-dropdown-menu slot="dropdown" class='panopticum-status-right'>
                                     <el-dropdown-item :command="{requirement: null, type: 'overal', status: status}"
-                                    v-for="status of statusDefinitions.signee" :key="status.id">
-                                    <app-status :status="status" lightIcon />{{ status.name | capitalize }}
-                                </el-dropdown-item>
-                                <el-dropdown-item command="reset" divided><i class="el-icon-circle-close"></i>Reset</el-dropdown-item>
+                                        v-for="status of statusDefinitions.signee" :key="status.id">
+                                        <app-status :status="status" lightIcon />{{ status.name | capitalize }}
+                                    </el-dropdown-item>
+                                    <el-dropdown-item command="reset" divided>
+                                        <i class="el-icon-circle-close"></i>Reset
+                                    </el-dropdown-item>
                                 </el-dropdown-menu>
                             </el-dropdown>
                     </div>
@@ -371,14 +372,14 @@ Vue.component('widget-components-list', {
 
                     <el-row>
                          <!-- owner dropdown filter -->
-                        <div style="position: absolute; left:0; bottom: 3px">
+                        <div style="position: absolute; left:0; bottom: 1px">
                             <el-dropdown trigger="click" @command="handleDropdownCommand">
                                 <span>
-                                <app-status v-if="headerFilters && headerFilters[req.id] && headerFilters[req.id].type=='owner'" :status='headerFilters[req.id].status' lightIcon/>
-                                    <i class="el-icon-arrow-down" style="font-size: 9px; display: inline-block; margin-left: 0;"></i>
+                                    <app-status v-if="headerFilters && headerFilters[req.id] && headerFilters[req.id].type=='owner'" :status='headerFilters[req.id].status' lightIcon/>
+                                    <i v-else class="el-icon-arrow-down" style="font-size: 9px; margin-left: 0;"></i>
                                 </span>
-                                <el-dropdown-menu slot="dropdown">
-                                    <h5 style="margin-right: 20px; text-align: right">Owner filter</h5>
+                                <el-dropdown-menu slot="dropdown" class='panopticum-status-right'>
+                                    <h5 style="margin: 0px 20px; text-align: right">Owner provided status</h5>
                                     <el-divider></el-divider>
                                     <el-dropdown-item align="right" 
                                     :command="{requirement: req, type: 'owner', status: status}"
@@ -392,20 +393,21 @@ Vue.component('widget-components-list', {
                             </el-dropdown>
                         </div>
                         <!-- signee dropdown filter -->
-                        <div style="position: absolute; float: right; right:0; bottom: 3px">
+                        <div style="position: absolute; float: right; right:0; bottom: 1px">
                             <el-dropdown trigger="click" placement="bottom-start" @command="handleDropdownCommand">
                                 <span>
                                     <app-status v-if="headerFilters && headerFilters[req.id] && headerFilters[req.id].type=='signee'" :status='headerFilters[req.id].status' lightIcon/>
                                     <i v-else class="el-icon-arrow-down" style="font-size: 9px; display: inline-block; margin-left: 0"></i>
                                 </span>
-                                <el-dropdown-menu slot="dropdown">
-                                    <h5 style="margin-left: 20px">Signee filter</h5>
+                                <el-dropdown-menu slot="dropdown" class='panopticum-status-left'>
+                                    <h5 style="margin: 0px 20px;">Signee provided status</h5>
                                     <el-divider></el-divider>
                                     <el-dropdown-item :command="{requirement: req, type: 'signee', status: status}"
-                                    v-for="status of statusDefinitions.signee" :key="status.id">
-                                    <app-status :status="status" lightIcon />{{ status.name | capitalize }}
-                                </el-dropdown-item>
-                                <el-dropdown-item command="reset" divided><i class="el-icon-circle-close"></i>Reset</el-dropdown-item>
+                                        v-for="status of statusDefinitions.signee" :key="status.id">
+                                        <app-status :status="status" lightIcon />{{ status.name | capitalize }}
+                                    </el-dropdown-item>
+                                    <el-dropdown-item command="reset" divided>
+                                        <i class="el-icon-circle-close"></i>Reset</el-dropdown-item>
                                 </el-dropdown-menu>
                             </el-dropdown>
                         </div>

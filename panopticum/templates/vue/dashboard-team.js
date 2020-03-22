@@ -61,7 +61,7 @@ Vue.component('dashboard-team', {
         <div class="col-sm-12"><hr></div>
     </div>
     <div class="row">
-        <div class="col-sm-12" id="vue-component">
+        <div class="col-sm-12 table-team-dashboard" id="vue-component">
             <widget-components-list 
             :requirement-set-id="requirementSetId"
              v-on:update:header-filters="onHeaderFilters" 
