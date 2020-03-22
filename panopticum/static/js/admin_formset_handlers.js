@@ -19,8 +19,10 @@ class Requirement {
 }
 
 class RequirementGroup {
-    constructor(name) {
+    constructor(name, doc_link, description) {
         this.name = name;
+        this.doc_link = doc_link;
+        this.description = description;
         this.requirements = new Map();
     }
 
@@ -48,22 +50,22 @@ class RequirementsStorage {
         this.default = "Other";
     }
 
-    update_group(group_name) {
+    update_group(group_name, group_doc_link, group_description) {
         if (!this.groups.has(group_name))
-            this.groups.set(group_name, new RequirementGroup(group_name));
+            this.groups.set(group_name, new RequirementGroup(group_name, group_doc_link, group_description));
         return this.groups.get(group_name);
     }
 
-    update_requirement(id, name, allowed = false, tr = null, group_name = null) {
+    update_requirement(id, name, allowed = false, tr = null, group_name = null, group_doc_link = null, group_description = null) {
         id = parseInt(id);
         if (!id)
             return null;
 
         if (group_name == null) {
             if (!this.requirements.has(id))
-                this.requirements.set(id, this.update_group(this.default).update_requirement(id, name));
+                this.requirements.set(id, this.update_group(this.default, "", "").update_requirement(id, name));
         } else {
-            var g = this.update_group(group_name);
+            var g = this.update_group(group_name, group_doc_link, group_description);
             if (this.requirements.has(id)) {
                 g.requirements.set(id, this.requirements.get(id));
                 this.requirements.get(id).group.remove_requirement(id);
@@ -122,7 +124,7 @@ class RequirementsStorage {
 
             $.each(data.results, function(key, group) {
                 $.each($(group.requirements), function(key, req_json) {
-                    var req = storage.update_requirement(req_json.id, req_json.title, false, null, group.name);
+                    var req = storage.update_requirement(req_json.id, req_json.title, false, null, group.name, group.doc_link, group.description);
                     if (req && req.allowed && !req.dom_tr)
                         add_row(req);
                 });
@@ -148,7 +150,15 @@ class RequirementsStorage {
 
             storage.groups.forEach(function(group, id) {
                 var cl = "row1";
-                var header = "<tr class='group-name'><td colspan=" + colspan + ">" + group.name + "</td></tr>";
+                var doc_link = "";
+
+                if (group.doc_link)
+                    doc_link = " (<a href='" + group.doc_link + "'>doc link</a>)";
+
+                var header = "<tr class='group-name'><td colspan=" + colspan + "><b>" + group.name + "</b>" + doc_link + "</td></tr>";
+                if (group.description)
+                    header += "<tr><td style='font-size: 11px; padding-top: 5px;' colspan='" + colspan + "'>" +
+                              group.description + "</td></tr>";
 
                 group.requirements.forEach(function(req, id) {
                     var tr = req.dom_tr;

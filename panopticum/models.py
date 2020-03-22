@@ -386,6 +386,7 @@ class ComponentVersionModel(models.Model):
     owner_architect = models.ManyToManyField(User, related_name='architect_of', blank=True)
 
     # development
+    links_help_msg = "List of URLs separated by whitespace"
 
     dev_language = models.ManyToManyField(ProgrammingLanguageModel, verbose_name="Language", blank=True)
     dev_framework = models.ManyToManyField(FrameworkModel, verbose_name="Frameworks", blank=True)
@@ -393,14 +394,14 @@ class ComponentVersionModel(models.Model):
     dev_orm = models.ManyToManyField(ORMModel, verbose_name="ORM", blank=True)
     dev_logging = models.ManyToManyField(LoggerModel, verbose_name="Logging framework", blank=True)
 
-    dev_raml = panopticum.fields.SmartTextField("RAML link", help_text="Multiple links allowed")
-    dev_repo = panopticum.fields.SmartTextField("Repository", help_text="Multiple links allowed")
-    dev_public_repo = panopticum.fields.SmartTextField("Public Repository", help_text="Multiple links allowed")
-    dev_jira_component = panopticum.fields.SmartTextField("JIRA component", help_text="Multiple links allowed")
-    dev_build_jenkins_job = panopticum.fields.SmartTextField("Jenkins job to build the component", help_text="Multiple links allowed")
-    dev_docs = panopticum.fields.SmartTextField("Documentation entry page", help_text="Multiple links allowed")
-    dev_public_docs = panopticum.fields.SmartTextField("Public Documentation", help_text="Multiple links allowed")
-    dev_commit_link = panopticum.fields.SmartTextField("Commit link", help_text="Multiple links allowed")
+    dev_raml = panopticum.fields.SmartTextField("RAML link", help_text=links_help_msg)
+    dev_repo = panopticum.fields.SmartTextField("Repository", help_text=links_help_msg)
+    dev_public_repo = panopticum.fields.SmartTextField("Public Repository", help_text=links_help_msg)
+    dev_jira_component = panopticum.fields.SmartTextField("JIRA component", help_text=links_help_msg)
+    dev_build_jenkins_job = panopticum.fields.SmartTextField("Jenkins job to build the component", help_text=links_help_msg)
+    dev_docs = panopticum.fields.SmartTextField("Documentation entry page", help_text=links_help_msg)
+    dev_public_docs = panopticum.fields.SmartTextField("Public Documentation", help_text=links_help_msg)
+    dev_commit_link = panopticum.fields.SmartTextField("Commit link", help_text=links_help_msg)
 
     dev_api_is_public = panopticum.fields.NoPartialYesField("API is public")
 
