@@ -317,6 +317,7 @@ class RequirementSet(models.Model):
     name = models.CharField(max_length=30, unique=True)
     requirements = models.ManyToManyField(Requirement, related_name='sets')
     description = models.TextField(null=True, blank=True)
+    doc_link = models.URLField("Documentation link URL", max_length=4096, blank=True)
     #
     owner_groups = models.ManyToManyField(Group, related_name='owner_groups', blank=True)
 
@@ -365,7 +366,7 @@ class ComponentVersionModel(models.Model):
 
     version = models.CharField(max_length=64, verbose_name="Version or build",
                                help_text="note: component version instance will be cloned if you change version!")
-    comments = models.TextField(blank=True, null=True)
+    comments = models.TextField(blank=True, verbose_name="Version description", null=True)
     history = HistoricalRecords()
     objects = ComponentManager()
 
@@ -375,16 +376,21 @@ class ComponentVersionModel(models.Model):
 
     # ownership
 
-    owner_maintainer = models.ForeignKey(User, related_name='maintainer_of', on_delete=models.PROTECT, blank=True, null=True)
-    owner_responsible_qa = models.ForeignKey(User, related_name='responsible_qa_of',
+    owner_maintainer = models.ForeignKey(User, related_name='maintainer_of',
+                                         on_delete=models.PROTECT, verbose_name="Maintainer", blank=True, null=True)
+    owner_responsible_qa = models.ForeignKey(User, related_name='responsible_qa_of', verbose_name="Responsible QA",
                                              on_delete=models.PROTECT, blank=True, null=True)
-    owner_product_manager = models.ManyToManyField(User, related_name='product_manager_of', blank=True)
-    owner_program_manager = models.ManyToManyField(User, related_name='program_managed_of', blank=True)
-    owner_escalation_list = models.ManyToManyField(User, related_name='escalation_list_of', blank=True)
-    owner_expert = models.ManyToManyField(User, related_name='expert_of', blank=True)
-    owner_architect = models.ManyToManyField(User, related_name='architect_of', blank=True)
+    owner_product_manager = models.ManyToManyField(User, related_name='product_manager_of',
+                                                   verbose_name="Product Managers", blank=True)
+    owner_program_manager = models.ManyToManyField(User, related_name='program_managed_of',
+                                                   verbose_name="Program Managers", blank=True)
+    owner_escalation_list = models.ManyToManyField(User, related_name='escalation_list_of',
+                                                   verbose_name="Escalation list", blank=True)
+    owner_expert = models.ManyToManyField(User, related_name='expert_of', verbose_name="Experts", blank=True)
+    owner_architect = models.ManyToManyField(User, related_name='architect_of', verbose_name="Architects", blank=True)
 
     # development
+    links_help_msg = "List of URLs separated by whitespace"
 
     dev_language = models.ManyToManyField(ProgrammingLanguageModel, verbose_name="Language", blank=True)
     dev_framework = models.ManyToManyField(FrameworkModel, verbose_name="Frameworks", blank=True)
@@ -392,47 +398,48 @@ class ComponentVersionModel(models.Model):
     dev_orm = models.ManyToManyField(ORMModel, verbose_name="ORM", blank=True)
     dev_logging = models.ManyToManyField(LoggerModel, verbose_name="Logging framework", blank=True)
 
-    dev_raml = panopticum.fields.SmartTextField("RAML link", help_text="Multiple links allowed")
-    dev_repo = panopticum.fields.SmartTextField("Repository", help_text="Multiple links allowed")
-    dev_public_repo = panopticum.fields.SmartTextField("Public Repository", help_text="Multiple links allowed")
-    dev_jira_component = panopticum.fields.SmartTextField("JIRA component", help_text="Multiple links allowed")
-    dev_build_jenkins_job = panopticum.fields.SmartTextField("Jenkins job to build the component", help_text="Multiple links allowed")
-    dev_docs = panopticum.fields.SmartTextField("Documentation entry page", help_text="Multiple links allowed")
-    dev_public_docs = panopticum.fields.SmartTextField("Public Documentation", help_text="Multiple links allowed")
-    dev_commit_link = panopticum.fields.SmartTextField("Commit link", help_text="Multiple links allowed")
+    dev_raml = panopticum.fields.SmartTextField("RAML link", help_text=links_help_msg)
+    dev_repo = panopticum.fields.SmartTextField("Repository", help_text=links_help_msg)
+    dev_public_repo = panopticum.fields.SmartTextField("Public Repository", help_text=links_help_msg)
+    dev_jira_component = panopticum.fields.SmartTextField("JIRA component", help_text=links_help_msg)
+    dev_build_jenkins_job = panopticum.fields.SmartTextField("Jenkins job to build the component", help_text=links_help_msg)
+    dev_docs = panopticum.fields.SmartTextField("Documentation entry page", help_text=links_help_msg)
+    dev_public_docs = panopticum.fields.SmartTextField("Public Documentation", help_text=links_help_msg)
+    dev_commit_link = panopticum.fields.SmartTextField("Commit link", help_text=links_help_msg)
 
     dev_api_is_public = panopticum.fields.NoPartialYesField("API is public")
 
 
     # quality assurance
+    test_status_help_msg = "Subjective Dev/QA lead opinion on tests completeness, coverage, quality, etc"
 
     qa_applicable = models.BooleanField(verbose_name="Tests requirements are applicable", default=True)
 
-    qa_manual_tests_status = panopticum.fields.LowMedHighField("Manual tests", help_text="Completeness, coverage, quality")
+    qa_manual_tests_status = panopticum.fields.LowMedHighField("Manual tests", help_text=test_status_help_msg)
     qa_manual_tests_notes = panopticum.fields.SmartTextField("Manual tests notes")
     qa_manual_tests_signoff = panopticum.fields.SigneeField(related_name='signed_manual_tests')
 
-    qa_unit_tests_status = panopticum.fields.LowMedHighField("Unit tests", help_text="Completeness, coverage, quality")
+    qa_unit_tests_status = panopticum.fields.LowMedHighField("Unit tests", help_text=test_status_help_msg)
     qa_unit_tests_notes = panopticum.fields.SmartTextField("Unit tests notes")
     qa_unit_tests_signoff = panopticum.fields.SigneeField(related_name='signed_unit_tests')
 
-    qa_e2e_tests_status = panopticum.fields.LowMedHighField("E2E tests", help_text="Completeness, coverage, quality")
+    qa_e2e_tests_status = panopticum.fields.LowMedHighField("E2E tests", help_text=test_status_help_msg)
     qa_e2e_tests_notes = panopticum.fields.SmartTextField("E2E tests notes")
     qa_e2e_tests_signoff = panopticum.fields.SigneeField(related_name='signed_e2e_tests')
 
-    qa_perf_tests_status = panopticum.fields.LowMedHighField("Performance tests", help_text="Completeness, coverage, quality")
+    qa_perf_tests_status = panopticum.fields.LowMedHighField("Performance tests", help_text=test_status_help_msg)
     qa_perf_tests_notes = panopticum.fields.SmartTextField("Perf tests notes")
     qa_perf_tests_signoff = panopticum.fields.SigneeField(related_name='signed_perf_tests')
 
-    qa_longhaul_tests_status = panopticum.fields.LowMedHighField("Long-haul tests", help_text="Completeness, coverage, quality")
+    qa_longhaul_tests_status = panopticum.fields.LowMedHighField("Long-haul tests", help_text=test_status_help_msg)
     qa_longhaul_tests_notes = panopticum.fields.SmartTextField("Long-hault tests notes")
     qa_longhaul_tests_signoff = panopticum.fields.SigneeField(related_name='signed_longhaul_tests')
 
-    qa_security_tests_status = panopticum.fields.LowMedHighField("Security tests", help_text="Completeness, coverage, quality")
+    qa_security_tests_status = panopticum.fields.LowMedHighField("Security tests", help_text=test_status_help_msg)
     qa_security_tests_notes = panopticum.fields.SmartTextField("Security tests notes")
     qa_security_tests_signoff = panopticum.fields.SigneeField(related_name='signed_security_tests')
 
-    qa_api_tests_status = panopticum.fields.LowMedHighField("API tests", help_text="Completeness, coverage, quality")
+    qa_api_tests_status = panopticum.fields.LowMedHighField("API tests", help_text=test_status_help_msg)
     qa_api_tests_notes = panopticum.fields.SmartTextField("API tests notes")
     qa_api_tests_signoff = panopticum.fields.SigneeField(related_name='signed_api_tests')
 
