@@ -405,34 +405,35 @@ class ComponentVersionModel(models.Model):
 
 
     # quality assurance
+    test_status_help_msg = "Subjective Dev/QA lead opinion on tests completeness, coverage, quality, etc"
 
     qa_applicable = models.BooleanField(verbose_name="Tests requirements are applicable", default=True)
 
-    qa_manual_tests_status = panopticum.fields.LowMedHighField("Manual tests", help_text="Completeness, coverage, quality")
+    qa_manual_tests_status = panopticum.fields.LowMedHighField("Manual tests", help_text=test_status_help_msg)
     qa_manual_tests_notes = panopticum.fields.SmartTextField("Manual tests notes")
     qa_manual_tests_signoff = panopticum.fields.SigneeField(related_name='signed_manual_tests')
 
-    qa_unit_tests_status = panopticum.fields.LowMedHighField("Unit tests", help_text="Completeness, coverage, quality")
+    qa_unit_tests_status = panopticum.fields.LowMedHighField("Unit tests", help_text=test_status_help_msg)
     qa_unit_tests_notes = panopticum.fields.SmartTextField("Unit tests notes")
     qa_unit_tests_signoff = panopticum.fields.SigneeField(related_name='signed_unit_tests')
 
-    qa_e2e_tests_status = panopticum.fields.LowMedHighField("E2E tests", help_text="Completeness, coverage, quality")
+    qa_e2e_tests_status = panopticum.fields.LowMedHighField("E2E tests", help_text=test_status_help_msg)
     qa_e2e_tests_notes = panopticum.fields.SmartTextField("E2E tests notes")
     qa_e2e_tests_signoff = panopticum.fields.SigneeField(related_name='signed_e2e_tests')
 
-    qa_perf_tests_status = panopticum.fields.LowMedHighField("Performance tests", help_text="Completeness, coverage, quality")
+    qa_perf_tests_status = panopticum.fields.LowMedHighField("Performance tests", help_text=test_status_help_msg)
     qa_perf_tests_notes = panopticum.fields.SmartTextField("Perf tests notes")
     qa_perf_tests_signoff = panopticum.fields.SigneeField(related_name='signed_perf_tests')
 
-    qa_longhaul_tests_status = panopticum.fields.LowMedHighField("Long-haul tests", help_text="Completeness, coverage, quality")
+    qa_longhaul_tests_status = panopticum.fields.LowMedHighField("Long-haul tests", help_text=test_status_help_msg)
     qa_longhaul_tests_notes = panopticum.fields.SmartTextField("Long-hault tests notes")
     qa_longhaul_tests_signoff = panopticum.fields.SigneeField(related_name='signed_longhaul_tests')
 
-    qa_security_tests_status = panopticum.fields.LowMedHighField("Security tests", help_text="Completeness, coverage, quality")
+    qa_security_tests_status = panopticum.fields.LowMedHighField("Security tests", help_text=test_status_help_msg)
     qa_security_tests_notes = panopticum.fields.SmartTextField("Security tests notes")
     qa_security_tests_signoff = panopticum.fields.SigneeField(related_name='signed_security_tests')
 
-    qa_api_tests_status = panopticum.fields.LowMedHighField("API tests", help_text="Completeness, coverage, quality")
+    qa_api_tests_status = panopticum.fields.LowMedHighField("API tests", help_text=test_status_help_msg)
     qa_api_tests_notes = panopticum.fields.SmartTextField("API tests notes")
     qa_api_tests_signoff = panopticum.fields.SigneeField(related_name='signed_api_tests')
 
