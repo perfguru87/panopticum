@@ -17,7 +17,8 @@ Vue.component('dashboard-components', {
         {key: 'componentVersion.deployments.location_class', query: 'deployments__location_class'},
         {key: 'component.type.name', query: 'component__type'},
         {key: 'component.data_privacy_class.name', query: 'component__data_privacy_class'},
-        {key: 'maintainer', query: 'owner_maintainer__username__icontains'}
+        {key: 'maintainer', query: 'owner_maintainer__username__icontains'},
+        {key: 'componentVersion.is_new_deployment', query: 'is_new_deployment'}
       ],
       cancelSource: null,
       loading: true,
@@ -48,6 +49,11 @@ Vue.component('dashboard-components', {
   watch: {
     'headerFilters': 'watchFilters',
     'componentVersions': 'fetchTableData',
+  },
+  computed: {
+    currentProduct() {
+      return this.headerFilters.find(filter => filter.key == 'product_version').value;
+    }
   },
   methods: {
     cancelSearch() {
@@ -109,6 +115,11 @@ Vue.component('dashboard-components', {
         .map(headerFilter => queryParams[headerFilter.query] = headerFilter.value);
       this.$emit("update:header-filter", this.headerFilters);
       this.fetchComponentsVersions(queryParams);
+    },
+    isNewDeployment(deployments) {
+      return deployments.some(deployment => {
+        return deployment.product_version.id == this.currentProduct && deployment.is_new_deployment
+      });
     }
   },
   template: `{% verbatim %}
@@ -273,6 +284,17 @@ Vue.component('dashboard-components', {
           <a v-if="scope.row.componentVersion.owner_maintainer" :href="'mailto:' + scope.row.componentVersion.owner_maintainer.email">
             {{ scope.row.componentVersion.owner_maintainer.first_name }} {{ scope.row.componentVersion.owner_maintainer.last_name }}
           </a>
+        </template>
+      </el-table-column>
+
+      <el-table-column
+        width="60" 
+        prop="componentVersion.is_new_deployment"
+        label="New?">
+        <template slot-scope="scope">
+          <span
+          class="el-icon-circle-check"
+          v-if="isNewDeployment(scope.row.componentVersion.deployments)"></span>
         </template>
       </el-table-column>
 
