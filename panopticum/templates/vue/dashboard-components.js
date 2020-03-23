@@ -18,7 +18,7 @@ Vue.component('dashboard-components', {
         {key: 'component.type.name', query: 'component__type'},
         {key: 'component.data_privacy_class.name', query: 'component__data_privacy_class'},
         {key: 'maintainer', query: 'owner_maintainer__username__icontains'},
-        {key: 'componentVersion.is_new_deployment', query: 'is_new_deployment'}
+        {key: 'componentVersion.deployments.is_new_deployment', query: 'deployments__is_new_deployment'}
       ],
       cancelSource: null,
       loading: true,
@@ -52,7 +52,12 @@ Vue.component('dashboard-components', {
   },
   computed: {
     currentProduct() {
-      return this.headerFilters.find(filter => filter.key == 'product_version').value;
+      const headerFilter = this.headerFilters.find(filter => filter.key == 'product_version');
+      if (headerFilter) {
+        return this.products.find(p => p.id == headerFilter.value);
+      } else {
+        return null;
+      }
     }
   },
   methods: {
@@ -116,9 +121,10 @@ Vue.component('dashboard-components', {
       this.$emit("update:header-filter", this.headerFilters);
       this.fetchComponentsVersions(queryParams);
     },
-    isNewDeployment(deployments) {
+    isNewDeployment(deployments) { 
+      if (!this.currentProduct) return null;
       return deployments.some(deployment => {
-        return deployment.product_version.id == this.currentProduct && deployment.is_new_deployment
+        return deployment.product_version.id == this.currentProduct.id && deployment.is_new_deployment;
       });
     }
   },
@@ -289,8 +295,17 @@ Vue.component('dashboard-components', {
 
       <el-table-column
         width="60" 
-        prop="componentVersion.is_new_deployment"
+        prop="componentVersion.deployments.is_new_deployment"
+        align="center"
         label="New?">
+        <template slot="header" slot-scope="scope">
+          <el-row>
+            <span>{{ scope.column.label }}</span>
+          </el-row>
+          <el-row>
+            <el-checkbox v-model="headerFilters.find(i => i.key == scope.column.property).value" @input="watchFilters()"></el-checkbox>
+          </el-row>
+        </template>
         <template slot-scope="scope">
           <span
           class="el-icon-circle-check"
