@@ -14,6 +14,7 @@ Vue.component('widget-components-list', {
             products: [],
             locations: [],
             types: [],
+            is_new: null,
             currentProduct: null,
             currentLocation: null,
             currentType: null,
@@ -38,6 +39,7 @@ Vue.component('widget-components-list', {
             this.currentProduct = this.topfilters.product;
             this.currentLocation = this.topfilters.location;
             this.currentType = this.topfilters.type;
+            this.is_new = this.topfilters.is_new;
         }
 
         if (this.filters && this.filters.length) {
@@ -57,6 +59,7 @@ Vue.component('widget-components-list', {
         currentProduct: 'handleChangeFilter',
         currentLocation: 'handleChangeFilter',
         currentType: 'handleChangeFilter',
+        is_new: 'handleChangeFilter',
         headerFilters: function() {this.$emit('update:header-filters', this.headerFilters)}
     },
 
@@ -132,6 +135,7 @@ Vue.component('widget-components-list', {
             if (this.currentLocation) queryParams += `&deployments__location_class=${this.currentLocation}`
             if (this.currentProduct) queryParams += `&deployments__product_version=${this.currentProduct}`
             if (this.currentType) queryParams += `&component__type=${this.currentType}`
+            if (this.is_new != null) queryParams += `&deployments__is_new_deployment=${this.is_new}`
             return axios.get(`/api/component_version/?format=json&limit=${this.pageLimit}&fields=${fields}&${queryParams}`, 
                     {cancelToken: this.cancelSource.token})
                 .then(resp => {
@@ -212,6 +216,7 @@ Vue.component('widget-components-list', {
             this.$emit('update:top-filters', {
                 location: this.currentLocation,
                 product: this.currentProduct,
+                is_new: this.is_new,
                 type: this.currentType});
             this.filterComponents();
         },
@@ -226,6 +231,12 @@ Vue.component('widget-components-list', {
             }
             return overal_status;
         },
+        isNewDeployment(deployments) { 
+            if (!this.currentProduct) return null;
+            return deployments.some(deployment => {
+              return deployment.product_version.id == this.currentProduct && deployment.is_new_deployment;
+            });
+        },
         updateTable: async function() {
             await this.fetchStatusEntries();
             this.tableData = this.componentVersions.map(compVer => {
@@ -235,6 +246,7 @@ Vue.component('widget-components-list', {
                     name: compVer.component.name, 
                     componentId: compVer.component.id,
                     version: compVer.version,
+                    deployments: compVer.deployments,
                     overal_status: this.getOveralStatus(compVer)
                 }
                 for (req of this.requirements) {
@@ -297,11 +309,29 @@ Vue.component('widget-components-list', {
             :loading="!types"
             name="Type"
             placeholder="type"
+            style="width: 150px; min-width: 150px"
             clearable>
                 <el-option v-for="type in types"
                     :key="type.id"
                     :label="type.name"
                     :value="type.id"></el-option>
+            </el-select>
+        </div>
+
+        <el-divider direction="vertical"></el-divider>
+
+        <div style="display: inline-block">
+            <label class="el-form-item__label" for="new">New</label>
+            <el-select
+            v-model="is_new"
+            :loading="!products"
+            name="new"
+            placeholder="new"
+            :disabled="!currentProduct"
+            style="width: 80px; min-width: 80px"
+            clearable>
+                <el-option key="yes" label="Yes" :value="true"></el-option>
+                <el-option key="no" label="No" :value="false"></el-option>
             </el-select>
         </div>
     </el-row>
@@ -428,6 +458,24 @@ Vue.component('widget-components-list', {
                             <div class="fill-cell" v-else></div>
                         </div>
                 </widget-status-popover>
+                </template>
+            </el-table-column>
+
+            <el-table-column
+            align="center"
+            width="80px"
+            label="New">
+                <template slot="header" slot-scope="scope">
+                <el-row>
+                    <span>{{ scope.column.label }}</span>
+                </el-row>
+                
+                </template>
+                <template slot-scope="scope">
+                <span
+                class="el-icon-circle-check"
+                v-if="isNewDeployment(scope.row.deployments)"
+                ></span>
                 </template>
             </el-table-column>
 
