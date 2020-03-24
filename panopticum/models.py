@@ -107,12 +107,12 @@ NO_PARTIAL_YES_RATING = {'unknown': 0, 'n/a': 2, 'no': 0, 'partial': 1, 'yes': 2
 
 
 DEPENDENCY_TYPE = (
-    ('sync_rw', "Sync R/W"),
-    ('sync_ro', "Sync R/O"),
-    ('sync_wo', "Sync W/O"),
-    ('async_rw', "Async R/W"),
-    ('async_ro', "Async R/O"),
-    ('async_wo', "Async W/O"),
+    ('sync_rw', "Requires - Sync R/W"),
+    ('sync_ro', "Requires - Sync R/O"),
+    ('sync_wo', "Requires - Sync W/O"),
+    ('async_rw', "Requires - Async R/W"),
+    ('async_ro', "Requires - Async R/O"),
+    ('async_wo', "Requires - Async W/O"),
     ('includes', "Includes")
 )
 
@@ -574,7 +574,12 @@ class ComponentVersionModel(models.Model):
 
 
 class ComponentDependencyModel(models.Model):
-    type = models.CharField(max_length=16, choices=DEPENDENCY_TYPE, default=DEPENDENCY_TYPE[0][0])
+    type = models.CharField(max_length=16, choices=DEPENDENCY_TYPE, default=DEPENDENCY_TYPE[0][0],
+                            help_text="Requires - mean components communicates through API; " +
+                                      "Sync - component will block if dependent component is not available; " +
+                                      "Async - component will not be blocked; " +
+                                      "R/O - read-only dependency; " +
+                                      "R/W - read/write dependency")
     component = models.ForeignKey(ComponentModel, on_delete=models.PROTECT)
     version = models.ForeignKey(ComponentVersionModel, on_delete=models.PROTECT)
     notes = panopticum.fields.SmartTextField("Dependency notes")
