@@ -116,7 +116,7 @@ Vue.component('dashboard-components', {
       let queryParams = {};
       this.loading=true;
       this.headerFilters
-        .filter(headerFilter => headerFilter.value)
+        .filter(headerFilter => headerFilter.value != null)
         .map(headerFilter => queryParams[headerFilter.query] = headerFilter.value);
       this.$emit("update:header-filter", this.headerFilters);
       this.fetchComponentsVersions(queryParams);
@@ -294,16 +294,24 @@ Vue.component('dashboard-components', {
       </el-table-column>
 
       <el-table-column
-        width="60" 
         prop="componentVersion.deployments.is_new_deployment"
         align="center"
-        label="New?">
+        width="80px"
+        label="New">
         <template slot="header" slot-scope="scope">
           <el-row>
             <span>{{ scope.column.label }}</span>
           </el-row>
           <el-row>
-            <el-checkbox v-model="headerFilters.find(i => i.key == scope.column.property).value" @input="watchFilters()"></el-checkbox>
+            <el-select v-model="headerFilters.find(i => i.key == scope.column.property).value" 
+            clearable
+            size="mini"
+            placeholder=""
+            :disabled="!currentProduct"
+            @change="watchFilters()">
+              <el-option key="yes" label="Yes" :value="true"></el-option>
+              <el-option key="no" label="No" :value="false"></el-option>
+            </el-select>
           </el-row>
         </template>
         <template slot-scope="scope">
