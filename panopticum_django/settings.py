@@ -154,7 +154,7 @@ ADMIN_REORDER = (
     {'app': 'auth', 'models': ('panopticum.User', 'auth.Group')},
 
     {'app': 'panopticum', 'label': 'Components', 'models':
-        ('panopticum.ComponentVersionModel',)
+        ('panopticum.ComponentVersionModel', 'panopticum.ComponentModel')
     },
 
     {'app': 'panopticum', 'label': 'Products', 'models':
@@ -201,7 +201,7 @@ USE_TZ = True
 # Page content
 
 PAGE_TITLE = "Components Registry"
-PAGE_FOOTER = "Copyright © 2019"
+PAGE_FOOTER = "Copyright © 2020"
 
 
 # Static files (CSS, JavaScript, Images)
