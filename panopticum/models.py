@@ -377,17 +377,22 @@ class ComponentVersionModel(models.Model):
     # ownership
 
     owner_maintainer = models.ForeignKey(User, related_name='maintainer_of',
-                                         on_delete=models.PROTECT, verbose_name="Maintainer", blank=True, null=True)
+                                         on_delete=models.PROTECT, verbose_name="Maintainer", blank=True, null=True,
+                                         help_text="Dev Lead or primary contributor")
     owner_responsible_qa = models.ForeignKey(User, related_name='responsible_qa_of', verbose_name="Responsible QA",
-                                             on_delete=models.PROTECT, blank=True, null=True)
+                                             on_delete=models.PROTECT, blank=True, null=True,
+                                             help_text="QA Lead or primary QA expert")
     owner_product_manager = models.ManyToManyField(User, related_name='product_manager_of',
                                                    verbose_name="Product Managers", blank=True)
     owner_program_manager = models.ManyToManyField(User, related_name='program_managed_of',
                                                    verbose_name="Program Managers", blank=True)
     owner_escalation_list = models.ManyToManyField(User, related_name='escalation_list_of',
-                                                   verbose_name="Escalation list", blank=True)
-    owner_expert = models.ManyToManyField(User, related_name='expert_of', verbose_name="Experts", blank=True)
-    owner_architect = models.ManyToManyField(User, related_name='architect_of', verbose_name="Architects", blank=True)
+                                                   verbose_name="Escalation list", blank=True,
+                                                   help_text="People who are in charge of RnD-side support in case of incidents")
+    owner_expert = models.ManyToManyField(User, related_name='expert_of', verbose_name="Experts", blank=True,
+                                          help_text="All people who have experience with given component")
+    owner_architect = models.ManyToManyField(User, related_name='architect_of', verbose_name="Architects", blank=True,
+                                             help_text="People who are in charge of the component architecture")
 
     # development
     links_help_msg = "List of URLs separated by whitespace"
