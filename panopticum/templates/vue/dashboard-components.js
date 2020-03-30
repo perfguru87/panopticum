@@ -17,7 +17,8 @@ Vue.component('dashboard-components', {
         {key: 'componentVersion.deployments.location_class', query: 'deployments__location_class'},
         {key: 'component.type.name', query: 'component__type'},
         {key: 'component.data_privacy_class.name', query: 'component__data_privacy_class'},
-        {key: 'maintainer', query: 'owner_maintainer__username__icontains'}
+        {key: 'maintainer', query: 'owner_maintainer__username__icontains'},
+        {key: 'componentVersion.deployments.is_new_deployment', query: 'deployments__is_new_deployment'}
       ],
       cancelSource: null,
       loading: true,
@@ -48,6 +49,16 @@ Vue.component('dashboard-components', {
   watch: {
     'headerFilters': 'watchFilters',
     'componentVersions': 'fetchTableData',
+  },
+  computed: {
+    currentProduct() {
+      const headerFilter = this.headerFilters.find(filter => filter.key == 'product_version');
+      if (headerFilter) {
+        return this.products.find(p => p.id == headerFilter.value);
+      } else {
+        return null;
+      }
+    }
   },
   methods: {
     cancelSearch() {
@@ -105,10 +116,16 @@ Vue.component('dashboard-components', {
       let queryParams = {};
       this.loading=true;
       this.headerFilters
-        .filter(headerFilter => headerFilter.value)
+        .filter(headerFilter => headerFilter.value != null)
         .map(headerFilter => queryParams[headerFilter.query] = headerFilter.value);
       this.$emit("update:header-filter", this.headerFilters);
       this.fetchComponentsVersions(queryParams);
+    },
+    isNewDeployment(deployments) { 
+      if (!this.currentProduct) return null;
+      return deployments.some(deployment => {
+        return deployment.product_version.id == this.currentProduct.id && deployment.is_new_deployment;
+      });
     }
   },
   template: `{% verbatim %}
@@ -273,6 +290,34 @@ Vue.component('dashboard-components', {
           <a v-if="scope.row.componentVersion.owner_maintainer" :href="'mailto:' + scope.row.componentVersion.owner_maintainer.email">
             {{ scope.row.componentVersion.owner_maintainer.first_name }} {{ scope.row.componentVersion.owner_maintainer.last_name }}
           </a>
+        </template>
+      </el-table-column>
+
+      <el-table-column
+        prop="componentVersion.deployments.is_new_deployment"
+        align="center"
+        width="80px"
+        label="New">
+        <template slot="header" slot-scope="scope">
+          <el-row>
+            <span>{{ scope.column.label }}</span>
+          </el-row>
+          <el-row>
+            <el-select v-model="headerFilters.find(i => i.key == scope.column.property).value" 
+            clearable
+            size="mini"
+            placeholder=""
+            :disabled="!currentProduct"
+            @change="watchFilters()">
+              <el-option key="yes" label="Yes" :value="true"></el-option>
+              <el-option key="no" label="No" :value="false"></el-option>
+            </el-select>
+          </el-row>
+        </template>
+        <template slot-scope="scope">
+          <span
+          class="el-icon-circle-check"
+          v-if="isNewDeployment(scope.row.componentVersion.deployments)"></span>
         </template>
       </el-table-column>
 
