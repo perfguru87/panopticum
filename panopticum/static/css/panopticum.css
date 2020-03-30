@@ -515,6 +515,8 @@ div.owner {
 
 .inner-cell {
     margin: 12px 0 4px;
+    line-height: 12px;
+    font-size: 12px;
 }
 
 /* Element UI */
