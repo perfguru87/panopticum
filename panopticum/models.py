@@ -6,6 +6,7 @@ from django.forms.models import model_to_dict
 import datetime
 from django.contrib.auth.models import AbstractUser, Group
 from simple_history.models import HistoricalRecords
+import django_atlassian.models.djira
 
 import panopticum.fields
 
@@ -714,3 +715,7 @@ class DatacenterModel(models.Model):
 
     def __str__(self):
         return "%s" % self.name
+
+
+class JiraIssue(django_atlassian.models.djira.Issue):
+    pass

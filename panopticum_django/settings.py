@@ -49,7 +49,8 @@ INSTALLED_APPS = [
     'admin_reorder',
     'simple_history',
     'loginas',
-    'panopticum'
+    'django_atlassian',
+    'panopticum',
 ]
 
 REST_FRAMEWORK = {
@@ -117,13 +118,18 @@ DATABASES = {
         'HOST': os.environ.get('DB_HOST', None),
         'PORT': os.environ.get('DB_PORT', None),
         'CONN_MAX_AGE': os.environ.get('DB_CONN_MAX_AGE', 0),
-    }
+    },
+    'jira': {
+            'ENGINE': 'django_atlassian.backends.jira',
+            'NAME': os.environ.get('JIRA_URL'),
+            'USER': os.environ.get('JIRA_USER'),
+            'PASSWORD': os.environ.get('JIRA_PASSWORD'),
+            'SECURITY': '',
+        },
+
 }
 
-# JIRA
-
-JIRA_CONFIG = { }
-
+DATABASE_ROUTERS = ['django_atlassian.router.Router']
 
 # Password validation
 # https://docs.djangoproject.com/en/2.1/ref/settings/#auth-password-validators
@@ -214,6 +220,15 @@ MEDIA_URL = '/media/'
 
 DEFAULT_FILE_STORAGE = 'database_files.storage.DatabaseStorage'
 AUTH_USER_MODEL = 'panopticum.User'
+
+# JIRA settings.
+JIRA_CONFIG = {
+    # 'URL': 'https://example.com',
+    # 'USER': 'some_user',
+    # 'PASSWORD': ''
+}
+
+
 
 # This will only allow admins to log in as other users, as long as
 # those users are not admins themselves:

@@ -30,7 +30,8 @@
 $(document).ready(function() {
 
     ELEMENT.locale(ELEMENT.lang.en);
- 
+    {% include "vue/widget-note.js" %}
+    {% include "vue/widget-jira-ticket.js" %}
     {% include "vue/status.js" %}
     {% include "vue/wdget-status-popover.js" %}
     {% include "vue/widget-components-list.js" %}

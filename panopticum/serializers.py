@@ -6,6 +6,7 @@ import panopticum.models
 from drf_queryfields import QueryFieldsMixin
 from panopticum.models import *
 
+
 class DynamicFieldsModelSerializer(serializers.ModelSerializer):
     """
     A ModelSerializer that takes an additional `fields` argument that
@@ -247,7 +248,6 @@ class ComponentVersionSerializerSimple(serializers.ModelSerializer):
         exclude = ComponentVersionModel.get_quality_assurance_fields()
 
 
-
 class ComponentVersionSerializer(QueryFieldsMixin, ComponentVersionSerializerSimple):
     component = ComponentSerializerSimple(read_only=True)
     rating = serializers.FloatField(read_only=True)
@@ -265,12 +265,20 @@ class ComponentVersionSerializer(QueryFieldsMixin, ComponentVersionSerializerSim
         return ret
 
 
+class IssueSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = JiraIssue
+        fields = ['assignee', 'reporter', 'summary', 'description',
+                  'project', 'issue_type', 'component_s', 'fix_version_s', 'status']
+
+
 class TokenSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)
 
     class Meta:
         model = rest_framework.authtoken.models.Token()
         fields = '__all__'
+
 
 class HistoricalRequirementStatusEntrySerializer(serializers.ModelSerializer):
     history_user = serializers.HyperlinkedRelatedField(read_only=True, view_name='user-detail')
