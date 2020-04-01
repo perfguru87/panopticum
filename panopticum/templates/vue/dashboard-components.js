@@ -22,6 +22,8 @@ Vue.component('dashboard-components', {
       ],
       cancelSource: null,
       loading: true,
+      currentPage:1,
+      total: 0,
       pageLimit: 30
     }
   },
@@ -58,7 +60,8 @@ Vue.component('dashboard-components', {
       } else {
         return null;
       }
-    }
+    },
+
   },
   methods: {
     cancelSearch() {
@@ -68,8 +71,9 @@ Vue.component('dashboard-components', {
       loading = false
     },
     async fetchComponentsVersions(queryParams) {
+      const offset = (this.currentPage - 1) * this.pageLimit;
       const fields = 'id,owner_maintainer,version,component,deployments,dev_raml,dev_repo,dev_jira_component,dev_docs'
-      let url = `/api/component_version/?format=json&ordering=component__name&limit=${this.pageLimit}&fields=${fields}`;
+      let url = `/api/component_version/?format=json&ordering=component__name&limit=${this.pageLimit}&offset=${offset}&fields=${fields}`;
       this.cancelSearch();
       this.cancelSource = axios.CancelToken.source();
       let queryString = Object.keys(queryParams || {}).map(k => `${k}=${queryParams[k]}`).join('&');
@@ -78,6 +82,7 @@ Vue.component('dashboard-components', {
       await axios.get(url, {cancelToken: this.cancelSource.token})
         .then(resp => {
           this.componentVersions = resp.data.results;
+          this.total = resp.data.count;
         }).catch(err => {
           if (err.response && err.response.status == 404) {
               this.componentVersions = [];
@@ -126,7 +131,10 @@ Vue.component('dashboard-components', {
       return deployments.some(deployment => {
         return deployment.product_version.id == this.currentProduct.id && deployment.is_new_deployment;
       });
-    }
+    },
+    onCurrentPageChange() {
+      this.applyFilters();
+    },
   },
   template: `{% verbatim %}
 <el-card>
@@ -359,6 +367,17 @@ Vue.component('dashboard-components', {
       </el-table-column>
       
     </el-table>
+  </el-row>
+  <el-row>
+    <el-pagination
+      v-show='!loading'
+      :hide-on-single-page="true"
+      layout="prev, pager, next"
+      v-bind:currentPage.sync="currentPage"
+      :page-size="pageLimit"
+      @current-change="onCurrentPageChange()"
+      :total="total">
+    </el-pagination>
   </el-row>
 </el-card>
     {% endverbatim %}

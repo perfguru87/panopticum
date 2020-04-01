@@ -2,7 +2,11 @@ Vue.component('dashboard-team', {
     data: function() {
         return {
             filters: {},
-            topFilters: {}
+            topFilters: {},
+            total: 0,
+            currentPage: null,
+            pageLimit: 30,
+
         }
     },
     computed: {
@@ -23,8 +27,19 @@ Vue.component('dashboard-team', {
     created: function() {
         this.filters = this.getFilters('filters');
         this.topFilters = this.getFilters('topfilters');
+        pageFilters = this.getFilters('pagination');
+        this.currentPage = pageFilters.page || 1;
+    },
+    watch: {
+        currentPage: "onCurrentPageChange"
     },
     methods: {
+        onCurrentPageChange(value) {
+            let pagination = this.getFilters('pagination');
+            pagination.page = value;
+            console.log(pagination);
+            this.setFilters('pagination', pagination);
+        },
         onHeaderFilters(value) {
             const filters = Object.keys(value).filter(k => value[k]).map(k => {return {requirement: k, status: value[k].status.id, type: value[k].type}});
             this.setFilters('filters', filters);
@@ -32,20 +47,27 @@ Vue.component('dashboard-team', {
         onUpdateTopFilters(topFilters) {
             this.setFilters('topfilters', topFilters);
         },
+        onTotalChange(total) {
+            this.total = total;
+        },
         getFilters(key) {
             const params = new URLSearchParams(window.location.hash.substr(1));
             let filtersParam = params.get(key);
-            filtersParam = filtersParam ? JSON.parse(filtersParam) : [];
+            filtersParam = filtersParam ? JSON.parse(filtersParam) : {};
             return filtersParam;
         },
-        setFilters(key, value) {
+        setFilters(key, value, replaceHistory=true) {
             const url = new URL(window.location);
             const originalHash = url.hash;
             const params = new URLSearchParams(originalHash.substr(1));
             params.set(key, JSON.stringify(value));
             url.hash = "#" + params.toString();
-            history.pushState(null, '', url.href);
-        }
+            if (replaceHistory) {
+                history.replaceState(null, '', url.href);
+            } else {
+                history.pushState(null, '', url.href);
+            }
+        },
     },
     template:`{% verbatim %}
 <div>
@@ -66,10 +88,22 @@ Vue.component('dashboard-team', {
             :requirement-set-id="requirementSetId"
              v-on:update:header-filters="onHeaderFilters" 
              v-on:update:top-filters="onUpdateTopFilters"
+             v-on:update:total="onTotalChange"
              :topfilters="topFilters"
+             :currentPage="currentPage"
              :filters="filters"></widget-components-list>
         </div>
     </div>
+    <el-row>
+    <el-pagination
+      :hide-on-single-page="true"
+      layout="prev, pager, next"
+      v-bind:currentPage.sync="currentPage"
+      :page-size="pageLimit"
+      :total="total"
+      >
+    </el-pagination>
+    </el-row>
 </div>
 {% endverbatim %}`
 })
