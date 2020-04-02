@@ -1,5 +1,5 @@
 Vue.component('widget-components-list', {
-    props: ['requirementSetId', 'filters', 'topfilters'],
+    props: ['requirementSetId', 'filters', 'topfilters', 'currentPage', 'pageLimit'],
     data: function() {
         return {
             componentVersions: [],
@@ -17,8 +17,7 @@ Vue.component('widget-components-list', {
             is_new: null,
             currentProduct: null,
             currentLocation: null,
-            currentType: null,
-            pageLimit: 30
+            currentType: null
         }
     },
     computed: {
@@ -59,6 +58,7 @@ Vue.component('widget-components-list', {
         currentProduct: 'handleChangeFilter',
         currentLocation: 'handleChangeFilter',
         currentType: 'handleChangeFilter',
+        currentPage: 'handleChangeFilter',
         is_new: 'handleChangeFilter',
         headerFilters: function() {this.$emit('update:header-filters', this.headerFilters)}
     },
@@ -129,6 +129,9 @@ Vue.component('widget-components-list', {
             this.cancelSearch();
             this.loading = true;
             this.cancelSource = axios.CancelToken.source();
+            const currentPage = this.currentPage || 1;
+            const pageLimit = this.pageLimit || 30;
+            const offset = pageLimit * (currentPage - 1);
             const fields = 'id,version,component,deployments'
             queryParams += `&requirement_set=${this.requirementSetId}` + 
                            `&ordering=${this.componentSorting}component__name,${this.componentSorting}version`
@@ -136,10 +139,11 @@ Vue.component('widget-components-list', {
             if (this.currentProduct) queryParams += `&deployments__product_version=${this.currentProduct}`
             if (this.currentType) queryParams += `&component__type=${this.currentType}`
             if (this.is_new != null) queryParams += `&deployments__is_new_deployment=${this.is_new}`
-            return axios.get(`/api/component_version/?format=json&limit=${this.pageLimit}&fields=${fields}&${queryParams}`, 
+            return axios.get(`/api/component_version/?format=json&fields=${fields}&limit=${pageLimit}&offset=${offset}${queryParams}`, 
                     {cancelToken: this.cancelSource.token})
                 .then(resp => {
                     this.componentVersions = resp.data.results;
+                    this.$emit('update:total', resp.data.count);
                 }).catch(err => {
                     if (err.response && err.response.status == 404) {
                         this.componentVersions = [];
