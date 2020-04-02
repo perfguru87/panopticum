@@ -11,6 +11,7 @@ Vue.component('widget-components-list', {
             statusDefinitions: {},
             componentSorting: '',
             loading: true,
+            globalLoading: true,
             products: [],
             locations: [],
             types: [],
@@ -27,7 +28,6 @@ Vue.component('widget-components-list', {
     },
     created: async function() {
         await this.fetchFilters();
-
         const [requirements, ] = await Promise.all([
             axios.get(`/api/requirement_set/${this.requirementSetId}/?format=json`).then(resp => resp.data.requirements),
             this.fetchStatuses(),
@@ -42,7 +42,7 @@ Vue.component('widget-components-list', {
         }
 
         if (this.filters && this.filters.length) {
-            this.handleDropdownCommand({
+            await this.handleDropdownCommand({
                 requirement: {id: Number(this.filters[0].requirement)},
                 status: {id: Number(this.filters[0].status)},
                 type: this.filters[0].type
@@ -50,7 +50,7 @@ Vue.component('widget-components-list', {
         } else {
             await this.filterComponents();
         }
-        this.loading = false;
+        this.globalLoading = false;
     },
     watch: {
         componentVersionSearch: 'fetchSearchComponents',
@@ -150,7 +150,6 @@ Vue.component('widget-components-list', {
                     }
                 }).finally(_ => {
                     this.cancelSource = null;
-                    this.loading = false
                 })
             
         },
@@ -159,7 +158,6 @@ Vue.component('widget-components-list', {
             if (this.cancelSource) {
                 this.cancelSource.cancel('Start new search, stop active search');
             }
-            loading = false
         },
         displayPopover(ownerStatus, signeeStatus) {
             return [ownerStatus, signeeStatus].some(status => status && status.status && status.status.id !=1);
@@ -195,7 +193,7 @@ Vue.component('widget-components-list', {
                 }
             }
             this.headerFilters = headerFilters;
-            this.filterComponents(queryParams);
+            return this.filterComponents(queryParams);
         },
         getIDfromHref(href) {
             // parse Hyperlink releative link. For eaxmple: for /api/component_version/1/ will return 1
@@ -216,6 +214,7 @@ Vue.component('widget-components-list', {
             if (status && [3, 4].includes(status.status.id) ) return "signee-yes";
         },
         handleChangeFilter(id) {
+            if (this.globalLoading) return;
             this.headerFilters = {};
             this.$emit('update:top-filters', {
                 location: this.currentLocation,
@@ -272,10 +271,11 @@ Vue.component('widget-components-list', {
                 }
                 return data;
             });
+            this.loading = false;
         }
     },
     template: `{% verbatim %}
-<el-card v-loading="loading" >
+<el-card v-loading="loading || globalLoading" >
     <el-row>
         <div style="display: inline-block">
             <label class="el-form-item__label" for="product">Product</label>
