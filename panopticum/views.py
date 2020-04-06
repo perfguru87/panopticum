@@ -4,6 +4,7 @@ import rest_framework.status
 from django.shortcuts import render
 from django.conf import settings
 from django.http import JsonResponse
+from django.contrib.auth.decorators import login_required
 
 from rest_framework import viewsets, permissions, views
 from rest_framework.response import Response
@@ -142,6 +143,7 @@ class UserDetail(RelativeURLViewSet):
         response = django.http.HttpResponse(user.photo.file.read(), content_type='image/jpeg')
         return response
 
+
 class Token(RelativeURLViewSet):
     queryset = rest_framework.authtoken.models.Token.objects.all()
     serializer_class = TokenSerializer
@@ -176,6 +178,7 @@ class LoginAPIView(APIView):
             return Response({"error": "not valid credentials"}, 401)
 
 
+@login_required
 def render_page(request, template):
     context = {
         'categories': ComponentCategoryModel.objects.all()
