@@ -311,14 +311,19 @@ class ComponentVersionAdmin(admin.ModelAdmin):
 
     def has_change_permission(self, request, obj: typing.Optional[ComponentVersionModel]=None):
         return request.user.is_superuser or \
-               (obj and request.user == obj.owner_maintainer) or request.user.has_perm(SIGNEE_STATUS_PERMISSION)
+               (obj and request.user == obj.owner_maintainer) or \
+               (obj and obj.owner_architect.filter(pk=request.user.pk).exists()) or \
+               request.user.has_perm(SIGNEE_STATUS_PERMISSION)
 
+    def has_delete_permission(self, request, obj: typing.Optional[ComponentVersionModel]=None):
+        return request.user.is_superuser or \
+               (obj and request.user == obj.owner_maintainer)
 
     def get_readonly_fields(self, request, obj=None):
         readonly_fields = set(super().get_readonly_fields(request, obj))
 
         if request.user.has_perm(SIGNEE_STATUS_PERMISSION) and not request.user.is_superuser:
-            for title, definition  in self.get_fieldsets(request, obj):
+            for title, definition in self.get_fieldsets(request, obj):
                 readonly_fields.update(definition.get('fields', ()))
         return tuple(readonly_fields)
 
