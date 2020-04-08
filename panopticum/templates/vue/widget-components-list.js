@@ -206,12 +206,17 @@ Vue.component('widget-components-list', {
                 "owner el-icon-circle-check": status && [3,4].includes(status.status.id)
             }
         },
-        getSigneeClass(obj) {
+        getSigneeClassForCell(obj) {
             let status = obj.row[obj.column.label];
             if (status == undefined) return;
-            status = status.signee
-            if (status && status.status.id == 2) return 'signee-no';
-            if (status && [3, 4].includes(status.status.id) ) return "signee-yes";
+            status = status.signee;
+            if (status == undefined) return;
+            return this.getSigneeClass(status.status);
+        },
+        getSigneeClass(status) {
+            if (status == undefined) return;
+            if (status.id == 2) return 'signee-no';
+            if ([3, 4].includes(status.id) ) return "signee-yes";
         },
         handleChangeFilter(id) {
             if (this.globalLoading) return;
@@ -345,7 +350,7 @@ Vue.component('widget-components-list', {
         <el-table stripe style="width: 100%" 
         :data="tableData"
         empty-text="No data"
-        :cell-class-name="getSigneeClass"
+        :cell-class-name="getSigneeClassForCell"
         border>
             <el-table-column label="Component" 
                     width="200" 
@@ -430,7 +435,7 @@ Vue.component('widget-components-list', {
                         <div style="position: absolute; float: right; right:0; bottom: 1px">
                             <el-dropdown trigger="click" placement="bottom-start" @command="handleDropdownCommand">
                                 <span>
-                                    <app-status v-if="headerFilters && headerFilters[req.id] && headerFilters[req.id].type=='signee'" :status='headerFilters[req.id].status' lightIcon/>
+                                    <div :class="getSigneeClass(headerFilters[req.id].status)" v-if="headerFilters && headerFilters[req.id] && headerFilters[req.id].type=='signee'" style="width: 15px; height: 1em; border: 1px solid darkgrey; display: inline-block"></div>
                                     <i v-else class="el-icon-arrow-down" style="font-size: 9px; display: inline-block; margin-left: 0"></i>
                                 </span>
                                 <el-dropdown-menu slot="dropdown" class='panopticum-status-left'>
@@ -438,7 +443,8 @@ Vue.component('widget-components-list', {
                                     <el-divider></el-divider>
                                     <el-dropdown-item :command="{requirement: req, type: 'signee', status: status}"
                                         v-for="status of statusDefinitions.signee" :key="status.id">
-                                        <app-status :status="status" lightIcon />{{ status.name | capitalize }}
+                                        <div :class="getSigneeClass(status)" style="width: 40px; height: 1em; border: 1px solid darkgrey; display: inline-block"></div>
+                                        {{ status.name | capitalize }}
                                     </el-dropdown-item>
                                     <el-dropdown-item command="reset" divided>
                                         <i class="el-icon-circle-close"></i>Reset</el-dropdown-item>

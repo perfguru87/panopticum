@@ -36,7 +36,6 @@ Vue.component('widget-status-popover', {
     },
     methods: {
         getSigneeClass(status) {
-            console.log(status)
             return {
                 'signee-no': (status && status.status.id == 2),
                 "signee-yes": (status && [3, 4].includes(status.status.id) )
