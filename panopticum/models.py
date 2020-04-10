@@ -718,4 +718,8 @@ class DatacenterModel(models.Model):
 
 
 class JiraIssue(django_atlassian.models.djira.Issue):
-    pass
+    def save(self, *args, **kwargs):
+        return
+
+    def delete(self, *args, **kwargs):
+        return

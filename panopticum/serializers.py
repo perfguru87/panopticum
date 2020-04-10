@@ -266,10 +266,14 @@ class ComponentVersionSerializer(QueryFieldsMixin, ComponentVersionSerializerSim
 
 
 class IssueSerializer(serializers.ModelSerializer):
+    type = serializers.StringRelatedField(source='issue_type')
+    components = serializers.ListField(serializers.StringRelatedField, source='component_s')
+    fixVersion = serializers.ListField(serializers.StringRelatedField, source='fix_version_s')
+
     class Meta:
         model = JiraIssue
         fields = ['assignee', 'reporter', 'summary', 'description',
-                  'project', 'issue_type', 'component_s', 'fix_version_s', 'status']
+                  'project', 'type', 'components', 'fixVersion', 'status']
 
 
 class TokenSerializer(serializers.ModelSerializer):

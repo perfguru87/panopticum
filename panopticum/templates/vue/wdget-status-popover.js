@@ -96,12 +96,12 @@ Vue.component('widget-status-popover', {
             </div>
             <div v-if="status.history && status.user">
                 <div class="text item">Status: {{ status.status.name }}
-                    <app-status :status="status.status" lightIcon v-if="status.type=='requirement reviewer'"></app-status>
-                    <div :class="getSigneeClass(status)" v-if="status.type=='component owner'" style="width: 40px; height: 1em; border: 1px solid darkgrey; display: inline-block"></div>
+                    <app-status :status="status.status" lightIcon v-if="status.type=='component owner'"></app-status>
+                    <div :class="getSigneeClass(status)" v-if="status.type=='requirement reviewer'" style="width: 40px; height: 1em; border: 1px solid darkgrey; display: inline-block"></div>
                 </div>
                 <div class="text item">updated by <span style="font-weight: bold">{{ getUsername(status.user) }}</span></div>
                 <div class="text item">{{ formatDate(status.history.history_date) }}</div>
-                <div class="text item" v-if="status && status.notes">{{ status.notes }}</div>
+                <div class="text item" v-if="status && status.notes"><widget-note>{{ status.notes }}</widget-note></div>
             </div>
         </el-card>
         <span slot="reference">
