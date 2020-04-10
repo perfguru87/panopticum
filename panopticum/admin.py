@@ -309,10 +309,26 @@ class ComponentVersionAdmin(admin.ModelAdmin):
                                      ('qa_upgrade_tests_status', 'qa_upgrade_tests_notes'))}),
     ]
 
+    @staticmethod
+    def _has_change_perm_by_component_person(obj, user):
+        perm_person_map = {
+            'panopticum.escalation_list_change': obj.owner_escalation_list,
+            'panopticum.architect_change': obj.owner_architect,
+            'panopticum.experts_change': obj.owner_expert,
+            'panopticum.qa_change': obj.owner_responsible_qa,
+            'panopticum.program_manager_change': obj.owner_program_manager,
+            'panopticum.product_manager_change': obj.owner_product_manager
+        }
+        for perm, person_set in perm_person_map.items():
+            if isinstance(person_set, User) and user == person_set:
+                return True
+            elif person_set and user.has_perm(perm) and person_set.filter(pk=user.pk).exists():
+                return True
+
     def has_change_permission(self, request, obj: typing.Optional[ComponentVersionModel]=None):
         return request.user.is_superuser or \
                (obj and request.user == obj.owner_maintainer) or \
-               (obj and obj.owner_architect.filter(pk=request.user.pk).exists()) or \
+               (obj and self._has_change_perm_by_component_person(obj, request.user)) or \
                request.user.has_perm(SIGNEE_STATUS_PERMISSION)
 
     def has_delete_permission(self, request, obj: typing.Optional[ComponentVersionModel]=None):
