@@ -573,6 +573,14 @@ class ComponentVersionModel(models.Model):
 
     class Meta:
         ordering = ['-version']
+        permissions = [
+            ("experts_change", "Component Experts can to change"),
+            ("qa_change", "QA responsible an to change"),
+            ("program_manager_change", "Can program manager to change"),
+            ("product_manager_change", "Can product manager to change"),
+            ("escalation_list_change", "Can persons in escalation list to change"),
+            ("architect_change", "Can architect to change")
+        ]
 
     def __str__(self):
         return "%s - %s" % (self.component.name, self.version)
