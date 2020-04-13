@@ -73,12 +73,19 @@ class ComponentDependencyAdmin(admin.TabularInline):
     verbose_name_plural = "Component Dependencies"
 
 
+class TCPPortAdmin(admin.ModelAdmin):
+    search_fields = ['port', ]
+    ordering = ['port', ]
+    model = TCPPortModel
+
+
 class ComponentDeploymentAdmin(admin.TabularInline):
     formfield_overrides = formfields_small
     model = ComponentDeploymentModel
     classes = ('collapse', 'no-upper', 'select-50px')
     verbose_name = "Component Deployment"
     verbose_name_plural = "Component Deployments"
+    autocomplete_fields = ['open_ports', ]
 
 
 class RequirementInlineAdmin(admin.TabularInline):
@@ -446,6 +453,6 @@ admin.site.register(ComponentModel, ComponentAdmin)
 admin.site.register(ComponentVersionModel, ComponentVersionAdmin)
 admin.site.register(DeploymentLocationClassModel)
 admin.site.register(DeploymentEnvironmentModel)
-admin.site.register(TCPPortModel)
+admin.site.register(TCPPortModel, TCPPortAdmin)
 admin.site.register(RequirementSet, RequirementSetAdmin)
 admin.site.register(Requirement, RequirementAdmin)
