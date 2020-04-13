@@ -258,6 +258,7 @@ class RequirementStatusEntryAdmin(admin.TabularInline):
     def has_delete_permission(self, request, obj=None):
         return False
 
+
 class RequirementAdmin(admin.ModelAdmin):
     list_display = ['title']
     model = Requirement
@@ -267,6 +268,12 @@ class RequirementSetAdmin(admin.ModelAdmin):
     filter_horizontal = ['requirements', 'owner_groups']
     list_display = ['name']
     model = RequirementSet
+
+
+class ComponentAdmin(admin.ModelAdmin):
+    search_fields = ['name']
+    list_display = ['name', 'type', 'data_privacy_class', 'category', 'subcategory', 'vendor']
+    model = ComponentModel
 
 
 class ComponentVersionAdmin(admin.ModelAdmin):
@@ -435,7 +442,7 @@ admin.site.register(ComponentType)
 admin.site.register(ComponentDataPrivacyClassModel)
 admin.site.register(ComponentCategoryModel)
 admin.site.register(ComponentSubcategoryModel)
-admin.site.register(ComponentModel)
+admin.site.register(ComponentModel, ComponentAdmin)
 admin.site.register(ComponentVersionModel, ComponentVersionAdmin)
 admin.site.register(DeploymentLocationClassModel)
 admin.site.register(DeploymentEnvironmentModel)
