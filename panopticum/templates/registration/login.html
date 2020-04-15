@@ -20,7 +20,7 @@
               {% csrf_token %}
               <h1>Login Form</h1>
               <div>
-                <input type="text" name="username" class="form-control" placeholder="Username" required="" />
+                <input type="text" name="username" class="form-control" placeholder="john.doe" required="" />
               </div>
               <div>
                 <input type="password" name="password" class="form-control" placeholder="Password" required="" />
@@ -29,15 +29,12 @@
               {% if form.errors %}
                 <p>Your username and password didn't match. Please try again.</p>
               {% endif %}
-                <a class="btn btn-default submit" href="javascript:{}" onclick="document.getElementById('loginForm').submit();">Log in</a>
-                <a class="reset_pass" href="#">Lost your password?</a>
+                <button class="btn btn-default submit" type="submit" onclick="document.getElementById('loginForm').submit();">Log in</button>
               </div>
               <div class="clearfix"></div>
 
               <div class="separator">
-                <p class="change_link">New to site?
-                  <a href="#signup" class="to_register"> Create Account </a>
-                </p>
+
 
                 <div class="clearfix"></div>
                 <br />
