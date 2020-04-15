@@ -505,6 +505,20 @@ div.owner {
     top: 0px;
 }
 
+.fixVersion {
+    display: inline-block;
+    border-radius: 4px;
+    padding: 1px;
+    text-align: center;
+    margin: 0px 2px;
+    color: white;
+    background-color: grey;
+}
+
+.closedIssue {
+    text-decoration: 'line-through';
+}
+
 .signee-no {
     background-color: #F5B7B1 !important;
 }

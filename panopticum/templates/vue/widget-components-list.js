@@ -463,7 +463,7 @@ Vue.component('widget-components-list', {
                      v-if="displayPopover(scope.row[req.title].owner, scope.row[req.title].signee)">
                         <div class="inner-cell">
                             <span class="word-wrap" v-if="scope.row[req.title].owner && scope.row[req.title].owner.notes && scope.row[req.title].owner.status.name !='n/a'">
-                            {{ scope.row[req.title].owner.notes }}
+                            <widget-note :short="true">{{ scope.row[req.title].owner.notes }}</widget-note>
                             </span>
                             <div class="fill-cell" v-else></div>
                         </div>

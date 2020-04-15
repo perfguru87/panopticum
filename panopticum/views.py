@@ -132,7 +132,7 @@ class UserDetail(RelativeURLViewSet):
     queryset = get_user_model().objects.all()
     serializer_class = UserSerializer
     permission_classes = (permissions.IsAuthenticated,)
-    filter_class= panopticum.filters.UserFilter
+    filter_class = panopticum.filters.UserFilter
     filterset_fields = ['username', 'email']
 
     @action(detail=True)
@@ -181,7 +181,8 @@ class LoginAPIView(APIView):
 @login_required
 def render_page(request, template):
     context = {
-        'categories': ComponentCategoryModel.objects.all()
+        'categories': ComponentCategoryModel.objects.all(),
+        'JIRA_BASE_URL': settings.DATABASES.get('jira', {}).get('NAME')
     }
     return render(request, template, context)
 
@@ -194,51 +195,13 @@ def dashboard_components(request):
     return render_page(request, 'dashboard/components.html')
 
 
-def dashboard_operations(request):
-    return render_page(request, 'dashboard/operations.html')
-
-
 def dashboard_team(request):
     return render_page(request, 'dashboard/team.html')
 
 
-class JiraIssueView(views.APIView):
-
-    def validate(self, request):
-
-        # FIXME: authentication is required!
-
-        for field in ('URL', 'USER', 'PASSWORD'):
-            if field not in settings.JIRA_CONFIG:
-                raise JsonResponse({'error': 'JIRA_CONFIG.%s setting is not congigured' % field},
-                                    safe=False, status=http.client.NOT_IMPLEMENTED)
-
-        if request.method != "GET":
-            return JsonResponse({'error': '%s: method is not allowed' % request.method},
-                                safe=False, status=http.client.METHOD_NOT_ALLOWED)
-
-        return None
-
-    def get(self, request, issue_key):
-        r = self.validate(request)
-        if r:
-            return r
-
-        j = JiraProxy()
-        body, safe, status = j.get_issue(issue_key)
-        return JsonResponse(body, safe=safe, status=status)
+class JiraIssueView(viewsets.ModelViewSet):
+    queryset = JiraIssue.objects.all()
+    serializer_class = IssueSerializer
+    permission_classes = (permissions.IsAuthenticated,)
 
 
-class JiraUrlView(views.APIView):
-
-    def _validate(self, request):
-        if request.method != "GET":
-            return JsonResponse({'error': '%s: method is not allowed' % request.method},
-                                safe=False, status=http.client.METHOD_NOT_ALLOWED)
-
-    def get(self, request):
-        r = self._validate(request)
-        if r:
-            return r
-
-        return JsonResponse({'response': {'jira_url': settings.JIRA_CONFIG.get('URL', '')}})

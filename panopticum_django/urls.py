@@ -40,6 +40,7 @@ router.register(r'component_type', views.ComponentTypeViewSet)
 router.register(r'component_data_privacy_class', views.ComponentDataPrivacyClassViewSet)
 router.register(r'user', views.UserDetail)
 router.register(r'token', views.Token)
+router.register(r'issue', views.JiraIssueView)
 
 
 urlpatterns = [
@@ -49,8 +50,6 @@ urlpatterns = [
     url('^dashboard/team/', views.dashboard_team, name='team'),
     url('^dashboard/links.html', views.dashboard_components, name='Links'),
     path('api/login/', rest_framework.authtoken.views.obtain_auth_token),
-    re_path(r'^api/jira/([A-Z]*-\d+)', views.JiraIssueView.as_view(), name='jira'),
-    url(r'^api/jira_url/', views.JiraUrlView.as_view(), name='jira_url'),
     path('api/login/', views.LoginAPIView.as_view()),
     path('accounts/', include('django.contrib.auth.urls')),
     url('^api/', include(router.urls)),

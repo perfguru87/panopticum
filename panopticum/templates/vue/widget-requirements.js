@@ -109,7 +109,7 @@ Vue.component('widget-requirements', {
 
                 <td><widget-signoff v-bind:status="row.status" v-bind:signoff-status="row.signoffStatus"></widget-signoff></td>
                 <td><widget-signoff v-bind:status="row.signoffStatus"></widget-signoff></td>
-                <td class='pa-replace-urls'>{{ row.notes }}</td>
+                <td class='pa-replace-urls'><widget-note :short="true">{{ row.notes }}</widget-note></td>
             </tr>
             </tbody>
         </table>

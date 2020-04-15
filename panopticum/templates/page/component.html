@@ -231,6 +231,8 @@ function update_component_page_elements(component) {
 function vue_component_init() {
 
     var url = `/api${window.location.pathname}/?format=json`
+    {% include "vue/widget-jira-ticket.js" %}
+    {% include "vue/widget-note.js" %}
     {% include "vue/status.js" %}
     {% include "vue/widget-requirements.js" %}
     {% include "vue/widget-signoff.js" %}

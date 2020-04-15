@@ -18,3 +18,4 @@ pillow
 scalpl
 iso3166
 django-database-files-3000
+git+https://github.com/den-gts/django-atlassian.git
