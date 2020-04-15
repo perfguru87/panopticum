@@ -515,7 +515,6 @@ class ComponentVersionModel(models.Model):
                 'qa_longhaul_tests_status', 'qa_security_tests_status', 'qa_api_tests_status',
                 'qa_anonymisation_tests_status', 'qa_upgrade_tests_status')
 
-
     def _update_qa_rating(self):
         return self._update_any_rating('meta_qa_rating', 'qa_applicable', LOW_MED_HIGH_RATING,
                                        ComponentVersionModel.get_quality_assurance_fields())
@@ -550,7 +549,6 @@ class ComponentVersionModel(models.Model):
         self.meta_profile_completeness = int(100 * completeness / max_completeness)
         self.meta_profile_not_filled_fields = ", ".join(sorted(not_filled_fields))
 
-
     def update_meta_locations_and_product_versions(self): # TODO: remove and switch to calculated fields
         locations = {}
         product_versions = {}
@@ -576,11 +574,17 @@ class ComponentVersionModel(models.Model):
         ordering = ['-version']
         permissions = [
             ("experts_change", "Component Experts can to change"),
+            ("experts_delete", "Component Experts can to delete"),
             ("qa_change", "QA responsible an to change"),
+            ("qa_delete", "QA responsible an to delete"),
             ("program_manager_change", "Can program manager to change"),
+            ("program_manager_delete", "Can program manager to delete"),
             ("product_manager_change", "Can product manager to change"),
+            ("product_manager_delete", "Can product manager to delete"),
             ("escalation_list_change", "Can persons in escalation list to change"),
-            ("architect_change", "Can architect to change")
+            ("escalation_list_delete", "Can persons in escalation list to delete"),
+            ("architect_change", "Can architect to change"),
+            ("architect_delete", "Can architect to delete"),
         ]
 
     def __str__(self):
