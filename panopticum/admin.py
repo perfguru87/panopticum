@@ -131,12 +131,13 @@ class RequirementForm(django.forms.ModelForm):
 
         if kwargs.get('instance'):
             # read and set field values from status models
+            owner_status_obj = self.get_status(kwargs['instance'], OWNER_STATUS_TYPE)
             initial = {
-                'owner_status': kwargs['instance'].status.pk,
-                'owner_notes': kwargs['instance'].notes
+                'owner_status': owner_status_obj.status.pk,
+                'owner_notes': owner_status_obj.notes
             }
             try:
-                signee_status_obj = self.get_signee_status(kwargs['instance'])
+                signee_status_obj = self.get_status(kwargs['instance'], SIGNEE_STATUS_TYPE)
                 initial['approve_status'] = signee_status_obj.status.pk
                 initial['approve_notes'] = signee_status_obj.notes
             except django.core.exceptions.ObjectDoesNotExist:
@@ -157,10 +158,10 @@ class RequirementForm(django.forms.ModelForm):
             self.fields['approve_notes'].disabled = True
 
     @staticmethod
-    def get_signee_status(obj):
+    def get_status(obj, status_type=OWNER_STATUS_TYPE):
         return RequirementStatusEntry.objects.get(
             requirement=obj.requirement,
-            type=SIGNEE_STATUS_TYPE,
+            type=status_type,
             component_version=obj.component_version
         )
 
