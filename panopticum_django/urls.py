@@ -23,6 +23,7 @@ import rest_framework.authtoken.views
 
 from panopticum import views
 from panopticum import jira
+from panopticum import graph
 from panopticum_django import settings
 
 router = routers.DefaultRouter()
@@ -42,16 +43,17 @@ router.register(r'user', views.UserDetail)
 router.register(r'token', views.Token)
 router.register(r'issue', views.JiraIssueView)
 
-
 urlpatterns = [
     path('admin/', admin.site.urls),
     url('^component/', views.component, name='Component'),
     url('^dashboard/components.html', views.dashboard_components, name='Components'),
     url('^dashboard/team/', views.dashboard_team, name='team'),
     url('^dashboard/links.html', views.dashboard_components, name='Links'),
+    url('^graph.html', graph.graph_view, name='Graph'),
     path('api/login/', rest_framework.authtoken.views.obtain_auth_token),
     path('api/login/', views.LoginAPIView.as_view()),
     path('accounts/', include('django.contrib.auth.urls')),
+    path('api/graph/component/<int:componentId>/', graph.graph_component),
     url('^api/', include(router.urls)),
 ]
 
