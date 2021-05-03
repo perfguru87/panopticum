@@ -34,7 +34,7 @@ def graph_component(request, componentId):
     categoryIds_set = set()
 
     start_component = ComponentModel.objects.get(id=componentId)
-    if component_version_param is not None:
+    if component_version_param:
         start_component_version = ComponentVersionModel.objects.filter(component=start_component.id, id=int(component_version_param)).first()
     else:
         start_component_version = ComponentVersionModel.objects.filter(component=start_component.id).order_by('-update_date').first()
