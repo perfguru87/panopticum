@@ -1,7 +1,5 @@
 import django.forms
 from django.db import models
-from datatableview.views import DatatableView
-from datatableview import helpers
 from django.forms.models import model_to_dict
 import datetime
 from django.contrib.auth.models import AbstractUser, Group

@@ -1,0 +1,79 @@
+{% extends "layout/_base.html" %}
+
+{% block title %} Component Graph {% endblock title %}
+
+{% block scripts %}
+  {{ block.super }}
+ <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+ <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cytoscape-panzoom@2.5.3/cytoscape.js-panzoom.css" type="text/css" />
+ <script src="https://cdnjs.cloudflare.com/ajax/libs/element-ui/2.13.0/index.js"></script>
+ <script src="https://cdnjs.cloudflare.com/ajax/libs/element-ui/2.13.0/locale/en.min.js"></script>
+ <script src="https://cdn.jsdelivr.net/npm/vue2-filters/dist/vue2-filters.min.js"></script>
+ <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.15/lodash.min.js"></script>
+ <script src="http://code.jquery.com/jquery-2.0.3.min.js"></script>
+ <script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.18.2/cytoscape.min.js"></script>
+ <script src="https://cdn.jsdelivr.net/npm/klayjs@0.4.1/klay.min.js"></script>
+ <script src="https://cdn.jsdelivr.net/npm/cytoscape-klay@3.1.4/cytoscape-klay.min.js"></script>
+ <script src="https://cdn.jsdelivr.net/npm/cytoscape-panzoom@2.5.3/cytoscape-panzoom.min.js"></script>
+ <script src="/static/js/graph.js"></script>
+
+ <script src="https://unpkg.com/popper.js@1.14.7/dist/umd/popper.js"></script>
+ <script src="https://cdn.jsdelivr.net/npm/cytoscape-popper@1.0.4/cytoscape-popper.min.js"></script>
+ <script src="https://unpkg.com/tippy.js@4.0.1/umd/index.all.min.js"></script>
+ 
+{% endblock %}
+
+{% block stylesheets %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/element-ui/2.13.0/theme-chalk/index.css">
+<link rel="stylesheet" href="https://unpkg.com/tippy.js@4.0.1/index.css" />
+<link rel="stylesheet" href="/static/css/graph.css" />
+<style></style>
+  {{ block.super }}
+{% endblock stylesheets %}
+
+{% block content %}
+<div class="right_col" role="main">
+  <div class="">
+
+    <div class="row title_left">
+        <div class="col-sm-12">
+            <h3>Components Dependency Graph</h3>
+        </div>
+    </div>
+
+    <div class="row">
+      <div class="col-sm-12"><hr></div>
+    </div>
+    <div class="row">
+      <div class="col-sm-12">
+        <label>Component:</label>
+        <select class id="component-dropdown" name="component-select">
+        </select>
+      </div>
+      <div class="col-sm-12">
+        <label>Component Version:</label>
+        <select class id="component-version-dropdown" name="component-version-select">
+        </select>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-sm-12"><hr></div>
+    </div>
+    <div class="row">
+      <div class="col-lg-12">
+        <div class="panel panel-primary">
+          <div class="panel-body">
+            <div id="cy"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+  </div>
+
+{% endblock %}
+{% block extra_js %}
+  {{ block.super }}
+
+</div></div>
+{% endblock %}

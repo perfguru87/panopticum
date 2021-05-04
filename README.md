@@ -152,7 +152,7 @@ LOW PRIO
 ## Requirements
 
 - Python3.0+
-- Django2.0+
+- Django3.0+
 
 ## Installation
 
@@ -169,7 +169,7 @@ sudo -u postgres psql
 postgres=# create database panopticum;
 postgres=# create user panopticum with encrypted password 'my secret password';
 postgres=# grant all privileges on database panopticum to panopticum;
-sudo echo "host all all 127.0.0.1/32 md5" > /var/lib/pgsql/11/data/pg_hba.conf
+sudo sh -c 'host all all 127.0.0.1/32 md5" > /var/lib/pgsql/11/data/pg_hba.conf'
 sudo systemctl restart postgresql-11
 ```
 
@@ -177,10 +177,11 @@ sudo systemctl restart postgresql-11
 
 CentOS-7:
 ```
-sudo yum -y install https://centos7.iuscommunity.org/ius-release.rpm
+sudo yum -y install https://repo.ius.io/ius-release-el7.rpm
 sudo yum -y install python36
 sudo yum -y install python36-pip
 sudo yum -y install python36-psycopg2
+sudo yum -y install openssl-devel gcc python3-devel openldap-devel graphviz-devel
 
 ```
 

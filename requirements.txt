@@ -1,7 +1,6 @@
-Django==2.1.*
+Django==3.1.4
 django-auth-ldap
 django-cors-headers
-django-datatable-view
 django-extensions
 django-filter
 django-modeladmin-reorder
@@ -19,3 +18,4 @@ scalpl
 iso3166
 django-database-files-3000
 git+https://github.com/den-gts/django-atlassian.git
+cryptography==2.9.1

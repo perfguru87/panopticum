@@ -72,6 +72,22 @@ class ComponentDependencyAdmin(admin.TabularInline):
     verbose_name = "Component Dependency"
     verbose_name_plural = "Component Dependencies"
 
+    def has_change_permission(self, request, obj=None):
+        """ Allow change requirement if user have permissions """
+        return request.user.has_perm(SIGNEE_STATUS_PERMISSION) or \
+               (request.user.has_perm(OWNER_STATUS_PERMISSION) and
+                obj and request.user == obj.owner_maintainer)
+
+    def _has_add_permission(self, request, obj=None):
+        return True;
+
+    def has_add_permission(self, request, obj=None):
+        return self.has_change_permission(request, obj)
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+
 
 class TCPPortAdmin(admin.ModelAdmin):
     search_fields = ['port', ]
@@ -86,6 +102,9 @@ class ComponentDeploymentAdmin(admin.TabularInline):
     verbose_name = "Component Deployment"
     verbose_name_plural = "Component Deployments"
     autocomplete_fields = ['open_ports', ]
+
+    def _has_add_permission(self, request, obj=None):
+        return True;
 
 
 class RequirementInlineAdmin(admin.TabularInline):
@@ -207,6 +226,9 @@ class RequirementStatusEntryAdmin(admin.TabularInline):
     classes = ('collapse', 'requirements-admin', 'no-upper')
     extra = 1
     verbose_name_plural = "Requirements"
+
+    def _has_add_permission(self, request, obj=None):
+        return True;
 
     def requirement(self, obj):
         return obj.name
