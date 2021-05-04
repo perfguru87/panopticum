@@ -67,8 +67,8 @@ It accepts an optional parameter 'depth', to limit the search of parents & child
 
 The following JavaScript libraries are utilised:
 - [cytoscape.js](https://github.com/cytoscape/cytoscape.js)
-- [cytoscape-klay](https://github.com/cytoscape/cytoscape.js-klay) (added as /static/vendor/cytoscape-klay)
-- [cytoscape-panzoom](https://github.com/cytoscape/cytoscape.js-panzoom) (added as /static/vendor/cytoscape.js-panzoom)
+- [cytoscape-klay](https://github.com/cytoscape/cytoscape.js-klay)
+- [cytoscape-panzoom](https://github.com/cytoscape/cytoscape.js-panzoom)
 - [popper.js](https://github.com/popperjs/popper-core)
 - [cytoscape-popper](https://github.com/cytoscape/cytoscape.js-popper)
 - [tippy.js](https://github.com/atomiks/tippyjs/releases)
