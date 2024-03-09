@@ -267,8 +267,8 @@ class ComponentVersionSerializer(QueryFieldsMixin, ComponentVersionSerializerSim
 
 class IssueSerializer(serializers.ModelSerializer):
     type = serializers.StringRelatedField(source='issue_type')
-    components = serializers.ListField(serializers.StringRelatedField, source='component_s')
-    fixVersion = serializers.ListField(serializers.StringRelatedField, source='fix_version_s')
+    components = serializers.ListField(child=serializers.StringRelatedField(), source='component_s')
+    fixVersion = serializers.ListField(child=serializers.StringRelatedField(), source='fix_version_s')
 
     class Meta:
         model = JiraIssue

@@ -534,7 +534,7 @@ class ComponentVersionModel(models.Model):
         d = model_to_dict(self)
         return 0 if d[field] in ("unknown", "", None, "?") else 1
 
-    def _update_profile_completeness(self):
+    def update_profile_completeness(self):
         completeness = 0
         max_completeness = 0
         not_filled_fields = set()
@@ -548,6 +548,7 @@ class ComponentVersionModel(models.Model):
 
         self.meta_profile_completeness = int(100 * completeness / max_completeness)
         self.meta_profile_not_filled_fields = ", ".join(sorted(not_filled_fields))
+        super().save()
 
     def update_meta_locations_and_product_versions(self): # TODO: remove and switch to calculated fields
         locations = {}
@@ -569,6 +570,7 @@ class ComponentVersionModel(models.Model):
         super().save(*args, **kwargs)
 
         self.update_meta_locations_and_product_versions()
+        self.update_profile_completeness()
 
     class Meta:
         ordering = ['-version']
