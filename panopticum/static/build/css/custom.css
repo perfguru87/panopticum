@@ -350,7 +350,7 @@ body .container.body .right_col {
     background: #F7F7F7
 }
 .nav-md .container.body .right_col {
-    padding: 10px 20px 0;
+    padding: 0px 20px 0;
     margin-left: 230px
 }
 .nav_title {
@@ -512,7 +512,7 @@ body {
     display: block
 }
 .page-title .title_left h3 {
-    margin: 9px 0
+    margin: 19px 0px 9px 0px
 }
 .page-title .title_right {
     width: 55%;
@@ -628,7 +628,8 @@ table.no-margin .progress {
     min-height: 1px;
     float: left;
     padding-right: 10px;
-    padding-left: 10px
+    padding-left: 10px;
+    margin-bottom: 10px;
 }
 .row {
     margin-right: -10px;
@@ -950,7 +951,7 @@ footer {
     overflow: hidden
 }
 .top_tiles {
-    margin-bottom: 0
+    margin-bottom: 0px;
 }
 .top_tiles .tile h2 {
     font-size: 30px;

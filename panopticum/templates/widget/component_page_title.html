@@ -1,19 +1,16 @@
 {% verbatim %}<div class="title_left">
-           <h3 style='margin-bottom: 3px;'>
-             <span v-cloak>[[ component.name ]]
-              <el-select v-model="selectedVersion" placeholder="no versions" size="mini" style="width: 90px;">
-                <el-option
-                  v-for="version in versions"
-                  :key="version.id"
-                  :label="version.version"
-                  :value="version.id">
-                </el-option>
-              </el-select>
+           <h3 style='margin-bottom: 3px; padding-top: 10px;'>
+             <span v-cloak>[[ component.category.name ]]
+              | [[ component.name ]]
              </span>
-             &nbsp;
+             <el-select v-if="versions.length > 1" v-model="selectedVersion" placeholder="no versions" size="mini" style="width: 90px; top: -3px;">
+               <el-option
+                 v-for="version in versions"
+                 :key="version.id"
+                 :label="version.version"
+                 :value="version.id">
+               </el-option>
+             </el-select>
+             &nbsp;<small><a target=_blank :href="`/admin/panopticum/componentversionmodel/${selectedVersion}/change/`"><i class='fa fa-edit'></i></a></small>
            </h3>
-           <p class='component-links'>
-             <span v-cloak>[[ component.type.name ]]</span>
-             <span v-cloak>[[ component.category.name ]]</span>&nbsp;
-           </p>
          </div>{% endverbatim %}

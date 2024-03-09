@@ -5,8 +5,10 @@ div.container {
   max-width: 100% !important;
 }
 
-footer {
-    margin-left: 0px;
+.footer {
+  margin-left: 0px;
+  width: 100%;
+  margin-top: auto;
 }
 
 .container-fluid {
@@ -306,6 +308,7 @@ div.owners-list td.owner img {
 
 /* Status table */
 
+table.status-table { margin-bottom: 10px; }
 table.status-table tbody tr:nth-child(even) td { background-color: #f0f0f0; }
 table.status-table tbody tr td:first-child { width: 150px; text-align: left; }
 table.status-table tbody tr td:nth-child(2) { width: 10%; text-align: center; }
@@ -572,3 +575,6 @@ div.owner {
 .table-team-dashboard .el-form-item__label,
 .table-team-dashboard .el-select .el-input__icon { height: 28px; line-height: 28px; }
 .table-team-dashboard .el-dropdown { display: inline-block; }
+
+/* Dashboards */
+.dashboard { height: 100vh; display: flex; flex-direction: column; }

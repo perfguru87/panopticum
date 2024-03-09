@@ -84,7 +84,7 @@ Vue.component('widget-requirements', {
     template: `
     {% verbatim %}<el-card>
         <div slot="header" class="clearfix">
-                <span>{{title }}</span>
+                <h2>{{title }}</h2>
                 <span class='pa-component-rating' v-if='component_version.op_applicable'>
                         {{ component_version.meta_op_rating }}%
                 </span>
