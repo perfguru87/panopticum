@@ -77,8 +77,8 @@
     "model": "panopticum.requirement",
     "pk": 2,
     "fields": {
-      "title": "Domain model definition",
-      "description": ""
+      "title": "Domain model",
+      "description": "Clear domain model description approved by architects"
     }
   },
   {
@@ -101,8 +101,8 @@
     "model": "panopticum.requirement",
     "pk": 5,
     "fields": {
-      "title": "Database usage policy",
-      "description": ""
+      "title": "DB usage policy",
+      "description": "Migration, connection, monitoring, security and other DB access policy"
     }
   },
   {
