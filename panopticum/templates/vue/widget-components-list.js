@@ -3,6 +3,7 @@ Vue.component('widget-components-list', {
     data: function() {
         return {
             componentVersions: [],
+            componentStatuses: {},
             statuses: [],
             tableData: [],
             requirements: [],
@@ -18,12 +19,12 @@ Vue.component('widget-components-list', {
             is_new: null,
             currentProduct: null,
             currentLocation: null,
-            currentType: null
+            currentType: null,
         }
     },
     computed: {
         allStatusDefinitions: function() {
-            return [...this.statusDefinitions.owner, this.statusDefinitions.signee];
+            return this.statusDefinitions.all;
         }
     },
     created: async function() {
@@ -45,7 +46,7 @@ Vue.component('widget-components-list', {
             await this.handleDropdownCommand({
                 requirement: {id: Number(this.filters[0].requirement)},
                 status: {id: Number(this.filters[0].status)},
-                type: this.filters[0].type
+                type: this.filters[0].type ? this.filters[0].type : 'component'
             });
         } else {
             await this.filterComponents();
@@ -89,11 +90,13 @@ Vue.component('widget-components-list', {
         },
         fetchStatuses() {
             // fetch statuses to cache
-            return axios.get('/api/status/?format=json&allow_for=1&allow_for=2').then(resp => {
+            return axios.get('/api/status/?format=json&allow_for=1&allow_for=2&allow_for=3').then(resp => {
                 const statuses = resp.data.results;
                 this.statusDefinitions = {
+                    'all': statuses,
                     'owner': statuses.filter(status => status.allow_for.includes('component owner')),
-                    'signee': statuses.filter(status => status.allow_for.includes('requirement reviewer'))
+                    'signee': statuses.filter(status => status.allow_for.includes('requirement reviewer')),
+                    'overall': statuses.filter(status => status.allow_for.includes('overall'))
                 }
             })
         },
@@ -167,27 +170,32 @@ Vue.component('widget-components-list', {
             let headerFilters = {};
             let queryParams='';
             Object.keys(this.headerFilters).map(key => {headerFilters[key] = null} );
-            const unknownOveralQuery = `&total_statuses!=${this.requirements.length}`;
-            const notReadyOveralQuery = `&negative_status_count!=0&unknown_status_count=0&total_statuses=${this.requirements.length}`;
-            const readyOveralQuery = `&unknown_status_count=0&negative_status_count=0&total_statuses=${this.requirements.length}`;
-            
+            const unknownOverallQuery = `&unknown_signoff_count!=0`;
+            const notReadyOverallQuery = `&negative_signoff_count!=0&unknown_signonff_count=0&max_signoff_count=${this.requirements.length}`;
+            const readyOverallQuery = `&unknown_signoff_count=0&negative_signoff_count=0&max_signoff_count=${this.requirements.length}`;
+
+            console.log('command type', command.type);
             if (command != 'reset') {
-                if(command.type == 'overal') {
-                    queryParams = command.status.id == STATUS_READY ? readyOveralQuery : notReadyOveralQuery;
+                if(command.type == 'component') {
+                    queryParams = command.status.id == window.REQ_STATUS_READY ? readyOverallQuery : notReadyOverallQuery;
+                } else if (command.type == 'overall') {
+                    queryParams = `&statuses__status=${command.status.id}&statuses__requirement=${command.requirement.id}&statuses__type=${window.REQ_OVERALL_STATUS}`
                 } else {
-                    queryParams = `&statuses__status=${command.status.id}&statuses__requirement=${command.requirement.id}&statuses__type=${command.type == 'owner' ? 1 : 2}`
+                    queryParams = `&statuses__status=${command.status.id}&statuses__requirement=${command.requirement.id}&statuses__type=${command.type == 'owner' ? window.REQ_OWNER_STATUS : window.REQ_SIGNEE_STATUS}`
                 }
-                if (command.status.id == STATUS_UNKNOWN) {  // unknown status
-                    if (command.type == 'overal') {
-                        queryParams = unknownOveralQuery;
+                if (command.status.id == window.REQ_STATUS_UNKNOWN) {  // unknown status
+                    if (command.type == 'component') {
+                        console.log("OK!");
+                        queryParams = unknownOverallQuery;
                     } else {
-                        const notUnknownStatusesIds = this.statusDefinitions.owner.filter(s => s.id != STATUS_UNKNOWN ).map(s => s.id);
-                        queryParams = `&exclude_statuses=${notUnknownStatusesIds}&exclude_requirement=${command.requirement.id}&exclude_type=${command.type == 'owner' ? STATUS_UKNOWN : STATUS_NOT_READY }`
+                        console.log("OOPS!");
+                        const notUnknownStatusesIds = this.statusDefinitions.owner.filter(s => s.id != window.REQ_STATUS_UNKNOWN ).map(s => s.id);
+                        queryParams = `&exclude_statuses=${notUnknownStatusesIds}&exclude_requirement=${command.requirement.id}&exclude_type=${command.type == 'owner' ? window.REQ_STATUS_UKNOWN : window.REQ_STATUS_NOT_READY }`
                     }
                 }
 
-                if (command.type == 'overal') {
-                    headerFilters['overal'] = {status: command.status}
+                if (command.type == 'component') {
+                    headerFilters['component'] = {status: command.status}
                 } else {
                     headerFilters[command.requirement.id] = {status: command.status, type: command.type};
                 }
@@ -202,69 +210,33 @@ Vue.component('widget-components-list', {
         },
         getOwnerClass(status) {
             return {
-                "owner el-icon-remove": status && status.status.id == STATUS_NOT_READY, // TODO: move constant to separated module after migration to webpack
-                "owner el-icon-circle-check": status && [STATUS_READY,STATUS_NOT_APPLICABLE].includes(status.status.id)
+                "owner el-icon-remove": status && status.status.id == window.REQ_STATUS_NOT_READY, // TODO: move constant to separated module after migration to webpack
+                "owner el-icon-circle-check": status && [REQ_STATUS_READY,REQ_STATUS_NOT_APPLICABLE].includes(status.status.id)
             }
-        },
-        getEffectiveStatus(ownerStatus, signeeStatus) {
-            if (ownerStatus == undefined || signeeStatus == undefined)
-                return STATUS_UNDEFINED;
-            if (ownerStatus.id != STATUS_READY && ownerStatus.id != STATUS_NOT_APPLICABLE)
-                return ownerStatus.id;
-            if (signeeStatus.id == STATUS_UNKNOWN)
-                return STATUS_WAITING;
-            if (ownerStatus.id == STATUS_NOT_APPLICABLE && signeeStatus.id == STATUS_READY)
-                return STATUS_NOT_APPLICABLE;
-            return signeeStatus.id
         },
         getStatusClassForCell(obj) {
             let req = obj.row[obj.column.label];
-            if (req == undefined)
+            if (req == undefined || req.overall == undefined || req.overall.status == undefined)
                 return 'status-unknown';
-            if (req.owner == undefined || req.signee == undefined)
-                return 'status-unknown';
-            status = this.getEffectiveStatus(req.owner.status, req.signee.status);
-            return this.getStatusClass(status);
+            return this.getStatusClass(req.overall.status.id);
         },
         getStatusClass(status) {
             if (status == undefined)
                 return 'status-unknown';
-            if (status == STATUS_NOT_READY)
+            if (status == window.REQ_STATUS_NOT_READY)
                 return 'status-not-ready';
-            if (status == STATUS_WAITING)
+            if (status == window.REQ_STATUS_WAITING_FOR_APPROVAL)
                 return 'status-waiting';
-            if (status == STATUS_READY)
+            if (status == window.REQ_STATUS_READY)
                 return 'status-ready';
-            if (status == STATUS_NOT_APPLICABLE)
+            if (status == window.REQ_STATUS_NOT_APPLICABLE)
                 return 'status-not-applicable';
             return 'status-unknown';
         },
-        getNotes(ownerStatus, signeeStatus) {
-            notes = "";
-            var oid = STATUS_UNKNOWN;
-            var sid = STATUS_UNKNOWN;
-
-            if (ownerStatus != undefined)
-                oid = ownerStatus.status.id;
-
-            if (signeeStatus != undefined)
-                sid = signeeStatus.status.id;
-
-            if (oid == STATUS_NOT_READY)
-                notes = "Not ready...";
-            else if (oid == STATUS_UNKNOWN)
-                notes = "?";
-            else if (oid == STATUS_READY || oid == STATUS_NOT_APPLICABLE) {
-                if (sid == STATUS_UNKNOWN)
-                    notes = "Waiting for approval... ";
-                else if (sid == STATUS_NOT_READY)
-                    notes = "Not approved!";
-                else if (oid == STATUS_NOT_APPLICABLE && sid == STATUS_NOT_APPLICABLE)
-                    notes = "N/A";
-                else
-                    notes = "OK"; 
-            }
-            return notes;
+        getNotes(ownerStatus, signeeStatus, overallStatus) {
+            if (overallStatus)
+                return overallStatus.notes;
+            return "?";
         },
         handleChangeFilter(id) {
             if (this.globalLoading) return;
@@ -276,16 +248,8 @@ Vue.component('widget-components-list', {
                 type: this.currentType});
             this.filterComponents();
         },
-        getOveralStatus(compVer) {
-            let overal_status = 'unknown';
-            if (compVer.total_statuses == this.requirements.length) {
-                if (compVer.negative_status_count != 0 && compVer.unknown_status_count == 0) {
-                    overal_status = this.allStatusDefinitions.find(s => s.id == STATUS_NOT_READY);
-                } else if (compVer.unknown_status_count == 0 && compVer.negative_status_count == 0) {
-                    overal_status = this.allStatusDefinitions.find(s => s.id == STATUS_READY);
-                }
-            }
-            return overal_status;
+        getComponentStatus: async function(compVer) {
+            return this.componentStatuses[compVer.id];
         },
         isNewDeployment(deployments) { 
             if (!this.currentProduct) return null;
@@ -303,8 +267,8 @@ Vue.component('widget-components-list', {
                     componentId: compVer.component.id,
                     version: compVer.version,
                     deployments: compVer.deployments,
-                    overal_status: this.getOveralStatus(compVer)
                 }
+
                 for (req of this.requirements) {
                     let statuses = this.statuses.filter(status => {
                         return (
@@ -319,8 +283,35 @@ Vue.component('widget-components-list', {
                     });
                     data[req.title] = {
                         owner: statuses.find(status => status.type == 'component owner'),
-                        signee: statuses.find(status => status.type == 'requirement reviewer')
+                        signee: statuses.find(status => status.type == 'requirement reviewer'),
+                        overall: statuses.find(status => status.type == 'overall')
                     };
+                }
+
+                for (req of this.requirements) {
+                    if (data[req.title].overall == undefined || data[req.title].overall.status == undefined || data[req.title].overall.status.id == undefined) {
+                        if (this.componentStatuses[compVer.id] == undefined) {
+                            if (data[req.title].overall && data[req.title].overall.status.id == window.REQ_STATUS_WAITING_FOR_APPROVAL)
+                                this.componentStatuses[compVer.id] = { id: window.REQ_STATUS_WAITING_FOR_APPROVAL, type: 'component owner' };
+                            else
+                                this.componentStatuses[compVer.id] = { id: window.REQ_STATUS_UNKNOWN, type: 'component owner' };
+                        }
+                        continue;
+                    }
+                    s = data[req.title].overall.status;
+                    sid = data[req.title].overall.status.id;
+                    if (sid == window.REQ_STATUS_NOT_READY) {
+                        this.componentStatuses[compVer.id] = s;
+                        break;
+                    }
+                    if (sid == window.REQ_STATUS_UNKNOWN)
+                        this.componentStatuses[compVer.id] = s;
+                    if (sid == window.REQ_STATUS_NOT_APPLICABLE && this.componentStatuses[compVer.id] == undefined)
+                        this.componentStatuses[compVer.id] = s;
+                    if (sid == window.REQ_STATUS_READY && this.componentStatuses[compVer.id] == undefined)
+                        this.componentStatuses[compVer.id] = s;
+                    if (sid == window.REQ_STATUS_WAITING_FOR_APPROVAL && this.componentStatuses[compVer.id] != undefined && this.componentStatuses[compVer.id].id != window.REQ_STATUS_UNKNOWN)
+                        this.componentStatuses[compVer.id] = s;
                 }
                 return data;
             });
@@ -406,7 +397,7 @@ Vue.component('widget-components-list', {
                     align="left" >
                 <template slot="header" scope="scope">
                     <span style='height: 15px; margin-bottom: 4px;'>{{ scope.column.label }}</span>
-                    <el-input placeholder="component version" 
+                    <el-input placeholder="" 
                     v-model="componentVersionSearch"
                     class="panopticum-table-input"
                     clearable></el-input>
@@ -418,6 +409,7 @@ Vue.component('widget-components-list', {
 
             <el-table-column
                 label="Status"
+                v-if="requirements"
                 header-align="center"
                 width="80"
                 align="center">
@@ -426,12 +418,12 @@ Vue.component('widget-components-list', {
                     <div>
                             <el-dropdown trigger="click" placement="bottom-start" @command="handleDropdownCommand">
                                 <span style='height: 10px; margin: 0px;'>
-                                    <app-status v-if="headerFilters && headerFilters['overal']" :status='headerFilters["overal"].status' lightIcon/>
+                                    <app-status v-if="headerFilters && headerFilters['component']" :status='headerFilters["component"].status' lightIcon/>
                                     <i v-else class="el-icon-arrow-down" style="font-size: 9px; display: inline-block; margin-left: 0"></i>
                                 </span>
                                 <el-dropdown-menu slot="dropdown" class='panopticum-status-right'>
-                                    <el-dropdown-item :command="{requirement: null, type: 'overal', status: status}"
-                                        v-for="status of statusDefinitions.signee" :key="status.id">
+                                    <el-dropdown-item :command="{requirement: null, type: 'component', status: status}"
+                                        v-for="status of statusDefinitions.overall" :key="status.id">
                                         <app-status :status="status" lightIcon />{{ status.name | capitalize }}
                                     </el-dropdown-item>
                                     <el-dropdown-item command="reset" divided>
@@ -442,7 +434,7 @@ Vue.component('widget-components-list', {
                     </div>
                 </template>
                 <template slot-scope="scope">
-                    <span><app-status :status="scope.row.overal_status" lightIcon></app-status></span>
+                    <span><app-status :status="componentStatuses[scope.row.id]" lightIcon></app-status></span>
                 </template>
             </el-table-column>
 
@@ -452,10 +444,26 @@ Vue.component('widget-components-list', {
             :key="req.id" 
             align="center">
 
+<!--
+        <template slot="header" slot-scope="scope">
+              <span>{{ scope.column.label }}</span>
+              <el-select
+              clearable
+              size="mini">
+                  <el-option v-for="status in allStatusDefinitions"
+                  :key="status.id"
+                  :label="status.name"
+                  :value="status.id">
+                  </el-option>
+              </el-select>
+        </template>
+-->
+
                 <template slot="header" slot-scope="scope">
                     <el-row style='line-height: 1.3em;'>
                         <span class="word-wrap">{{ req.title }}</span>
                     </el-row>
+
 
                     <el-row>
                          <!-- owner dropdown filter -->
@@ -500,35 +508,17 @@ Vue.component('widget-components-list', {
                             </el-dropdown>
                         </div>
                     </el-row>
-                    
                 </template>
 
                 <template slot-scope="scope">
                     <widget-status-popover
                      :owner-status="scope.row[req.title].owner"
                      :signee-status="scope.row[req.title].signee"
+                     :overall-status="scope.row[req.title].overall"
                      v-if="displayPopover(scope.row[req.title].owner, scope.row[req.title].signee)">
-                            <span class="word-wrap">{{ getNotes(scope.row[req.title].owner, scope.row[req.title].signee) }}</span>
+                            <span class="word-wrap">{{ getNotes(scope.row[req.title].owner, scope.row[req.title].signee, scope.row[req.title].overall) }}</span>
                             </span>
                 </widget-status-popover>
-                </template>
-            </el-table-column>
-
-            <el-table-column
-            align="center"
-            width="80px"
-            label="Is New">
-                <template slot="header" slot-scope="scope">
-                <el-row>
-                    <span>{{ scope.column.label }}</span>
-                </el-row>
-                
-                </template>
-                <template slot-scope="scope">
-                <span
-                class="el-icon-circle-check"
-                v-if="isNewDeployment(scope.row.deployments)"
-                ></span>
                 </template>
             </el-table-column>
 

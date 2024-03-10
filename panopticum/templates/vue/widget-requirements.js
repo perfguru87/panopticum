@@ -18,7 +18,7 @@ Vue.component('widget-requirements', {
     },
     methods: {
         fetchStatusesDefinition() {
-            return axios.get('/api/status/?format=json&allow_for=1&allow_for=2').then(resp => {
+            return axios.get('/api/status/?format=json&allow_for=1&allow_for=2&allow_for=3').then(resp => {
                 this.statusDefinitions = resp.data.results;
             })
         },

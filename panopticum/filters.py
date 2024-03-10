@@ -98,6 +98,7 @@ class DeploymentFilter(filters.FilterSet):
         model = models.ComponentDeploymentModel
         fields = '__all__'
 
+
 class ComponentVersionFilter(filters.FilterSet):
     component = filters.RelatedFilter(ComponentFilter,
                                       field_name='component',
@@ -115,9 +116,9 @@ class ComponentVersionFilter(filters.FilterSet):
                                      queryset=models.RequirementStatusEntry.objects.all())
     exclude_statuses = filters.BaseInFilter(field_name='statuses',
                                             method='filter_exclude_statuses')
-    unknown_status_count = filters.NumberFilter()
-    negative_status_count = filters.NumberFilter()
-    total_statuses = filters.NumberFilter()
+    unknown_signoff_count = filters.NumberFilter()
+    negative_signoff_count = filters.NumberFilter()
+    max_signoff_count = filters.NumberFilter()
     version = filters.AutoFilter(lookups='__all__')
 
     class Meta:

@@ -335,8 +335,8 @@ class RequirementSet(models.Model):
 class ComponentManager(models.Manager):
 
     def with_rating(self, requirement_set_id=None):
-        """ Custom manager method for add calculated fields: total_statuses, positive_status_count,
-         negative_status_count, unknown_status_count. That useful for calculation overal component
+        """ Custom manager method for add calculated fields: total_signoff_count, positive_signoff_count,
+         negative_signoff_count, unknown_signoff_count. That useful for calculation overal component
          version status """
         annotate_filter_kwargs = dict(statuses__type=REQ_SIGNEE_STATUS)
 
@@ -346,10 +346,9 @@ class ComponentManager(models.Manager):
         else:
             max_signoff_count = RequirementSet.objects.all().aggregate(count=django.db.models.Count('requirements'))['count']
 
-        total_statuses = django.db.models.Count('statuses', filter=django.db.models.Q(**annotate_filter_kwargs))
-        positive_status_count = django.db.models.Count('statuses', filter=django.db.models.Q(statuses__status=REQ_STATUS_READY,
+        positive_signoff_count = django.db.models.Count('statuses', filter=django.db.models.Q(statuses__status=REQ_STATUS_READY,
                                                                              **annotate_filter_kwargs))
-        negative_status_count = django.db.models.Count('statuses', filter=django.db.models.Q(statuses__status=REQ_STATUS_NOT_READY,
+        negative_signoff_count = django.db.models.Count('statuses', filter=django.db.models.Q(statuses__status=REQ_STATUS_NOT_READY,
                                                                                **annotate_filter_kwargs))
 
         return self.model.objects.annotate(
@@ -358,10 +357,10 @@ class ComponentManager(models.Manager):
                                                                    **annotate_filter_kwargs),
                                          output_field=django.db.models.FloatField())
                   / float(max_signoff_count),
-            max_signoff_count = max_signoff_count - positive_status_count + positive_status_count,
-            positive_signoff_count = positive_status_count,
-            negative_signoff_count = negative_status_count,
-            unknown_signoff_count = max_signoff_count - positive_status_count - negative_status_count
+            max_signoff_count = max_signoff_count - positive_signoff_count + positive_signoff_count,
+            positive_signoff_count = positive_signoff_count,
+            negative_signoff_count = negative_signoff_count,
+            unknown_signoff_count = max_signoff_count - positive_signoff_count - negative_signoff_count
         )
 
 
@@ -522,9 +521,9 @@ class ComponentVersionModel(models.Model):
                                        ComponentVersionModel.get_quality_assurance_fields())
 
     def _update_meta_rating(self):
-        max_status_count = RequirementSet.objects.all().aggregate(count=django.db.models.Count('requirements'))['count']
-        positive_status_count = self.statuses.filter(status__id__in=[REQ_STATUS_READY, REQ_STATUS_NOT_APPLICABLE]).count()
-        negative_status_count = max_status_count - positive_status_count
+        max_signoff_count = RequirementSet.objects.all().aggregate(count=django.db.models.Count('requirements'))['count']
+        positive_signoff_count = self.statuses.filter(status__id__in=[REQ_STATUS_READY, REQ_STATUS_NOT_APPLICABLE]).count()
+        negative_signoff_count = max_signoff_count - positive_signoff_count
 
         if self.qa_applicable:
             max_qa_rating = len(ComponentVersionModel.get_quality_assurance_fields()) * max(LOW_MED_HIGH_RATING.values())
@@ -533,8 +532,8 @@ class ComponentVersionModel(models.Model):
             max_qa_rating = 1
             qa_rating = 1
 
-        if (max_qa_rating + max_status_count) > 0:
-            self.meta_rating = 100 * (positive_status_count + qa_rating) / (max_qa_rating + max_status_count)
+        if (max_qa_rating + max_signoff_count) > 0:
+            self.meta_rating = 100 * (positive_signoff_count + qa_rating) / (max_qa_rating + max_signoff_count)
         else:
             self.meta_rating = 0
 

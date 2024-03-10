@@ -1,11 +1,12 @@
 Vue.component('widget-status-popover', {
     props: [
-      'owner-status', 'signee-status' 
+      'owner-status', 'signee-status', 'overall-status'
     ],
     data: function() {
         return {
             _ownerStatus: null,
             _signeeStatus: null,
+            _overeallStatus: null,
             history: null,
             user: null,
             loading: true
@@ -18,7 +19,7 @@ Vue.component('widget-status-popover', {
             }
         },
         statuses: function() {
-            return [ this._signeeStatus, this._ownerStatus];
+            return [ this._signeeStatus, this._ownerStatus, this._overallStatus];
         },
         apiUrl: function() {
             return `${window.location.origin}/api`
@@ -26,28 +27,21 @@ Vue.component('widget-status-popover', {
         popupEnabled: function() {
             const statuses = this.statuses;
             return statuses.filter(status => {
-                return (status && status.status.id != STATUS_UNKNOWN)
+                return (status && status.status.id != window.REQ_STATUS_UNKNOWN)
             }).some(s => s);
         }
     },
     created: function() {
         this._ownerStatus = this.ownerStatus;
         this._signeeStatus = this.signeeStatus;
+        this._overallStatus = this.overallStatus;
     },
     methods: {
-        getSigneeClass(status) {
-            return {
-                'status-unknown': (status && status.status.id == STATUS_UNKNOWN),
-                'status-not-ready': (status && status.status.id == STATUS_NOT_READY),
-                'status-ready': (status && status.status.id == STATUS_READY),
-                'status-not-applicable': (status && status.status.id == STATUS_NOT_APPLICABLE)
-            }
-        },
         getUsername(user) {
             if (!user) return null;
             if (user.first_name && user.last_name) {
                 return `${user.first_name} ${user.last_name}`
-            } else { 
+            } else {
                 return user.username;
             }
         },
@@ -59,24 +53,27 @@ Vue.component('widget-status-popover', {
             let url = document.createElement('a');
             const statuses = this.statuses;
             const requests = statuses.map(status => {
+                if (status == undefined)
+                    return;
                 url.href = status.url;
-                
+
                 return axios.get(`${url.pathname}history/?format=json&limit=1`)
                 .then(resp => {
                     if (resp.data.count > 0) {
                         status.history = resp.data.results[0];
                         return axios.get(status.history.history_user).then(resp => {
-                               status.user = resp.data; 
+                               status.user = resp.data;
                         });
                     }
                 })
             })
-            Promise.all(requests).then((ownerStatus, signeeStatus) => {
+            Promise.all(requests).then((ownerStatus, signeeStatus, overallStatus) => {
                 this._ownerStatus = ownerStatus;
                 this._signeeStatus = signeeStatus;
+                this._overallStatus = overallStatus;
                 this.loading = false;
             })
-            
+
         },
         formatDate: function(date) {
             return moment(date).fromNow();
@@ -98,12 +95,10 @@ Vue.component('widget-status-popover', {
             </div>
             <div v-if="status.history && status.user">
                 <div class="text item">Status: {{ status.status.name }}
-                    <app-status :status="status.status" lightIcon v-if="status.type=='component owner'"></app-status>
-                    <div :class="getSigneeClass(status)" v-if="status.type=='requirement reviewer'" style="width: 40px; height: 1em; border: 1px solid darkgrey; display: inline-block"></div>
                 </div>
-                <div class="text item">updated by <span style="font-weight: bold">{{ getUsername(status.user) }}</span></div>
-                <div class="text item">{{ formatDate(status.history.history_date) }}</div>
-                <div class="text item" v-if="status && status.notes"><widget-note>{{ status.notes }}</widget-note></div>
+                <div class="text item">updated by: <span style="font-weight: bold">{{ getUsername(status.user) }}</span></div>
+                <div class="text item">updated time: {{ formatDate(status.history.history_date) }}</div>
+                <div class="text item" v-if="status && status.notes">notes: <widget-note>{{ status.notes }}</widget-note></div>
             </div>
         </el-card>
         <span slot="reference">

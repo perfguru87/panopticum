@@ -1,8 +1,12 @@
-var STATUS_UNKNOWN = 1;
-var STATUS_NOT_READY = 2;
-var STATUS_READY = 3;
-var STATUS_NOT_APPLICABLE = 4;
-var STATUS_WAITING = 5;
+/* FIXME: these values are hardcoded here and on backend side */
+window.REQ_STATUS_UNKNOWN = 1;
+window.REQ_STATUS_NOT_READY = 2;
+window.REQ_STATUS_READY = 3;
+window.REQ_STATUS_NOT_APPLICABLE = 4;
+window.REQ_STATUS_WAITING_FOR_APPROVAL = 5;
+window.REQ_OWNER_STATUS = 1;
+window.REQ_SIGNEE_STATUS = 2;
+window.REQ_OVERALL_STATUS = 3;
 
 if (!String.prototype.pa_format) {
     String.prototype.pa_format = function() {

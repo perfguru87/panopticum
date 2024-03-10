@@ -6,10 +6,11 @@ Vue.component('app-status', {
     computed: {
         classObject: function() {
             return {
-                'el-icon-circle-check yes': this.status && this.status.id == STATUS_READY,
-                'el-icon-remove no': this.status && this.status.id == STATUS_NOT_READY,
-                'unknown fa fa-question-circle': this.status && this.status.id == STATUS_UNKNOWN,
-                'unknown fa fa-question-circle': !this.status || this.status.id == STATUS_UNKNOWN,
+                'el-icon-circle-check yes': this.status && this.status.id == window.REQ_STATUS_READY,
+                'el-icon-remove no': this.status && this.status.id == window.REQ_STATUS_NOT_READY,
+                'fa fa-clock-o': this.status && this.status.id == window.REQ_STATUS_WAITING_FOR_APPROVAL,
+                'unknown fa fa-question-circle': this.status && this.status.id == window.REQ_STATUS_UNKNOWN,
+                'unknown fa fa-question-circle': !this.status || this.status.id == window.REQ_STATUS_UNKNOWN,
             }
         }
     },

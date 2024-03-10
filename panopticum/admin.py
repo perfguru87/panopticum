@@ -171,7 +171,7 @@ class RequirementForm(django.forms.ModelForm):
     def _save_status(self, field_prefix, type_pk):
         status = self.cleaned_data[f'{field_prefix}_status']
         notes = self.cleaned_data[field_prefix + "_notes"]
-        status_obj, created = RequirementStatusEntry.objects.get_or_create(
+        obj, created = RequirementStatusEntry.objects.get_or_create(
             component_version=self.instance.component_version,
             requirement=self.instance.requirement,
             type=RequirementStatusType.objects.get(pk=type_pk),
@@ -181,48 +181,52 @@ class RequirementForm(django.forms.ModelForm):
             }
         )
         if not created:
-            status_obj.status = status
-            status_obj.notes = notes
-            status_obj.save()
-        return status_obj
+            obj.status = status
+            obj.notes = notes
+            obj.save()
+
+        return obj
 
     def _save_overall_status(self, owner_status, signee_status):
-        code = REQ_STATUS_UNKNOWN
+        status = REQ_STATUS_UNKNOWN
         msg = "?"
 
-        if owner_status.id in (REQ_STATUS_READY, REQ_STATUS_NOT_APPLICABLE):
-            code = signee_status.status.id
-            if signee_status.id == REQ_STATUS_UNKNOWN:
+        if owner_status.status.id in (REQ_STATUS_READY, REQ_STATUS_NOT_APPLICABLE):
+            if not signee_status or not signee_status.status or not signee_status.status.id or signee_status.status.id == REQ_STATUS_UNKNOWN:
                 msg = "Waiting for approval..."
-            elif signee_status.id == REQ_STATUS_NOT_READY:
-                msg = "Not approved!"
-            elif signee_status.id == REQ_STATUS_READY:
-                if owner_status.id == REQ_STATUS_NOT_APPLICABLE:
+                status = REQ_STATUS_WAITING_FOR_APPROVAL
+            else:
+                status = signee_status.status.id
+                if signee_status.status.id == REQ_STATUS_NOT_READY:
+                    msg = "Not approved!"
+                elif signee_status.status.id == REQ_STATUS_READY:
+                    if owner_status.status.id == REQ_STATUS_NOT_APPLICABLE:
+                        msg = "N/A"
+                    else:
+                        msg = "OK"
+                elif signee_status.status.id == REQ_STATUS_NOT_APPLICABLE:
                     msg = "N/A"
-                else:
-                    msg = "OK"
-            elif signee_status.id == REQ_STATUS_NOT_APPLICABLE:
-                msg = "N/A"
         else:
-            code = owner_status.status.id
-            if owner_status.id == REQ_STATUS_UNKNOWN:
+            status = owner_status.status.id
+            if owner_status.status.id == REQ_STATUS_UNKNOWN:
                 msg = "?"
-            elif owner_status.id == REQ_STATUS_NOT_READY:
+            elif owner_status.status.id == REQ_STATUS_NOT_READY:
                 msg = "Not ready"
 
         obj, created = RequirementStatusEntry.objects.get_or_create(
             component_version=self.instance.component_version,
             requirement=self.instance.requirement,
             type=RequirementStatusType.objects.get(pk=REQ_OVERALL_STATUS),
-            status=RequirementStatus.objects.get(pk=code),
             defaults={
+                "status": RequirementStatus.objects.get(pk=status),
                 "notes": msg,
             }
         )
         if not created:
-            obj.status = status
-            obj.notes = notes
+            obj.status = RequirementStatus.objects.get(pk=status)
+            obj.notes = msg
             obj.save()
+
         return obj
 
     def save(self, commit=True, *args, **kwargs):
@@ -236,6 +240,7 @@ class RequirementForm(django.forms.ModelForm):
             elif 'owner_status' in self.changed_data:  # reset sign off if readiness is changed
                 self.cleaned_data['approve_status'] = RequirementStatus.objects.get(pk=REQ_STATUS_UNKNOWN)
                 signee_status = self._save_status('approve', REQ_SIGNEE_STATUS)
+
             owner_status = self._save_status('owner', REQ_OWNER_STATUS)
             return self._save_overall_status(owner_status, signee_status)
 
