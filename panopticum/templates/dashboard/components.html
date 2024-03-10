@@ -20,15 +20,12 @@
   <div class="right_col" role="main">
     <div class="dashboard">
 
-<div class="row title_left">
-    <div class="col-sm-12">
+<div class="row top_tiles title_left">
+    <div class="col-sm-12 tile">
         <h3>Components dashboard</h3>
     </div>
 </div>
 
-<div class="row">
-    <div class="col-sm-12"><hr></div>
-</div>
 <div class="row">
     <div class="col-sm-12" id="vue-component">
         <dashboard-components :filters="filters" v-on:update:header-filter="onChangeFilters"></dashboard-components>

@@ -80,16 +80,12 @@ Vue.component('dashboard-requirementset', {
     template:`{% verbatim %}
 <div>
 
-
     <div class="row title_left">
         <div class="col-sm-12">
             <h3>{{ requirementSet.name }} dashboard</h3>
         </div>
     </div>
 
-    <div class="row">
-        <div class="col-sm-12"><hr></div>
-    </div>
     <div class="row">
         <div class="col-sm-12 table-requirementset-dashboard" id="vue-component">
             <widget-components-list 
