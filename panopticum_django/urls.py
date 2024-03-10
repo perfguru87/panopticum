@@ -17,6 +17,7 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path, re_path
 from django.conf.urls import url, include
+from django.shortcuts import redirect
 
 from rest_framework import routers
 import rest_framework.authtoken.views
@@ -44,6 +45,7 @@ router.register(r'issue', views.JiraIssueView)
 
 
 urlpatterns = [
+    path('', lambda request: redirect('/dashboard/components.html', permanent=False)),  # Redirect root URL
     path('admin/', admin.site.urls),
     url('^component/', views.component, name='Component'),
     url('^dashboard/components.html', views.dashboard_components, name='Components'),
@@ -57,4 +59,3 @@ urlpatterns = [
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 urlpatterns += (path("admin/", include('loginas.urls')),)
-urlpatterns += (url('', views.dashboard_components, name='Components'), )
