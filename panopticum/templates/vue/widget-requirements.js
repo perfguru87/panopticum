@@ -27,7 +27,7 @@ Vue.component('widget-requirements', {
             return Number(idPattern.exec(href)[1]);
         },
         getStatuses: function () {
-            return axios.get(`${this.apiUrl}/requirement_status/?component_version=${this.$props.component_version.id}&requirement__requrementset_set=${this.$props.requirementsetid}`)
+            return axios.get(`${this.apiUrl}/requirement_status/?component_version=${this.$props.component_version.id}&requirementset=${this.$props.requirementsetid}`)
                 .then(resp => {
                     return resp.data.results.map(status => { 
                         status.status = this.statusDefinitions.find(s=> this.getIDfromHref(status.status) == s.id)

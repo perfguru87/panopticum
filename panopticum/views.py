@@ -121,6 +121,20 @@ class RequirementStatusEntryViewSet(RelativeURLViewSet):
                                                                 context={'request': None})
         return Response(serializer.data)
 
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        component_version = self.request.query_params.get('component_version')
+        requirementset = self.request.query_params.get('requirementset')
+
+        if component_version:
+            queryset = queryset.filter(component_version_id=component_version)
+
+        if requirementset:
+            # Filtering based on RequirementSet
+            queryset = queryset.filter(requirement__sets__id=requirementset)
+
+        return queryset
+
 
 class RequirementSetViewSet(RelativeURLViewSet):
     queryset = RequirementSet.objects.all().order_by('id')

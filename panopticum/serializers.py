@@ -167,6 +167,12 @@ class RequirementSimpleSerializer(DynamicFieldsModelSerializer, serializers.Mode
 
 class RequirementSerializer(DynamicFieldsModelSerializer, serializers.ModelSerializer):
     requirements = RequirementSetSimpleSerializer(many=True, read_only=True)
+    requirement_sets = serializers.SerializerMethodField()
+
+    def get_requirement_sets(self, obj):
+        # This method is called for each RequirementStatusEntry to get its related RequirementSets
+        requirement_sets = obj.sets.all()  # Fetch related RequirementSets
+        return RequirementSetSimpleSerializer(requirement_sets, many=True, context=self.context).data
 
     class Meta:
         model = Requirement
@@ -188,10 +194,23 @@ class RequirementStatusEntrySerializer(serializers.HyperlinkedModelSerializer):
         read_only=True,
         slug_field='owner'
     )
+    requirement_sets = serializers.SerializerMethodField()
 
     class Meta:
         model = RequirementStatusEntry
         fields = '__all__'
+
+    def get_requirement_sets(self, obj):
+        # This method is called for each RequirementStatusEntry to get its related RequirementSets
+        requirement = obj.requirement
+        requirement_sets = requirement.sets.all()  # Fetch related RequirementSets
+        return RequirementSetSimpleSerializer(requirement_sets, many=True, context=self.context).data
+
+
+class RequirementSetSimpleSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = RequirementSet
+        fields = ['id', 'name']
 
 
 class RequirementSetSerializer(serializers.ModelSerializer):
