@@ -151,8 +151,8 @@ LOW PRIO
 
 ## Requirements
 
-- Python3.0+
-- Django2.0+
+- Python3.7+
+- Django3.1+
 
 ## Installation
 
@@ -243,13 +243,13 @@ JIRA_CONFIG = {
 
 ### Create DB schema (apply migrations)
 ```
-python3.6 ./manage.py migrate
+python3 ./manage.py migrate
 ```
 
 ### Create Django admin panel superuser
 
 ```
-python3.6 ./manage.py createsuperuser
+python3 ./manage.py createsuperuser
 ```
 
 ### Load initial fixtures
@@ -315,7 +315,7 @@ For more information please refer to [documentation](https://django-auth-ldap.re
 ## Running the server
 
 ```
-python3.6 ./manage.py runserver 0.0.0.0:8000
+python3 ./manage.py runserver 0.0.0.0:8000
 ```
 
 ## Running at docker-compose
@@ -332,11 +332,11 @@ Service will available at http://127.0.0.1:8080/
 For import users from your Active Directory use:
 
 ```
-python3.6  manage.py ad-sync
+python3  manage.py ad-sync
 ```
 
 ## Data model visualization
 
 ```
-python3.6 manage.py graph_models -a -g -o model.png
+python3 manage.py graph_models -a -g -o model.png
 ```

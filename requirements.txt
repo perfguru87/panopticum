@@ -1,4 +1,4 @@
-Django==2.1.*
+Django==3.1.*
 django-auth-ldap
 django-cors-headers
 django-datatable-view
@@ -7,15 +7,17 @@ django-filter
 django-modeladmin-reorder
 django-loginas
 django-simple-history
+djangorestframework==3.12.4
 djangorestframework-datatables
 djangorestframework-filters==1.0.0.dev0
 djangorestframework-queryfields
 gevent
 gunicorn
 jira-python
-pygraphviz
+psycopg2-binary==2.9.5
 pillow
 scalpl
 iso3166
-django-database-files-3000
-git+https://github.com/den-gts/django-atlassian.git
+
+git+https://github.com/den-gts/django-database-files-3000.git
+git+https://github.com/perfguru87/django-atlassian.git
