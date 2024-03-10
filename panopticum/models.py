@@ -10,12 +10,15 @@ import django_atlassian.models.djira
 
 import panopticum.fields
 
-# constants from fixtures
-NOT_APP_STATUS = 4
-POSITIVE_STATUS = 3
-NEGATIVE_STATUS = 2
-UNKNOWN_STATUS = 1
-SIGNEE_STATUS_TYPE = 2
+# constants statuses from the fixtures
+REQ_STATUS_UNKNOWN = 1
+REQ_STATUS_NOT_READY = 2
+REQ_STATUS_READY = 3
+REQ_STATUS_NOT_APPLICABLE = 4
+REQ_STATUS_WAITING_FOR_APPROVAL = 5
+REQ_OWNER_STATUS = 1
+REQ_SIGNEE_STATUS = 2
+REQ_OVERALL_STATUS = 3
 
 class User(AbstractUser):
     dn = models.CharField(max_length=255, null=True)
@@ -335,7 +338,7 @@ class ComponentManager(models.Manager):
         """ Custom manager method for add calculated fields: total_statuses, positive_status_count,
          negative_status_count, unknown_status_count. That useful for calculation overal component
          version status """
-        annotate_filter_kwargs = dict(statuses__type=SIGNEE_STATUS_TYPE)
+        annotate_filter_kwargs = dict(statuses__type=REQ_SIGNEE_STATUS)
 
         if requirement_set_id:
             max_signoff_count = RequirementSet.objects.get(pk=requirement_set_id).requirements.count()
@@ -344,14 +347,14 @@ class ComponentManager(models.Manager):
             max_signoff_count = RequirementSet.objects.all().aggregate(count=django.db.models.Count('requirements'))['count']
 
         total_statuses = django.db.models.Count('statuses', filter=django.db.models.Q(**annotate_filter_kwargs))
-        positive_status_count = django.db.models.Count('statuses', filter=django.db.models.Q(statuses__status=POSITIVE_STATUS,
+        positive_status_count = django.db.models.Count('statuses', filter=django.db.models.Q(statuses__status=REQ_STATUS_READY,
                                                                              **annotate_filter_kwargs))
-        negative_status_count = django.db.models.Count('statuses', filter=django.db.models.Q(statuses__status=NEGATIVE_STATUS,
+        negative_status_count = django.db.models.Count('statuses', filter=django.db.models.Q(statuses__status=REQ_STATUS_NOT_READY,
                                                                                **annotate_filter_kwargs))
 
         return self.model.objects.annotate(
             rating = 100 * django.db.models.Count('statuses',
-                                         filter=django.db.models.Q(statuses__status=POSITIVE_STATUS,
+                                         filter=django.db.models.Q(statuses__status=REQ_STATUS_READY,
                                                                    **annotate_filter_kwargs),
                                          output_field=django.db.models.FloatField())
                   / float(max_signoff_count),
@@ -520,7 +523,7 @@ class ComponentVersionModel(models.Model):
 
     def _update_meta_rating(self):
         max_status_count = RequirementSet.objects.all().aggregate(count=django.db.models.Count('requirements'))['count']
-        positive_status_count = self.statuses.filter(status__id__in=[POSITIVE_STATUS, NOT_APP_STATUS]).count()
+        positive_status_count = self.statuses.filter(status__id__in=[REQ_STATUS_READY, REQ_STATUS_NOT_APPLICABLE]).count()
         negative_status_count = max_status_count - positive_status_count
 
         if self.qa_applicable:
@@ -562,10 +565,12 @@ class ComponentVersionModel(models.Model):
             max_completeness += 1
 
         for r in self.statuses.all():
-            if r.status in (POSITIVE_STATUS, NOT_APP_STATUS):
+            if r.type == REQ_OVERALL_STATUS:
+                continue
+            if r.status in (REQ_STATUS_READY, REQ_STATUS_NOT_READY):
                 completeness += 1
             else:
-                not_filled_fields.add("%s (%s)" % (r.requirement, "signee" if r.type == SIGNEE_STATUS_TYPE else "owner"))
+                not_filled_fields.add("%s (%s)" % (r.requirement, "signee" if r.type == REQ_SIGNEE_STATUS else "owner"))
             max_completeness += 1
 
         self.meta_profile_completeness = int(100 * completeness / max_completeness)

@@ -12,9 +12,6 @@ from django.contrib.auth.models import AnonymousUser
 import panopticum.fields
 from panopticum.models import *
 
-SIGNEE_STATUS_TYPE = 2 # Requirement status type with name = "approver person". Check init.json
-OWNER_STATUS_TYPE = 1
-UNKNOWN_REQUIREMENT_STATUS = 1 # it's unknown status. Check init.json fixture
 OWNER_STATUS_PERMISSION = 'panopticum.change_owner_status'
 SIGNEE_STATUS_PERMISSION = 'panopticum.change_signee_status'
 
@@ -104,7 +101,7 @@ class RequirementForm(django.forms.ModelForm):
                                          required=False,
                                          )
     approve_status = panopticum.fields.RequirementStatusChoiceField(
-        queryset=RequirementStatus.objects.filter(allow_for=SIGNEE_STATUS_TYPE),
+        queryset=RequirementStatus.objects.filter(allow_for=REQ_SIGNEE_STATUS),
         label='Sign off'
     )
     approve_notes = django.forms.CharField(label='Signee notes',
@@ -126,23 +123,23 @@ class RequirementForm(django.forms.ModelForm):
     def __init__(self, *args, **kwargs):
 
         # define initial fields values
-        self.base_fields['owner_status'].initial = UNKNOWN_REQUIREMENT_STATUS
-        self.base_fields['approve_status'].initial = UNKNOWN_REQUIREMENT_STATUS
+        self.base_fields['owner_status'].initial = REQ_STATUS_UNKNOWN
+        self.base_fields['approve_status'].initial = REQ_STATUS_UNKNOWN
 
         if kwargs.get('instance'):
             # read and set field values from status models
-            owner_status_obj = self.get_status(kwargs['instance'], OWNER_STATUS_TYPE)
+            owner_status_obj = self.get_status(kwargs['instance'], REQ_OWNER_STATUS)
             initial = {
                 'owner_status': owner_status_obj.status.pk,
                 'owner_notes': owner_status_obj.notes
             }
             try:
-                signee_status_obj = self.get_status(kwargs['instance'], SIGNEE_STATUS_TYPE)
+                signee_status_obj = self.get_status(kwargs['instance'], REQ_SIGNEE_STATUS)
                 initial['approve_status'] = signee_status_obj.status.pk
                 initial['approve_notes'] = signee_status_obj.notes
             except django.core.exceptions.ObjectDoesNotExist:
                 # set default values for signee
-                initial['approve_status'] = UNKNOWN_REQUIREMENT_STATUS
+                initial['approve_status'] = REQ_STATUS_UNKNOWN
 
             kwargs.update(initial=initial)
 
@@ -158,7 +155,7 @@ class RequirementForm(django.forms.ModelForm):
             self.fields['approve_notes'].disabled = True
 
     @staticmethod
-    def get_status(obj, status_type=OWNER_STATUS_TYPE):
+    def get_status(obj, status_type=REQ_OWNER_STATUS):
         return RequirementStatusEntry.objects.get(
             requirement=obj.requirement,
             type=status_type,
@@ -189,15 +186,58 @@ class RequirementForm(django.forms.ModelForm):
             status_obj.save()
         return status_obj
 
+    def _save_overall_status(self, owner_status, signee_status):
+        code = REQ_STATUS_UNKNOWN
+        msg = "?"
+
+        if owner_status.id in (REQ_STATUS_READY, REQ_STATUS_NOT_APPLICABLE):
+            code = signee_status.status.id
+            if signee_status.id == REQ_STATUS_UNKNOWN:
+                msg = "Waiting for approval..."
+            elif signee_status.id == REQ_STATUS_NOT_READY:
+                msg = "Not approved!"
+            elif signee_status.id == REQ_STATUS_READY:
+                if owner_status.id == REQ_STATUS_NOT_APPLICABLE:
+                    msg = "N/A"
+                else:
+                    msg = "OK"
+            elif signee_status.id == REQ_STATUS_NOT_APPLICABLE:
+                msg = "N/A"
+        else:
+            code = owner_status.status.id
+            if owner_status.id == REQ_STATUS_UNKNOWN:
+                msg = "?"
+            elif owner_status.id == REQ_STATUS_NOT_READY:
+                msg = "Not ready"
+
+        obj, created = RequirementStatusEntry.objects.get_or_create(
+            component_version=self.instance.component_version,
+            requirement=self.instance.requirement,
+            type=RequirementStatusType.objects.get(pk=REQ_OVERALL_STATUS),
+            status=RequirementStatus.objects.get(pk=code),
+            defaults={
+                "notes": msg,
+            }
+        )
+        if not created:
+            obj.status = status
+            obj.notes = notes
+            obj.save()
+        return obj
+
     def save(self, commit=True, *args, **kwargs):
         if 'requirement' in self.cleaned_data:
+            signee_status = None
+            owner_status = None
+
             if 'approve_status' in self.changed_data or 'approve_notes' in self.changed_data:
-                self._save_status('approve', SIGNEE_STATUS_TYPE)
+                signee_status = self._save_status('approve', REQ_SIGNEE_STATUS)
 
             elif 'owner_status' in self.changed_data:  # reset sign off if readiness is changed
-                self.cleaned_data['approve_status'] = RequirementStatus.objects.get(pk=UNKNOWN_REQUIREMENT_STATUS)
-                self._save_status('approve', SIGNEE_STATUS_TYPE)
-            return self._save_status('owner', OWNER_STATUS_TYPE)
+                self.cleaned_data['approve_status'] = RequirementStatus.objects.get(pk=REQ_STATUS_UNKNOWN)
+                signee_status = self._save_status('approve', REQ_SIGNEE_STATUS)
+            owner_status = self._save_status('owner', REQ_OWNER_STATUS)
+            return self._save_overall_status(owner_status, signee_status)
 
 
 class RequirementStatusEntryAdmin(admin.TabularInline):
@@ -232,9 +272,9 @@ class RequirementStatusEntryAdmin(admin.TabularInline):
         # show requirements available for requirement set owners only
         if not request.user.has_perm(OWNER_STATUS_PERMISSION) and \
                 request.user.has_perm(SIGNEE_STATUS_PERMISSION):
-            return qs.filter(type=SIGNEE_STATUS_TYPE,
+            return qs.filter(type=REQ_SIGNEE_STATUS,
                              requirement__sets__owner_groups__in=request.user.groups.all()).order_by('requirement_id')
-        return qs.filter(type=OWNER_STATUS_TYPE).order_by('requirement_id')
+        return qs.filter(type=REQ_OWNER_STATUS).order_by('requirement_id')
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         requirement_qs = Requirement.objects.all()

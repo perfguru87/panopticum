@@ -5,7 +5,7 @@
     "fields": {
       "name": "unknown",
       "description": "",
-      "allow_for": [1, 2 ]
+      "allow_for": [1, 2, 3 ]
     }
   },
   {
@@ -14,7 +14,7 @@
     "fields": {
       "name": "not ready",
       "description": "Requirement declined by approver",
-      "allow_for": [1, 2 ]
+      "allow_for": [1, 2, 3 ]
     }
   },
   {
@@ -23,7 +23,7 @@
     "fields": {
       "name": "ready",
       "description": "Requirement approved",
-      "allow_for": [1, 2 ]
+      "allow_for": [1, 2, 3 ]
     }
   },
   {
@@ -32,7 +32,16 @@
     "fields": {
       "name": "n/a",
       "description": "not applicable. That requirement doesn't need for that component",
-      "allow_for": [1 ]
+      "allow_for": [1, 3 ]
+    }
+  },
+  {
+    "model": "panopticum.requirementstatus",
+    "pk": 5,
+    "fields": {
+      "name": "waiting",
+      "description": "waiting for approval",
+      "allow_for": [3 ]
     }
   },
   {
@@ -47,6 +56,13 @@
     "pk": 2,
     "fields": {
       "owner": "requirement reviewer"
+    }
+  },
+  {
+    "model": "panopticum.requirementstatustype",
+    "pk": 3,
+    "fields": {
+      "owner": "ovrerall"
     }
   },
   {
