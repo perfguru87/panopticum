@@ -251,7 +251,7 @@ p.component-links span:first-child {
     min-width: 40px;
 }
 
-.title_left h3 { margin-top: 7px; font-size: 22px; }
+.title_left h3 { margin-top: 15px; font-size: 22px; }
 .title_left span div { margin-left: 5px; }
 
 .body { color: #4a5159; }
