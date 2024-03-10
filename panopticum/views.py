@@ -110,7 +110,7 @@ class RequirementStatusEntryViewSet(RelativeURLViewSet):
     @action(detail=True)
     def history(self, request, pk=None):
         status = self.get_object()
-        history_entries = status.history.all()
+        history_entries = status.history.all().order_by("-history_date")
         page = self.paginate_queryset(history_entries)
         if page is not None:
             serializer = HistoricalRequirementStatusEntrySerializer(page, many=True,
