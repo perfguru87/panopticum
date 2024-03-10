@@ -53,47 +53,47 @@
     "model": "panopticum.requirement",
     "pk": 1,
     "fields": {
-      "title": "Design review",
-      "description": "Late involvement of operation team into the development process leads to delays for the release and bring operations problems for the component in production."
+      "title": "Conformance",
+      "description": "Component doesn't duplicate others, has proper dependencies, has accurate description, etc"
     }
   },
   {
     "model": "panopticum.requirement",
     "pk": 2,
     "fields": {
-      "title": "SLO/SLI",
-      "description": "Operation team don't have metrics to understand if the component addresses a user's business needs or not."
+      "title": "Domain model definition",
+      "description": ""
     }
   },
   {
     "model": "panopticum.requirement",
     "pk": 3,
     "fields": {
-      "title": "Component state",
-      "description": "Most of the updates and other operations on containers lead to downtime if the component keeps a state on the same container."
+      "title": "Component diagram",
+      "description": ""
     }
   },
   {
     "model": "panopticum.requirement",
     "pk": 4,
     "fields": {
-      "title": "Backup and restore",
-      "description": "Operation team should be able to perform the consistent online backup of the component.\nOperation team should be able to restore the component if the component data is corrupted."
+      "title": "Sequence diagram",
+      "description": ""
     }
   },
   {
     "model": "panopticum.requirement",
     "pk": 5,
     "fields": {
-      "title": "Databases",
-      "description": "One database account used by several components is insecure and may lead to data corruption.\nDirect access to a database of another component may lead to data corruption, problems for another component, and incorrect results as well.\nNo way to easily check what is going to be changed in database schema within product upgrade."
+      "title": "Database usage policy",
+      "description": ""
     }
   },
   {
     "model": "panopticum.requirement",
     "pk": 6,
     "fields": {
-      "title": "Message queuing",
+      "title": "API guideline",
       "description": ""
     }
   },
@@ -101,7 +101,7 @@
     "model": "panopticum.requirement",
     "pk": 7,
     "fields": {
-      "title": "Backward compatibility",
+      "title": "OS autoupdate",
       "description": ""
     }
   },
@@ -109,53 +109,13 @@
     "model": "panopticum.requirement",
     "pk": 8,
     "fields": {
-      "title": "HA",
-      "description": ""
+      "title": "Vulnerability management",
+      "description": "Component has periodical vulnerabilities scan (e.g. static scan and external black box audit) and fixes"
     }
   },
   {
     "model": "panopticum.requirement",
     "pk": 9,
-    "fields": {
-      "title": "Zero-downtime update",
-      "description": ""
-    }
-  },
-  {
-    "model": "panopticum.requirement",
-    "pk": 10,
-    "fields": {
-      "title": "HTTP requests tracing",
-      "description": ""
-    }
-  },
-  {
-    "model": "panopticum.requirement",
-    "pk": 11,
-    "fields": {
-      "title": "Logging completeness",
-      "description": ""
-    }
-  },
-  {
-    "model": "panopticum.requirement",
-    "pk": 12,
-    "fields": {
-      "title": "Logging format",
-      "description": ""
-    }
-  },
-  {
-    "model": "panopticum.requirement",
-    "pk": 13,
-    "fields": {
-      "title": "Logging storage",
-      "description": ""
-    }
-  },
-  {
-    "model": "panopticum.requirement",
-    "pk": 14,
     "fields": {
       "title": "Logs sanitization",
       "description": ""
@@ -163,23 +123,7 @@
   },
   {
     "model": "panopticum.requirement",
-    "pk": 15,
-    "fields": {
-      "title": "DataBase anonymisation",
-      "description": ""
-    }
-  },
-  {
-    "model": "panopticum.requirement",
-    "pk": 16,
-    "fields": {
-      "title": "API guideline compliance",
-      "description": ""
-    }
-  },
-  {
-    "model": "panopticum.requirement",
-    "pk": 17,
+    "pk": 10,
     "fields": {
       "title": "FIPS compliance",
       "description": ""
@@ -187,37 +131,166 @@
   },
   {
     "model": "panopticum.requirement",
-    "pk": 18,
+    "pk": 11,
     "fields": {
       "title": "GDPR compliance",
       "description": ""
     }
   },
   {
+    "model": "panopticum.requirement",
+    "pk": 12,
+    "fields": {
+      "title": "DataBase anonymisation",
+      "description": "Database replicas accessed by R&D teams should be anonymised, if any"
+    }
+  },
+  {
+    "model": "panopticum.requirement",
+    "pk": 13,
+    "fields": {
+      "title": "Design review",
+      "description": "Late involvement of operation team into the development process leads to delays for the release and bring operations problems for the component in production."
+    }
+  },
+  {
+    "model": "panopticum.requirement",
+    "pk": 14,
+    "fields": {
+      "title": "Deployment",
+      "description": "Component meets defined deployment requirements, e.g. deployed as kubernetes pod and takes DB credentials from env variables."
+    }
+  },
+  {
+    "model": "panopticum.requirement",
+    "pk": 15,
+    "fields": {
+      "title": "Safe restart",
+      "description": "Most of the updates and other operations on containers lead to downtime if the component keeps a state on the same container."
+    }
+  },
+  {
+    "model": "panopticum.requirement",
+    "pk": 16,
+    "fields": {
+      "title": "Backup and restore",
+      "description": "Operation team should be able to perform the consistent online backup of the component.\nOperation team should be able to restore the component if the component data is corrupted."
+    }
+  },
+  {
+    "model": "panopticum.requirement",
+    "pk": 17,
+    "fields": {
+      "title": "Databases access",
+      "description": "One database account used by several components is insecure and may lead to data corruption.\nDirect access to a database of another component may lead to data corruption, problems for another component, and incorrect results as well.\nNo way to easily check what is going to be changed in database schema within product upgrade."
+    }
+  },
+  {
+    "model": "panopticum.requirement",
+    "pk": 18,
+    "fields": {
+      "title": "Message queuing",
+      "description": ""
+    }
+  },
+  {
+    "model": "panopticum.requirement",
+    "pk": 19,
+    "fields": {
+      "title": "Scalability",
+      "description": "Component is horizontally scalable and has appropriate load balancing"
+    }
+  },
+  {
+    "model": "panopticum.requirement",
+    "pk": 20,
+    "fields": {
+      "title": "High Availability",
+      "description": "Component meets high-availability requirements and can survive in case of infrastructure outages"
+    }
+  },
+  {
+    "model": "panopticum.requirement",
+    "pk": 21,
+    "fields": {
+      "title": "Zero-downtime upgrade",
+      "description": "Component supports zero-downtime upgrade"
+    }
+  },
+  {
+    "model": "panopticum.requirement",
+    "pk": 22,
+    "fields": {
+      "title": "Metris",
+      "description": "Component provides all necessary metrics to understand if it works properly"
+    }
+  },
+  {
+    "model": "panopticum.requirement",
+    "pk": 23,
+    "fields": {
+      "title": "Logging completeness",
+      "description": "Component generates enough logs for easy troubleshooting"
+    }
+  },
+  {
+    "model": "panopticum.requirement",
+    "pk": 24,
+    "fields": {
+      "title": "Logging format",
+      "description": "Logging format is compliant with company standards (e.g. has proper JSON schema)"
+    }
+  },
+  {
+    "model": "panopticum.requirement",
+    "pk": 25,
+    "fields": {
+      "title": "Logging storage",
+      "description": "Logs are being delivered to proper logs storage and has proper retention configured"
+    }
+  },
+  {
+    "model": "panopticum.requirement",
+    "pk": 26,
+    "fields": {
+      "title": "HTTP requests tracing",
+      "description": "Component supports HTTP tracing for easy requests path tracking"
+    }
+  },
+  {
     "model": "panopticum.requirementset",
     "pk": 1,
     "fields": {
-      "name": "Cloud requirements",
-      "description": "identifies a component needs, which based on its architecture, technologies and other details;\nseek ways to apply what operation team learned and experienced to ensure the high availability and reliability of a service operating in production with minimization of costs;\nIs a prerequisite for DCO team to accept a component and put a component into production.",
-      "requirements": [1, 2, 3, 4, 5, 6, 7, 9]
+      "name": "Architecture requirements",
+      "description": "",
+      "requirements": [1, 2, 3, 4, 5, 6]
     }
   },
   {
     "model": "panopticum.requirementset",
     "pk": 2,
     "fields": {
-      "name": "Maintenance",
+      "name": "Security & Compliance",
       "description": "",
-      "requirements": [10, 11, 12, 13, 14, 15]
+      "requirements": [7, 8, 9, 10, 11, 12]
     }
   },
   {
     "model": "panopticum.requirementset",
     "pk": 3,
     "fields": {
-      "name": "Compliance",
+      "name": "Operational requirements",
+      "description": "identifies a component needs, which based on its architecture, technologies and other details;\nseek ways to apply what operation team learned and experienced to ensure the high availability and reliability of a service operating in production with minimization of costs;\nIs a prerequisite for DCO team to accept a component and put a component into production.",
+      "requirements": [13, 14, 15, 16, 17, 18, 19, 20, 21]
+    }
+  },
+  {
+    "model": "panopticum.requirementset",
+    "pk": 4,
+    "fields": {
+      "name": "Maintenance requirements",
       "description": "",
-      "requirements": [16, 17, 18]
+      "requirements": [22, 23, 24, 25, 26]
     }
   }
 ]
