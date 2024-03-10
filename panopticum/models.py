@@ -111,13 +111,13 @@ NO_PARTIAL_YES_RATING = {'unknown': 0, 'n/a': 2, 'no': 0, 'partial': 1, 'yes': 2
 
 
 DEPENDENCY_TYPE = (
-    ('sync_rw', "Requires - Sync R/W"),
-    ('sync_ro', "Requires - Sync R/O"),
-    ('sync_wo', "Requires - Sync W/O"),
-    ('async_rw', "Requires - Async R/W"),
-    ('async_ro', "Requires - Async R/O"),
-    ('async_wo', "Requires - Async W/O"),
-    ('includes', "Includes")
+    ("strong_rw", "Runtime - Strong - R/W"),
+    ("strong_ro", "Runtime - Strong - R/O"),
+    ("strong_wo", "Runtime - Strong - W/O"),
+    ("weak_rw", "Runtime - Weak - R/W"),
+    ("weak_ro", "Runtime - Weak - R/O"),
+    ("weak_wo", "Runtime - Weak - W/O"),
+    ("compile_time", "Compile time"),
 )
 
 
@@ -624,11 +624,14 @@ class ComponentVersionModel(models.Model):
 
 class ComponentDependencyModel(models.Model):
     type = models.CharField(max_length=16, choices=DEPENDENCY_TYPE, default=DEPENDENCY_TYPE[0][0],
-                            help_text="Requires - mean components communicates through API; " +
-                                      "Sync - component will block if dependent component is not available; " +
-                                      "Async - component will not be blocked; " +
-                                      "R/O - read-only dependency; " +
-                                      "R/W - read/write dependency")
+                            help_text=
+                            "Compile time - Given component requires the other component statically and can't be compiled w/o it; "
+                            "Strong - component can't operate w/o the other being deployed and running; "
+                            "Weak - component require the other to unblock certain functionality, however still can work well w/o it; "
+                            "R/W - component reads data from the other OR modify state of another component; "
+                            "R/O - component reads data from the other, BUT doesn't modify state of another component; "
+                            "W/O - component doesn't get any data from the other, BUT can modify it's state;")
+
     component = models.ForeignKey(ComponentModel, on_delete=models.PROTECT)
     version = models.ForeignKey(ComponentVersionModel, on_delete=models.PROTECT)
     notes = panopticum.fields.SmartTextField("Dependency notes")
