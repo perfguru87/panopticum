@@ -15,8 +15,8 @@
 {% block content %}
 
 <!-- Temporary disable, because vue js breaks all the javascripts  <div class="right_col" role="main" id="vue-component2"> //-->
-  <div class="right_col" role="main" id="vue-component">
-    <div class="">
+  <div v-cloak class="right_col dashboard" role="main" id="vue-component">
+    <div class="" v-if='component.id'>
 
       <div class='row top_tiles'>
         <div class="col-md-8 tile">
@@ -43,7 +43,7 @@
             </div>
           </div>
         </div>
-        <div class="col-md-8 col-sm-12">
+        <div v-cloak class="col-md-8 col-sm-12" v-if='component.latest_version_id'>
           <div class='row'>
             <div class="col-md-12 col-sm-12">
               {% include "widget/component_deployments.html" %}
@@ -56,16 +56,35 @@
                   {% include "widget/component_owners.html" %}
                 </div>
                 <div class="col-xs-12">
-                  {% include "widget/component_quality_assurance.html" %}
+                  <widget-requirements v-bind:requirementsets="requirementsets" v-bind:requirementsetid="1" v-bind:component_version="component.latest_version" v-cloak></widget-requirements>
+                  <widget-requirements v-bind:requirementsets="requirementsets" v-bind:requirementsetid="2" v-bind:component_version="component.latest_version" v-cloak></widget-requirements>
                 </div>
               </div>
             </div>
             <div class="col-md-6 col-sm-12 col-xs-12">
               <div class="row">
                 <div class="col-xs-12">
-                  {% include "widget/component_requirements.html" %}
+                  {% include "widget/component_quality_assurance.html" %}
+                  <widget-requirements v-if="requirementsets.length > 2" v-bind:requirementsets="requirementsets" v-bind:requirementsetid="3" v-bind:component_version="component.latest_version" v-cloak></widget-requirements>
+                  <widget-requirements v-if="requirementsets.length > 3" v-bind:requirementsets="requirementsets" v-bind:requirementsetid="4" v-bind:component_version="component.latest_version" v-cloak></widget-requirements>
+                  <widget-requirements v-if="requirementsets.length > 4" v-bind:requirementsets="requirementsets" v-bind:requirementsetid="5" v-bind:component_version="component.latest_version" v-cloak></widget-requirements>
                 </div>
               </div>
+            </div>
+          </div>
+        </div>
+        <div v-cloak v-else-if="component.id" class="col-md-8 col-sm-12">
+          <div class='row'>
+            <div class="col-md-12 col-sm-12">
+              <el-card>
+                <div slot="header" class="clearfix">
+                    <h2>Component details</h2>
+                </div>
+                    <p><b>WARNING</b>: It seems like component version information has not been provided yet. A component must have at least one registered component version,
+                    you can create it in the <a href='/admin/panopticum/componentversionmodel/add/'>admin panel</a> (see ComponentVersion class)</p>
+                    <p>Component versions cover specific details, like dependencies, requirements, quality attributes and other volatile information</p>
+                    <p>Single component can have several component versions assigned, in this case the latest version will be selected by default.</p>
+              </el-card>
             </div>
           </div>
         </div>
@@ -134,7 +153,6 @@ function init_profile_completeness_gauge(component) {
     };
 
     $('#profile-completeness-gauge-text').each(function(index, el) {
-
         if (component.latest_version.meta_profile_not_filled_fields == "")
             $(el).attr('title', 'Good job!');
         else if (component.latest_version.meta_profile_not_filled_fields)
@@ -144,7 +162,7 @@ function init_profile_completeness_gauge(component) {
             $(el).attr('title', 'no component version created in admin panel!');
 
         $(el).click(function() {
-            window.open('/admin/panopticum/componentversionmodel/' + component.latest_version.id + '/change/');
+            window.open('/admin/panopticum/componentversionmodel/' + component.latest_version_id + '/change/');
             return false;
         });
         $(el).css('cursor', 'pointer');
@@ -169,7 +187,7 @@ function init_profile_completeness_gauge(component) {
 function update_component_page_elements(component) {
     pa_replace_urls();
 
-    $(".pa-quality").each(function(index, el) {
+    $(".pa-status").each(function(index, el) {
         $(el).html(pa_star_rating($(el).html()));
         var val = $(el).html();
         if (val == "unknown") {
@@ -249,6 +267,7 @@ function vue_component_init() {
                 'data_privacy_class':{},
             },
             versions: [],
+            requirementsets: [],
             selectedVersion: null,
             loading: true,
             erroed: false
@@ -283,16 +302,19 @@ function vue_component_init() {
                    this.errored = true
                 }),
               axios.get(`/api/component_version/?format=json&ordering=-release_date&component=${this.getIdFromHref(window.location.pathname)}`)
+                .then(response => response.data.results),
+              axios.get(`/api/requirement_set/?format=json`)
                 .then(response => response.data.results)
           ];
           // make parallel requests
-          const [component, versions]= await Promise.all(requests)
+          const [component, versions, requirementsets] = await Promise.all(requests)
           if (versions.length) {
             currentVersion  = await axios.get(`/api/component_version/${versions[0].id}/?format=json`).then(resp => resp.data);
             this.selectedVersion = currentVersion.id;
           }
           component.latest_version = currentVersion;
-          this.versions=versions;
+          this.versions = versions;
+          this.requirementsets = requirementsets;
           this.component = component;
           this.loading = false;
           this.$nextTick(function () {

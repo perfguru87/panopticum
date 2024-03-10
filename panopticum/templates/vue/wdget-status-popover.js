@@ -26,7 +26,7 @@ Vue.component('widget-status-popover', {
         popupEnabled: function() {
             const statuses = this.statuses;
             return statuses.filter(status => {
-                return (status && status.status != 'unknown' && (status.notes || status.history))
+                return (status && status.status.id != STATUS_UNKNOWN)
             }).some(s => s);
         }
     },
@@ -37,8 +37,10 @@ Vue.component('widget-status-popover', {
     methods: {
         getSigneeClass(status) {
             return {
-                'signee-no': (status && status.status.id == 2),
-                "signee-yes": (status && [3, 4].includes(status.status.id) )
+                'status-unknown': (status && status.status.id == STATUS_UNKNOWN),
+                'status-not-ready': (status && status.status.id == STATUS_NOT_READY),
+                'status-ready': (status && status.status.id == STATUS_READY),
+                'status-not-applicable': (status && status.status.id == STATUS_NOT_APPLICABLE)
             }
         },
         getUsername(user) {

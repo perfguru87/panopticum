@@ -6,11 +6,10 @@ Vue.component('app-status', {
     computed: {
         classObject: function() {
             return {
-                'el-icon-success yes': this.status &&  this.status.id == 3 && this.lightIcon == undefined,
-                'el-icon-circle-check yes': this.status && this.status.id == 3 && this.lightIcon != undefined,
-                'el-icon-remove no': this.status && this.status.id == 2,
-                'unknown': this.status && this.status.id == 4,
-                'el-icon-question': !this.status || this.status.id == 1,
+                'el-icon-circle-check yes': this.status && this.status.id == STATUS_READY,
+                'el-icon-remove no': this.status && this.status.id == STATUS_NOT_READY,
+                'unknown fa fa-question-circle': this.status && this.status.id == STATUS_UNKNOWN,
+                'unknown fa fa-question-circle': !this.status || this.status.id == STATUS_UNKNOWN,
             }
         }
     },
@@ -20,7 +19,7 @@ Vue.component('app-status', {
         <i v-else-if="status && [4].includes(status.id)" v-bind:class="classObject" style="font-size: 10px;">
         N/A
         </i>
-        <i v-else class="el-icon-question" style="color: grey;"></i>
+        <i v-else class="unknown fa fa-question-circle"></i>
     </span>
     {% endverbatim %}`
 })

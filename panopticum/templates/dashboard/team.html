@@ -26,9 +26,7 @@
   {{ block.super }}
 <script>
 
-
-$(document).ready(function() {
-
+function vue_component_init() {
     ELEMENT.locale(ELEMENT.lang.en);
     {% include "vue/widget-note.js" %}
     {% include "vue/widget-jira-ticket.js" %}
@@ -40,6 +38,10 @@ $(document).ready(function() {
     const app = new Vue({
         el: "#vue-component"
     })
+}
+
+$(document).ready(function() {
+    vue_component_init();
 });
 </script>
 

@@ -1,34 +1,33 @@
-Vue.component('dashboard-team', {
+Vue.component('dashboard-requirementset', {
     data: function() {
         return {
             filters: {},
             topFilters: {},
+            requirementSetId: 1,
+            requirementSet: {},
             total: 0,
             currentPage: null,
             pageLimit: 30,
 
         }
     },
-    computed: {
-        requirementSetId: function() {
-            const searchParams = new URLSearchParams(window.location.search);
-            return searchParams.get('requirementset');
-        },
-        team: function() {
-            // dashboard title hardcoded until dashboard settings will be implemented
-            const reqTitleMap = [
-                {requirementset: 1, title: 'Operations'},
-                {requirementset: 2, title: 'Maintenance'},
-                {requirementset: 3, title: 'Compliance'}
-            ]
-            return reqTitleMap.find(item => item.requirementset == this.requirementSetId).title
-        }
-    },
-    created: function() {
+    created: async function() {
         this.filters = this.getFilters('filters');
+        this.requirementSetId = this.getRequirementSetId();
         this.topFilters = this.getFilters('topfilters');
         pageFilters = this.getFilters('pagination');
         this.currentPage = pageFilters.page || 1;
+
+        let requests = [
+            axios.get(`/api/requirement_set/${this.getRequirementSetId()}/?format=json`)
+              .then(response => response.data)
+              .catch(error => {
+                 console.log(error);
+                 this.errored = true
+              }),
+        ];
+        const [requirementset]= await Promise.all(requests)
+        this.requirementSet = requirementset
     },
     watch: {
         currentPage: "onCurrentPageChange"
@@ -49,6 +48,15 @@ Vue.component('dashboard-team', {
         },
         onTotalChange(total) {
             this.total = total;
+        },
+        getRequirementSetId() {
+            const pattern = /\/requirementset\/(\d+)/;
+            const matches = window.location.href.match(pattern);
+            if (matches) {
+                return matches[1];
+            } else {
+                return 1;
+            }
         },
         getFilters(key) {
             const params = new URLSearchParams(window.location.hash.substr(1));
@@ -75,7 +83,7 @@ Vue.component('dashboard-team', {
 
     <div class="row title_left">
         <div class="col-sm-12">
-            <h3>{{ team }} dashboard</h3>
+            <h3>{{ requirementSet.name }} dashboard</h3>
         </div>
     </div>
 
@@ -83,7 +91,7 @@ Vue.component('dashboard-team', {
         <div class="col-sm-12"><hr></div>
     </div>
     <div class="row">
-        <div class="col-sm-12 table-team-dashboard" id="vue-component">
+        <div class="col-sm-12 table-requirementset-dashboard" id="vue-component">
             <widget-components-list 
             :requirement-set-id="requirementSetId"
              v-on:update:header-filters="onHeaderFilters" 

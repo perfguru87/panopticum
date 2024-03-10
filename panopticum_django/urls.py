@@ -47,7 +47,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     url('^component/', views.component, name='Component'),
     url('^dashboard/components.html', views.dashboard_components, name='Components'),
-    url('^dashboard/team/', views.dashboard_team, name='team'),
+    url('^requirementset/', views.requirementset, name='team'),
     url('^dashboard/links.html', views.dashboard_components, name='Links'),
     path('api/login/', rest_framework.authtoken.views.obtain_auth_token),
     path('api/login/', views.LoginAPIView.as_view()),

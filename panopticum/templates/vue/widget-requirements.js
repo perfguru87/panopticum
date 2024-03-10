@@ -1,15 +1,15 @@
 
 Vue.component('widget-requirements', {
-    props: ['component_version', 'setid'],
+    props: ['requirementsets', 'requirementsetid', 'component_version'],
     data: function() {
-        return {
-            requirements: [],
-            statuses: [],
-            table: [],
-            title: "",
-            description: "",
-            statusDefinitions: []
-        }
+      return {
+        requirements: [],
+        statuses: [],
+        table: [],
+        title: "",
+        description: "",
+        statusDefinitions: []
+      }
     },
     computed: {
         apiUrl: function() {
@@ -17,10 +17,6 @@ Vue.component('widget-requirements', {
         }
     },
     methods: {
-        getRequirementSet: function () {
-            return axios.get(`${this.apiUrl}/requirement_set/${this.setid}/`)
-                .then(resp => resp.data)
-        },
         fetchStatusesDefinition() {
             return axios.get('/api/status/?format=json&allow_for=1&allow_for=2').then(resp => {
                 this.statusDefinitions = resp.data.results;
@@ -31,7 +27,7 @@ Vue.component('widget-requirements', {
             return Number(idPattern.exec(href)[1]);
         },
         getStatuses: function () {
-            return axios.get(`${this.apiUrl}/requirement_status/?component_version=${this.component_version.id}&requirement__requrementset_set=${this.setid}`)
+            return axios.get(`${this.apiUrl}/requirement_status/?component_version=${this.$props.component_version.id}&requirement__requrementset_set=${this.$props.requirementsetid}`)
                 .then(resp => {
                     return resp.data.results.map(status => { 
                         status.status = this.statusDefinitions.find(s=> this.getIDfromHref(status.status) == s.id)
@@ -43,11 +39,15 @@ Vue.component('widget-requirements', {
             return Number(href.split('/').slice(-2)[0])
         },
         updateRequirements: function() {
-            return this.getRequirementSet().then(reqSet => {
-                this.title = reqSet.name;
-                this.description = reqSet.description;
-                this.requirements = reqSet.requirements;
-            })
+            for (let i = 0; i < this.$props.requirementsets.length; i++) {
+                rs = this.$props.requirementsets[i];
+                if (rs.id == this.$props.requirementsetid) {
+                    this.title = rs.name;
+                    this.description = rs.description;
+                    this.requirements = rs.requirements;
+                    break;
+                }
+            }
         },
         updateTable: function() {
             this.table = [];
@@ -68,13 +68,15 @@ Vue.component('widget-requirements', {
             }
         },
         updateStatuses: function() {
-            if (!this.component_version.id) return;
+            if (!this.$props.component_version.id)
+                return;
             return this.getStatuses().then(statuses => {this.statuses = statuses;}) 
         }
     },
     mounted: function() {
         this.fetchStatusesDefinition();
         this.updateRequirements();
+        this.updateStatuses().then(_ => this.updateTable());
     },
     watch: {
         component_version: function() {
@@ -82,7 +84,7 @@ Vue.component('widget-requirements', {
         }
     },
     template: `
-    {% verbatim %}<el-card>
+    {% verbatim %}<el-card v-if='title'>
         <div slot="header" class="clearfix">
                 <h2>{{title }}</h2>
                 <span class='pa-component-rating' v-if='component_version.op_applicable'>

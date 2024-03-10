@@ -5,6 +5,7 @@ Vue.component('dashboard-components', {
       tableData: [],
       componentVersions: [],
       categories: [],
+      requirementSets: [],
       products: [],
       locations: [],
       types: [],

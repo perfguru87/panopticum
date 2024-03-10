@@ -123,7 +123,7 @@ class RequirementStatusEntryViewSet(RelativeURLViewSet):
 
 
 class RequirementSetViewSet(RelativeURLViewSet):
-    queryset = RequirementSet.objects.all()
+    queryset = RequirementSet.objects.all().order_by('id')
     serializer_class = RequirementSetSerializer
     filterset_filelds = '__all__'
 
@@ -181,7 +181,8 @@ class LoginAPIView(APIView):
 @login_required
 def render_page(request, template):
     context = {
-        'categories': ComponentCategoryModel.objects.all(),
+        'categories': ComponentCategoryModel.objects.all().order_by('order'),
+        'requirementSets': RequirementSet.objects.all().order_by('id'),
         'JIRA_BASE_URL': settings.DATABASES.get('jira', {}).get('NAME')
     }
     return render(request, template, context)
@@ -189,6 +190,10 @@ def render_page(request, template):
 
 def component(request):
     return render_page(request, 'page/component.html')
+
+
+def requirementset(request):
+    return render_page(request, 'page/requirementset.html')
 
 
 def dashboard_components(request):

@@ -1,120 +1,78 @@
 {% load static %}
 <el-card>
   <div slot="header" class="clearfix">
-    <h2>Owners</h2>
+    <h2 v-cloak>Responsibility</h2>
   </div>
-    <div class="owners-list">
 
-      <table style='width: 100%;' v-cloak>
+  <table class='status-table' v-cloak>
+    <thead>
       <tr>
-        <td class='owner'>
-          <div class='block'>
-            <div class='image'>
-              <img :src="`/api/user/${component.latest_version.owner_maintainer.id}/photo/`"
-                   v-if="component.latest_version.owner_maintainer && component.latest_version.owner_maintainer.id">
-              <img v-else src="{% static '/images/default_avatar.png' %}">
-            </div>
-            <div class='details'>
-              <b v-if='component.latest_version.owner_maintainer'>
-                [[ component.latest_version.owner_maintainer.name ]]</b> - Maintainer<br>
-              <a v-if='component.latest_version.owner_maintainer'
-                  v-bind:href="`mailto:${component.latest_version.owner_maintainer.email}`">
-                [[ component.latest_version.owner_maintainer.email ]], </a>
-              <span v-if='component.latest_version.owner_maintainer'>
-                [[ component.latest_version.owner_maintainer.mobile_phone ]]</span>
-            </div>
-          </div>
-        </td>
+        <th>Category</th>
+        <th>Status</th>
+        <th>People</th>
       </tr>
-
+    </thead>
+    <tbody>
       <tr>
-        <td class='owner'>
-          <div class='block'>
-            <div class='image'>
-              <img :src="`/api/user/${component.latest_version.owner_responsible_qa.id}/photo/`"
-                   v-if="component.latest_version.owner_responsible_qa && component.latest_version.owner_responsible_qa.id ">
-              <img v-else src="{% static '/images/default_avatar.png' %}">
-            </div>
-            <div class='details'>
-              <b v-if='component.latest_version.owner_responsible_qa'>
-                [[ component.latest_version.owner_responsible_qa.name ]]</b> - Responsible QA<br>
-              <a v-if='component.latest_version.owner_responsible_qa'
-                  v-bind:href="`mailto:${component.latest_version.owner_responsible_qa.email}`">
-                [[ component.latest_version.owner_responsible_qa.email ]], </a>
-              <span v-if='component.latest_version.owner_responsible_qa'>
-                [[ component.latest_version.owner_responsible_qa.mobile_phone ]]</span>
-            </div>
-          </div>
+        <td>Maintainers</td>
+        <td v-cloak class='pa-status'>
+              <i v-cloak v-if='component.latest_version && component.latest_version.owner_maintainer && component.latest_version.owner_maintainer.username' class='el-icon-circle-check yes'></i>
+              <i v-cloak v-else class='unknown fa fa-question-circle'></i>
+        </td>
+        <td>
+              <span v-if='component.latest_version.owner_maintainer'>[[ component.latest_version.owner_maintainer.username ]]</span>
         </td>
       </tr>
-
-      <tr v-for="p in component.latest_version.owner_product_manager">
-        <td class='owner'>
-          <div class='block'>
-            <div class='image'><img v-bind:src="`/api/user/${p.id}/photo/`"
-                                    v-if="p.id"></div>
-            <div class='details'>
-              <b>[[ p.name ]]</b> - Product Manager<br>
-              <a v-bind:href="`mailto:${p.email}`">[[ p.email ]]</a>, [[ p.mobile_phone ]]
-            </div>
-          </div>
-        </td>
-      </tr>
-
-      <tr v-for="p in component.latest_version.owner_program_manager">
-        <td class='owner'>
-          <div class='block'>
-            <div class='image'><img v-bind:src="`/api/user/${p.id}/photo/`"
-                                    v-if="p.id"></div>
-            <div class='details'>
-              <b>[[ p.name ]]</b> - Program Manager<br>
-              <a v-bind:href="`mailto:${p.email}`">[[ p.email ]]</a>, [[ p.mobile_phone ]]
-            </div>
-          </div>
-        </td>
-      </tr>
-
-      <tr v-for="p in component.latest_version.owner_architect">
-        <td class='owner'>
-          <div class='block'>
-            <div class='image'><img v-bind:src="`/api/user/${p.id}/photo/`"
-                                    v-if="p.id"></div>
-            <div class='details'>
-              <b>[[ p.name ]]</b> - Architect<br>
-              <a v-bind:href="`mailto:${p.email}`">[[ p.email ]]</a>, [[ p.mobile_phone ]]
-            </div>
-          </div>
-        </td>
-      </tr>
-
       <tr>
-        <td class='owner'>
-          <div class='block'>
-            <div class='image'><i class='fa fa-phone'></i></div>
-            <div class='details' style='min-height: 42px;'>
-              <b>Escalation list:</b><br>
-              <div v-for="p in component.latest_version.owner_escalation_list">
-                <a v-bind:href="`mailto:${p.email}`">[[ p.email ]]</a>, [[ p.mobile_phone ]]
-              </div>
-            </div>
-          </div>
+        <td>Quality Assurance</td>
+        <td v-cloak class='pa-status'>
+              <i v-cloak v-if='component.latest_version && component.latest_version.owner_responsible_qa && component.latest_version.owner_responsible_qa.username' class='el-icon-circle-check yes'></i>
+              <i v-cloak v-else class='unknown fa fa-question-circle'></i>
+        </td>
+        <td>
+              <span v-if='component.latest_version.owner_responsible_qa'>[[ component.latest_version.owner_responsible_qa.username ]]</span>
         </td>
       </tr>
-
       <tr>
-        <td class='owner'>
-          <div class='block'>
-            <div class='image'><i class='fa fa-question'></i></div>
-            <div class='details' style='min-height: 42px;'>
-              <b>Experts:</b><br>
-              <div v-for="p in component.latest_version.owner_expert">
-                <a v-bind:href="`mailto:${p.email}`">[[ p.email ]]</a>, [[ p.mobile_phone ]]
-              </div>
-            </div>
-          </div>
+        <td>Code Experts</td>
+        <td v-cloak class='pa-status'>
+              <i v-cloak v-if='component.latest_version.owner_expert.length > 0' class='el-icon-circle-check yes'></i>
+              <i v-cloak v-else class='unknown fa fa-question-circle'></i>
+        </td>
+        <td>
+              <span v-if='component.latest_version.owner_expert.length > 0'>[[ component.latest_version.owner_expert.map(object => object.username).join(', ') ]]</span>
         </td>
       </tr>
-
-      </table>
-    </div>
+      <tr>
+        <td>3-rd line support</td>
+        <td v-cloak class='pa-status'>
+              <i v-cloak v-if='component.latest_version.owner_escalation_list.length > 0' class='el-icon-circle-check yes'></i>
+              <i v-cloak v-else class='unknown fa fa-question-circle'></i>
+        </td>
+        <td>
+              <span v-if='component.latest_version.owner_escalation_list.length > 0'>[[ component.latest_version.owner_escalation_list.map(object => object.username).join(', ') ]]</span>
+        </td>
+      </tr>
+      <tr>
+        <td>Architects</td>
+        <td v-cloak class='pa-status'>
+              <i v-cloak v-if='component.latest_version.owner_architect.length > 0' class='el-icon-circle-check yes'></i>
+              <i v-cloak v-else class='unknown fa fa-question-circle'></i>
+        </td>
+        <td>
+              <span v-if='component.latest_version.owner_architect.length > 0'>[[ component.latest_version.owner_architect.map(object => object.username).join(', ') ]]</span>
+        </td>
+      </tr>
+      <tr>
+        <td>Product managers</td>
+        <td v-cloak class='pa-status'>
+              <i v-cloak v-if='component.latest_version.owner_product_manager.length > 0' class='el-icon-circle-check yes'></i>
+              <i v-cloak v-else class='unknown fa fa-question-circle'></i>
+        </td>
+        <td>
+              <span v-if='component.latest_version.owner_product_manager.length > 0'>[[ component.latest_version.owner_product_manager.map(object => object.username).join(', ') ]]</i>
+        </td>
+      </tr>
+    </tbody>
+  </table>
 </el-card>

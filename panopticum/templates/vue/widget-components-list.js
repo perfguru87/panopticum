@@ -160,7 +160,7 @@ Vue.component('widget-components-list', {
             }
         },
         displayPopover(ownerStatus, signeeStatus) {
-            return [ownerStatus, signeeStatus].some(status => status && status.status && status.status.id !=1);
+            return true;
         },
         handleDropdownCommand(command) {
             // handle change dropdown filters
@@ -173,16 +173,16 @@ Vue.component('widget-components-list', {
             
             if (command != 'reset') {
                 if(command.type == 'overal') {
-                    queryParams = command.status.id == 3 ? readyOveralQuery : notReadyOveralQuery;
+                    queryParams = command.status.id == STATUS_READY ? readyOveralQuery : notReadyOveralQuery;
                 } else {
                     queryParams = `&statuses__status=${command.status.id}&statuses__requirement=${command.requirement.id}&statuses__type=${command.type == 'owner' ? 1 : 2}`
                 }
-                if (command.status.id == 1) {  // unknown status
+                if (command.status.id == STATUS_UNKNOWN) {  // unknown status
                     if (command.type == 'overal') {
                         queryParams = unknownOveralQuery;
                     } else {
-                        const notUnknownStatusesIds = this.statusDefinitions.owner.filter(s => s.id != 1 ).map(s => s.id);
-                        queryParams = `&exclude_statuses=${notUnknownStatusesIds}&exclude_requirement=${command.requirement.id}&exclude_type=${command.type == 'owner' ? 1 : 2}`
+                        const notUnknownStatusesIds = this.statusDefinitions.owner.filter(s => s.id != STATUS_UNKNOWN ).map(s => s.id);
+                        queryParams = `&exclude_statuses=${notUnknownStatusesIds}&exclude_requirement=${command.requirement.id}&exclude_type=${command.type == 'owner' ? STATUS_UKNOWN : STATUS_NOT_READY }`
                     }
                 }
 
@@ -202,21 +202,69 @@ Vue.component('widget-components-list', {
         },
         getOwnerClass(status) {
             return {
-                "owner el-icon-remove": status && status.status.id == 2, // TODO: move constant to separated module after migration to webpack
-                "owner el-icon-circle-check": status && [3,4].includes(status.status.id)
+                "owner el-icon-remove": status && status.status.id == STATUS_NOT_READY, // TODO: move constant to separated module after migration to webpack
+                "owner el-icon-circle-check": status && [STATUS_READY,STATUS_NOT_APPLICABLE].includes(status.status.id)
             }
         },
-        getSigneeClassForCell(obj) {
-            let status = obj.row[obj.column.label];
-            if (status == undefined) return;
-            status = status.signee;
-            if (status == undefined) return;
-            return this.getSigneeClass(status.status);
+        getEffectiveStatus(ownerStatus, signeeStatus) {
+            if (ownerStatus == undefined || signeeStatus == undefined)
+                return STATUS_UNDEFINED;
+            if (ownerStatus.id != STATUS_READY && ownerStatus.id != STATUS_NOT_APPLICABLE)
+                return ownerStatus.id;
+            if (signeeStatus.id == STATUS_UNKNOWN)
+                return STATUS_WAITING;
+            if (ownerStatus.id == STATUS_NOT_APPLICABLE && signeeStatus.id == STATUS_READY)
+                return STATUS_NOT_APPLICABLE;
+            return signeeStatus.id
         },
-        getSigneeClass(status) {
-            if (status == undefined) return;
-            if (status.id == 2) return 'signee-no';
-            if ([3, 4].includes(status.id) ) return "signee-yes";
+        getStatusClassForCell(obj) {
+            let req = obj.row[obj.column.label];
+            if (req == undefined)
+                return 'status-unknown';
+            if (req.owner == undefined || req.signee == undefined)
+                return 'status-unknown';
+            status = this.getEffectiveStatus(req.owner.status, req.signee.status);
+            return this.getStatusClass(status);
+        },
+        getStatusClass(status) {
+            if (status == undefined)
+                return 'status-unknown';
+            if (status == STATUS_NOT_READY)
+                return 'status-not-ready';
+            if (status == STATUS_WAITING)
+                return 'status-waiting';
+            if (status == STATUS_READY)
+                return 'status-ready';
+            if (status == STATUS_NOT_APPLICABLE)
+                return 'status-not-applicable';
+            return 'status-unknown';
+        },
+        getNotes(ownerStatus, signeeStatus) {
+            notes = "";
+            var oid = STATUS_UNKNOWN;
+            var sid = STATUS_UNKNOWN;
+
+            if (ownerStatus != undefined)
+                oid = ownerStatus.status.id;
+
+            if (signeeStatus != undefined)
+                sid = signeeStatus.status.id;
+
+            if (oid == STATUS_NOT_READY)
+                notes = "Not ready...";
+            else if (oid == STATUS_UNKNOWN)
+                notes = "?";
+            else if (oid == STATUS_READY || oid == STATUS_NOT_APPLICABLE) {
+                if (sid == STATUS_UNKNOWN)
+                    notes = "Waiting for approval... ";
+                else if (sid == STATUS_NOT_READY)
+                    notes = "Not approved!";
+                else if (oid == STATUS_NOT_APPLICABLE && sid == STATUS_NOT_APPLICABLE)
+                    notes = "N/A";
+                else
+                    notes = "OK"; 
+            }
+            return notes;
         },
         handleChangeFilter(id) {
             if (this.globalLoading) return;
@@ -232,9 +280,9 @@ Vue.component('widget-components-list', {
             let overal_status = 'unknown';
             if (compVer.total_statuses == this.requirements.length) {
                 if (compVer.negative_status_count != 0 && compVer.unknown_status_count == 0) {
-                    overal_status = this.allStatusDefinitions.find(s => s.id == 2); // not ready status
+                    overal_status = this.allStatusDefinitions.find(s => s.id == STATUS_NOT_READY);
                 } else if (compVer.unknown_status_count == 0 && compVer.negative_status_count == 0) {
-                    overal_status = this.allStatusDefinitions.find(s => s.id == 3); // ready status
+                    overal_status = this.allStatusDefinitions.find(s => s.id == STATUS_READY);
                 }
             }
             return overal_status;
@@ -347,10 +395,10 @@ Vue.component('widget-components-list', {
     <el-divider></el-divider>
 
     <el-row>
-        <el-table stripe style="width: 100%" 
+        <el-table stripe style="width: 100%;" 
         :data="tableData"
         empty-text="No data"
-        :cell-class-name="getSigneeClassForCell"
+        :cell-class-name="getStatusClassForCell"
         border>
             <el-table-column label="Component" 
                     width="200" 
@@ -369,12 +417,12 @@ Vue.component('widget-components-list', {
             </el-table-column>
 
             <el-table-column
-                label="Overal status"
+                label="Status"
                 header-align="center"
                 width="80"
                 align="center">
                 <template slot="header">
-                    <span class="word-wrap">Overal status</span>
+                    <span class="word-wrap">Status</span>
                     <div>
                             <el-dropdown trigger="click" placement="bottom-start" @command="handleDropdownCommand">
                                 <span style='height: 10px; margin: 0px;'>
@@ -405,7 +453,7 @@ Vue.component('widget-components-list', {
             align="center">
 
                 <template slot="header" slot-scope="scope">
-                    <el-row>
+                    <el-row style='line-height: 1.3em;'>
                         <span class="word-wrap">{{ req.title }}</span>
                     </el-row>
 
@@ -435,7 +483,7 @@ Vue.component('widget-components-list', {
                         <div style="position: absolute; float: right; right:0; bottom: 1px">
                             <el-dropdown trigger="click" placement="bottom-start" @command="handleDropdownCommand">
                                 <span>
-                                    <div :class="getSigneeClass(headerFilters[req.id].status)" v-if="headerFilters && headerFilters[req.id] && headerFilters[req.id].type=='signee'" style="width: 15px; height: 1em; border: 1px solid darkgrey; display: inline-block"></div>
+                                    <div :class="getStatusClass(headerFilters[req.id].status.id)" v-if="headerFilters && headerFilters[req.id] && headerFilters[req.id].type=='signee'" style="width: 15px; height: 1em; border: 1px solid darkgrey; display: inline-block"></div>
                                     <i v-else class="el-icon-arrow-down" style="font-size: 9px; display: inline-block; margin-left: 0"></i>
                                 </span>
                                 <el-dropdown-menu slot="dropdown" class='panopticum-status-left'>
@@ -443,7 +491,7 @@ Vue.component('widget-components-list', {
                                     <el-divider></el-divider>
                                     <el-dropdown-item :command="{requirement: req, type: 'signee', status: status}"
                                         v-for="status of statusDefinitions.signee" :key="status.id">
-                                        <div :class="getSigneeClass(status)" style="width: 40px; height: 1em; border: 1px solid darkgrey; display: inline-block"></div>
+                                        <div :class="getStatusClass(status.id)" style="width: 40px; height: 1em; border: 1px solid darkgrey; display: inline-block"></div>
                                         {{ status.name | capitalize }}
                                     </el-dropdown-item>
                                     <el-dropdown-item command="reset" divided>
@@ -456,17 +504,12 @@ Vue.component('widget-components-list', {
                 </template>
 
                 <template slot-scope="scope">
-                    <div :class="getOwnerClass(scope.row[req.title].owner)"></div>
                     <widget-status-popover
                      :owner-status="scope.row[req.title].owner"
                      :signee-status="scope.row[req.title].signee"
                      v-if="displayPopover(scope.row[req.title].owner, scope.row[req.title].signee)">
-                        <div class="inner-cell">
-                            <span class="word-wrap" v-if="scope.row[req.title].owner && scope.row[req.title].owner.notes && scope.row[req.title].owner.status.name !='n/a'">
-                            <widget-note :short="true">{{ scope.row[req.title].owner.notes }}</widget-note>
+                            <span class="word-wrap">{{ getNotes(scope.row[req.title].owner, scope.row[req.title].signee) }}</span>
                             </span>
-                            <div class="fill-cell" v-else></div>
-                        </div>
                 </widget-status-popover>
                 </template>
             </el-table-column>
@@ -474,7 +517,7 @@ Vue.component('widget-components-list', {
             <el-table-column
             align="center"
             width="80px"
-            label="New">
+            label="Is New">
                 <template slot="header" slot-scope="scope">
                 <el-row>
                     <span>{{ scope.column.label }}</span>

@@ -44,17 +44,17 @@
  * and open the template in the editor.
  */
 
-var CURRENT_URL = window.location.href.split('#')[0].split('?')[0],
+var CURRENT_URL = window.location.href.split('?')[0].split('#')[0],
     $BODY = $('body'),
     $MENU_TOGGLE = $('#menu_toggle'),
     $MENU_TOGGLE_SMALL = $('#menu_toggle_small'),
     $SIDEBAR_MENU = $('#sidebar-menu'),
     $SIDEBAR_FOOTER = $('.sidebar-footer'),
+    $SLIDE_DURATION_MS = 10,
     $LEFT_COL = $('.left_col'),
     $RIGHT_COL = $('.right_col'),
     $NAV_MENU = $('.nav_menu'),
     $FOOTER = $('footer');
-
 
 
 // Sidebar
@@ -79,31 +79,46 @@ function init_sidebar() {
         console.log('clicked - sidebar_menu');
         var $li = $(this).parent();
 
+        var is_new_page = false;
+        if ($li.children('ul').length == 0)
+            is_new_page = true;
+
+        if (is_new_page)
+            $('ul.child_menu li').removeClass('current-page');
+
+        if ($li.hasClass('current-page')) {
+            $li.removeClass('current-page');
+        }
+
         if ($li.is('.active')) {
-            $li.removeClass('active active-sm');
-            $('ul:first', $li).slideUp(function() {
+            $li.removeClass('active active-sm current-page');
+            $('ul:first', $li).slideUp($SLIDE_DURATION_MS, function() {
                 setContentHeight();
             });
         } else {
             // prevent closing menu if we are on child menu
             if (!$li.parent().is('.child_menu')) {
                 $SIDEBAR_MENU.find('li').removeClass('active active-sm');
-                $SIDEBAR_MENU.find('li ul').slideUp();
+                $SIDEBAR_MENU.find('li ul').slideUp($SLIDE_DURATION_MS);
             } else {
                 if ($BODY.is(".nav-sm")) {
                     $SIDEBAR_MENU.find("li").removeClass("active active-sm");
-                    $SIDEBAR_MENU.find("li ul").slideUp();
+                    $SIDEBAR_MENU.find("li ul").slideUp($SLIDE_DURATION_MS);
                 }
             }
-            $li.addClass('active');
+            if (is_new_page)
+                $li.addClass('current-page');
+            else
+                $li.addClass('active');
 
-            $('ul:first', $li).slideDown(function() {
+            $('ul:first', $li).slideDown($SLIDE_DURATION_MS, function() {
                 setContentHeight();
             });
         }
+
     });
 
-    menu_toggle_on_click = function() {
+    menu_toggle_on_click = function(e) {
         console.log('clicked - menu toggle');
 
         if ($BODY.hasClass('nav-md')) {
@@ -127,8 +142,8 @@ function init_sidebar() {
     $SIDEBAR_MENU.find('a[href="' + CURRENT_URL + '"]').parent('li').addClass('current-page');
 
     $SIDEBAR_MENU.find('a').filter(function() {
-        return this.href == CURRENT_URL;
-    }).parent('li').addClass('current-page').parents('ul').slideDown(function() {
+        return this.href.startsWith(CURRENT_URL);
+    }).parent('li').addClass('current-page').parents('ul').slideDown($SLIDE_DURATION_MS, function() {
         setContentHeight();
     }).parent().addClass('active');
 
@@ -193,6 +208,7 @@ function vue_components_init() {
     });
 */
 }
+
 $(document).ready(function() {
     init_sidebar();
 

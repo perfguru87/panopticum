@@ -1,3 +1,9 @@
+var STATUS_UNKNOWN = 1;
+var STATUS_NOT_READY = 2;
+var STATUS_READY = 3;
+var STATUS_NOT_APPLICABLE = 4;
+var STATUS_WAITING = 5;
+
 if (!String.prototype.pa_format) {
     String.prototype.pa_format = function() {
         var args = arguments;
