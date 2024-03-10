@@ -1,14 +1,14 @@
-          <table style='float: right;'>
+          <table style='float: right; top: 10px; position: relative; '>
             <tr>
               <td style='text-align: right; padding-right: 10px; line-height: 12px;'>
                 <p>Component profile<br>completion</p>
               </td>
               <td style='text-align: right; padding-right: 10px;'>
-                <canvas width="60" height="30" id="profile-completeness-gauge" class="" style="width: 60px; height: 30px;"></canvas>
+                <canvas width="50" height="25" id="profile-completeness-gauge" class="" style="width: 50px; height: 25px;"></canvas>
                 <div class="goal-wrapper" style='text-align: center; top: -5px; left: 5px; position: relative; z-index: 100px;'>
                   <span id="profile-completeness-gauge-text" class="gauge-value"
                         data-toggle='tooltip' data-placement='bottom' data-container="body"
-                        title="x" style='font-size: 16px; line-height: 20px; font-weight: bold;'>
+                        title="x" style='font-size: 16px; line-height: 16px; font-weight: bold;'>
                      0
                   </span>
                   <span class="gauge-value">%</span>
@@ -17,9 +17,10 @@
 
               <td style='text-align: right; padding-right: 10px; line-height: 12px;'><p>Component<br>rating</p></td>
               <td>
-                <div style='display: block; height: 30px; width: 60px; margin-bottom: 10px;'>
-                  <div style='height: 30px; width: 60px; border-radius: 5px;'>
-                    <span v-cloak class='pa-component-rating pa-component-rating-large'>[[ component.latest_version.meta_rating ]]%
+                <div style='display: block; height: 25px; width: 60px; margin-bottom: 10px;'>
+                  <div style='height: 25px; width: 60px; border-radius: 5px;'>
+                    <span v-cloak v-if="component.latest_version.meta_rating" class='pa-component-rating pa-component-rating-large'>[[ component.latest_version.meta_rating ]]%</span>
+                    <span v-cloak v-else class='pa-component-rating pa-component-rating-large'>n/a</span>
                   </div>
                 </div>
               </td>

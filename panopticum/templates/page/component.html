@@ -153,7 +153,7 @@ function init_profile_completeness_gauge(component) {
     };
 
     $('#profile-completeness-gauge-text').each(function(index, el) {
-        if (component.latest_version.meta_profile_not_filled_fields == "")
+        if (component.latest_version.meta_profile_not_filled_fields == "" && component.latest_version.meta_rating)
             $(el).attr('title', 'Good job!');
         else if (component.latest_version.meta_profile_not_filled_fields)
             $(el).attr('title', pa_tooltip_from_list('<b>Fields to be filled:</b>',
