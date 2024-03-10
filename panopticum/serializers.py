@@ -123,7 +123,6 @@ class ComponentSerializerSimple(serializers.ModelSerializer):
         fields = '__all__'
 
     def get_latest_version_id(self, obj):
-        print('get_latest_version_id')
         latest_version = obj.component_version.order_by('-update_date').first()
         return latest_version.id if latest_version else None
 
