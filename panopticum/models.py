@@ -338,27 +338,27 @@ class ComponentManager(models.Manager):
         annotate_filter_kwargs = dict(statuses__type=SIGNEE_STATUS_TYPE)
 
         if requirement_set_id:
-            requirement_count = RequirementSet.objects.get(pk=requirement_set_id).requirements.count()
+            max_signoff_count = RequirementSet.objects.get(pk=requirement_set_id).requirements.count()
             annotate_filter_kwargs.update({'statuses__requirement__sets': requirement_set_id})
         else:
-            requirement_count = RequirementSet.objects.all().aggregate(count=django.db.models.Count('requirements'))['count']
+            max_signoff_count = RequirementSet.objects.all().aggregate(count=django.db.models.Count('requirements'))['count']
+
+        total_statuses = django.db.models.Count('statuses', filter=django.db.models.Q(**annotate_filter_kwargs))
+        positive_status_count = django.db.models.Count('statuses', filter=django.db.models.Q(statuses__status=POSITIVE_STATUS,
+                                                                             **annotate_filter_kwargs))
+        negative_status_count = django.db.models.Count('statuses', filter=django.db.models.Q(statuses__status=NEGATIVE_STATUS,
+                                                                               **annotate_filter_kwargs))
+
         return self.model.objects.annotate(
-            rating= 100 * django.db.models.Count('statuses',
+            rating = 100 * django.db.models.Count('statuses',
                                          filter=django.db.models.Q(statuses__status=POSITIVE_STATUS,
                                                                    **annotate_filter_kwargs),
                                          output_field=django.db.models.FloatField())
-                  / requirement_count,
-            total_statuses = django.db.models.Count('statuses',
-                                                   filter=django.db.models.Q(**annotate_filter_kwargs)),
-            positive_status_count=django.db.models.Count('statuses',
-                                                   filter=django.db.models.Q(statuses__status=POSITIVE_STATUS,
-                                                                             **annotate_filter_kwargs)),
-            negative_status_count = django.db.models.Count('statuses',
-                                                     filter=django.db.models.Q(statuses__status=NEGATIVE_STATUS,
-                                                                               **annotate_filter_kwargs)),
-            unknown_status_count = django.db.models.Count('statuses',
-                                                     filter=django.db.models.Q(statuses__status=UNKNOWN_STATUS,
-                                                                               **annotate_filter_kwargs))
+                  / float(max_signoff_count),
+            max_signoff_count = max_signoff_count - positive_status_count + positive_status_count,
+            positive_signoff_count = positive_status_count,
+            negative_signoff_count = negative_status_count,
+            unknown_signoff_count = max_signoff_count - positive_status_count - negative_status_count
         )
 
 
@@ -508,22 +508,37 @@ class ComponentVersionModel(models.Model):
         self.__dict__[target] = int(100 * rating / max_rating)
         return rating, max_rating, bad_rating
 
-
     @staticmethod
     def get_quality_assurance_fields():
         return ('qa_manual_tests_status', 'qa_unit_tests_status', 'qa_e2e_tests_status', 'qa_perf_tests_status',
                 'qa_longhaul_tests_status', 'qa_security_tests_status', 'qa_api_tests_status',
                 'qa_anonymisation_tests_status', 'qa_upgrade_tests_status')
 
-    def _update_qa_rating(self):
+    def _update_meta_qa_rating(self):
         return self._update_any_rating('meta_qa_rating', 'qa_applicable', LOW_MED_HIGH_RATING,
                                        ComponentVersionModel.get_quality_assurance_fields())
+
+    def _update_meta_rating(self):
+        max_status_count = RequirementSet.objects.all().aggregate(count=django.db.models.Count('requirements'))['count']
+        positive_status_count = self.statuses.filter(status__id__in=[POSITIVE_STATUS, NOT_APP_STATUS]).count()
+        negative_status_count = max_status_count - positive_status_count
+
+        if self.qa_applicable:
+            max_qa_rating = len(ComponentVersionModel.get_quality_assurance_fields()) * max(LOW_MED_HIGH_RATING.values())
+            qa_rating = self.meta_qa_rating * max_qa_rating / 100.0
+        else:
+            max_qa_rating = 1
+            qa_rating = 1
+
+        if (max_qa_rating + max_status_count) > 0:
+            self.meta_rating = 100 * (positive_status_count + qa_rating) / (max_qa_rating + max_status_count)
+        else:
+            self.meta_rating = 0
 
     def _get_profile_must_fields(self):
         ret = ['owner_maintainer', 'owner_responsible_qa', 'owner_product_manager', 'owner_program_manager',
                 'owner_escalation_list', 'owner_expert', 'owner_architect',
                 'dev_language', 'dev_raml', 'dev_repo', 'dev_jira_component', 'dev_docs', 'dev_api_is_public']
-
 
         if self.qa_applicable:
             ret += list(ComponentVersionModel.get_quality_assurance_fields())
@@ -534,7 +549,7 @@ class ComponentVersionModel(models.Model):
         d = model_to_dict(self)
         return 0 if d[field] in ("unknown", "", None, "?") else 1
 
-    def update_profile_completeness(self):
+    def _update_profile_completeness(self):
         completeness = 0
         max_completeness = 0
         not_filled_fields = set()
@@ -543,7 +558,14 @@ class ComponentVersionModel(models.Model):
             if self._field_is_filled(f):
                 completeness += 1
             else:
-                not_filled_fields.add(f)
+                not_filled_fields.add("Summary: " + f)
+            max_completeness += 1
+
+        for r in self.statuses.all():
+            if r.status in (POSITIVE_STATUS, NOT_APP_STATUS):
+                completeness += 1
+            else:
+                not_filled_fields.add("%s (%s)" % (r.requirement, "signee" if r.type == SIGNEE_STATUS_TYPE else "owner"))
             max_completeness += 1
 
         self.meta_profile_completeness = int(100 * completeness / max_completeness)
@@ -570,7 +592,10 @@ class ComponentVersionModel(models.Model):
         super().save(*args, **kwargs)
 
         self.update_meta_locations_and_product_versions()
-        self.update_profile_completeness()
+        self._update_profile_completeness()
+        self._update_meta_qa_rating()
+        self._update_meta_rating()
+        super().save()
 
     class Meta:
         ordering = ['-version']

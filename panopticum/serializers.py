@@ -116,10 +116,16 @@ class ComponentSerializerSimple(serializers.ModelSerializer):
     subcategory = ComponentSubcategorySerializer(read_only=True)
     product = ProductVersionSerializer(read_only=True, many=True)
     vendor = SoftwareVendorSerializer(read_only=True)
+    latest_version_id = serializers.SerializerMethodField()
 
     class Meta:
         model = ComponentModel
         fields = '__all__'
+
+    def get_latest_version_id(self, obj):
+        print('get_latest_version_id')
+        latest_version = obj.component_version.order_by('-update_date').first()
+        return latest_version.id if latest_version else None
 
 
 class ComponentDependencySerializerSimple(serializers.ModelSerializer):
@@ -251,10 +257,12 @@ class ComponentVersionSerializerSimple(serializers.ModelSerializer):
 class ComponentVersionSerializer(QueryFieldsMixin, ComponentVersionSerializerSimple):
     component = ComponentSerializerSimple(read_only=True)
     rating = serializers.FloatField(read_only=True)
-    total_statuses = serializers.IntegerField(read_only=True)
-    positive_status_count = serializers.IntegerField(read_only=True)
-    negative_status_count = serializers.IntegerField(read_only=True)
-    unknown_status_count = serializers.IntegerField(read_only=True)
+    max_qa_score = serializers.IntegerField(read_only=True)
+    qa_score = serializers.IntegerField(read_only=True)
+    max_signoff_count = serializers.IntegerField(read_only=True)
+    positive_signoff_count = serializers.IntegerField(read_only=True)
+    negative_signoff_count = serializers.IntegerField(read_only=True)
+    unknown_signoff_count = serializers.IntegerField(read_only=True)
 
     dependent = serializers.SerializerMethodField()
 
