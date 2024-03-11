@@ -23,18 +23,12 @@
             <div>
               <h4>Links</h4>
               <table class='col-3-center'>
-                <tr><td>RAML</td><td>:</td><td><div class='pa-replace-urls' v-cloak>
-                                               [[ component.latest_version.dev_raml ]]</div></td></tr>
-                <tr><td>Repository</td><td>:</td><td><div class='pa-replace-urls' v-cloak>
-                                               [[ component.latest_version.dev_repo ]]</div></td></tr>
-                <tr><td>JIRA</td><td>:</td><td><div class='pa-replace-urls' v-cloak>
-                                               [[ component.latest_version.dev_jira_component ]]</div></td></tr>
-                <tr><td>Public Docs</td><td>:</td><td><div class='pa-replace-urls' v-cloak>
-                                               [[ component.latest_version.dev_public_docs ]]</div></td></tr>
-                <tr><td>Internal Docs</td><td>:</td><td><div class='pa-replace-urls' v-cloak>
-                                               [[ component.latest_version.dev_docs ]]</div></td></tr>
-                <tr><td>Build job</td><td>:</td><td><div class='pa-replace-urls' v-cloak>
-                                               [[ component.latest_version.dev_build_jenkins_job ]]</div></td></tr>
+                <tr><td>RAML</td><td>:</td><td><widget-links v-cloak v-bind:text="component.latest_version.dev_raml"></widget-links></td></tr>
+                <tr><td>Repository</td><td>:</td><td><widget-links v-cloak :text="component.latest_version.dev_repo"></widget-links></td></tr>
+                <tr><td>Issue tracker</td><td>:</td><td><widget-links v-cloak :text="component.latest_version.dev_jira_component"></widget-links></td></tr>
+                <tr><td>Public Docs</td><td>:</td><td><widget-links v-cloak :text="component.latest_version.dev_public_docs"></widget-links></td></tr>
+                <tr><td>Internal Docs</td><td>:</td><td><widget-links v-cloak :text="component.latest_version.dev_docs"></widget-links></td></tr>
+                <tr><td>Build job</td><td>:</td><td><widget-links v-cloak :text="component.latest_version.dev_build_jenkins_job"></widget-links></td></tr>
               </table>
             </div>
           </div>
