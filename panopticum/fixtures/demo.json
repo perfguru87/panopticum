@@ -1,0 +1,2263 @@
+[
+{
+  "model": "panopticum.componentdataprivacyclassmodel",
+  "pk": 1,
+  "fields": {
+    "name": "?",
+    "order": 1
+  }
+},
+{
+  "model": "panopticum.componentdataprivacyclassmodel",
+  "pk": 2,
+  "fields": {
+    "name": "Framework or library",
+    "order": 2
+  }
+},
+{
+  "model": "panopticum.componentdataprivacyclassmodel",
+  "pk": 3,
+  "fields": {
+    "name": "Non-sensitive metadata",
+    "order": 4
+  }
+},
+{
+  "model": "panopticum.componentdataprivacyclassmodel",
+  "pk": 4,
+  "fields": {
+    "name": "Sensitive metadata",
+    "order": 5
+  }
+},
+{
+  "model": "panopticum.componentdataprivacyclassmodel",
+  "pk": 5,
+  "fields": {
+    "name": "Customer data",
+    "order": 6
+  }
+},
+{
+  "model": "panopticum.componentdataprivacyclassmodel",
+  "pk": 6,
+  "fields": {
+    "name": "No any data or metadata",
+    "order": 3
+  }
+},
+{
+  "model": "panopticum.componentcategorymodel",
+  "pk": 1,
+  "fields": {
+    "name": "My category",
+    "description": "Sample components category",
+    "order": 1
+  }
+},
+{
+  "model": "panopticum.componentcategorymodel",
+  "pk": 2,
+  "fields": {
+    "name": "My another category",
+    "description": "Another sample components category",
+    "order": 2
+  }
+},
+{
+  "model": "panopticum.softwarevendormodel",
+  "pk": 1,
+  "fields": {
+    "name": "My Company"
+  }
+},
+{
+  "model": "panopticum.softwarevendormodel",
+  "pk": 2,
+  "fields": {
+    "name": "mariadb.org"
+  }
+},
+{
+  "model": "panopticum.softwarevendormodel",
+  "pk": 3,
+  "fields": {
+    "name": "postgresql.org"
+  }
+},
+{
+  "model": "panopticum.softwarevendormodel",
+  "pk": 4,
+  "fields": {
+    "name": "grafana.com"
+  }
+},
+{
+  "model": "panopticum.databasevendormodel",
+  "pk": 1,
+  "fields": {
+    "name": "MSSQL"
+  }
+},
+{
+  "model": "panopticum.databasevendormodel",
+  "pk": 2,
+  "fields": {
+    "name": "PostgreSQL"
+  }
+},
+{
+  "model": "panopticum.databasevendormodel",
+  "pk": 3,
+  "fields": {
+    "name": "SQLite"
+  }
+},
+{
+  "model": "panopticum.databasevendormodel",
+  "pk": 4,
+  "fields": {
+    "name": "MySQL"
+  }
+},
+{
+  "model": "panopticum.databasevendormodel",
+  "pk": 5,
+  "fields": {
+    "name": "MariaDB"
+  }
+},
+{
+  "model": "panopticum.databasevendormodel",
+  "pk": 6,
+  "fields": {
+    "name": "Cassandra"
+  }
+},
+{
+  "model": "panopticum.databasevendormodel",
+  "pk": 7,
+  "fields": {
+    "name": "Percona"
+  }
+},
+{
+  "model": "panopticum.databasevendormodel",
+  "pk": 8,
+  "fields": {
+    "name": "Clickhouse"
+  }
+},
+{
+  "model": "panopticum.databasevendormodel",
+  "pk": 9,
+  "fields": {
+    "name": "MongoDB"
+  }
+},
+{
+  "model": "panopticum.programminglanguagemodel",
+  "pk": 1,
+  "fields": {
+    "name": "Python"
+  }
+},
+{
+  "model": "panopticum.programminglanguagemodel",
+  "pk": 2,
+  "fields": {
+    "name": "Golang"
+  }
+},
+{
+  "model": "panopticum.programminglanguagemodel",
+  "pk": 3,
+  "fields": {
+    "name": "C++"
+  }
+},
+{
+  "model": "panopticum.programminglanguagemodel",
+  "pk": 4,
+  "fields": {
+    "name": "C"
+  }
+},
+{
+  "model": "panopticum.programminglanguagemodel",
+  "pk": 5,
+  "fields": {
+    "name": "Java"
+  }
+},
+{
+  "model": "panopticum.programminglanguagemodel",
+  "pk": 6,
+  "fields": {
+    "name": "Kotlin"
+  }
+},
+{
+  "model": "panopticum.componenttype",
+  "pk": 1,
+  "fields": {
+    "name": "?",
+    "order": 1
+  }
+},
+{
+  "model": "panopticum.componenttype",
+  "pk": 2,
+  "fields": {
+    "name": "OS Driver",
+    "order": 2
+  }
+},
+{
+  "model": "panopticum.componenttype",
+  "pk": 3,
+  "fields": {
+    "name": "OS Service",
+    "order": 3
+  }
+},
+{
+  "model": "panopticum.componenttype",
+  "pk": 4,
+  "fields": {
+    "name": "OS Process",
+    "order": 4
+  }
+},
+{
+  "model": "panopticum.componenttype",
+  "pk": 5,
+  "fields": {
+    "name": "Library",
+    "order": 5
+  }
+},
+{
+  "model": "panopticum.componenttype",
+  "pk": 6,
+  "fields": {
+    "name": "Framework",
+    "order": 6
+  }
+},
+{
+  "model": "panopticum.componenttype",
+  "pk": 7,
+  "fields": {
+    "name": "Config files",
+    "order": 7
+  }
+},
+{
+  "model": "panopticum.componenttype",
+  "pk": 8,
+  "fields": {
+    "name": "DB Service",
+    "order": 8
+  }
+},
+{
+  "model": "panopticum.componenttype",
+  "pk": 9,
+  "fields": {
+    "name": "MQ Service",
+    "order": 9
+  }
+},
+{
+  "model": "panopticum.componenttype",
+  "pk": 10,
+  "fields": {
+    "name": "Web Service",
+    "order": 10
+  }
+},
+{
+  "model": "panopticum.componenttype",
+  "pk": 11,
+  "fields": {
+    "name": "UI",
+    "order": 11
+  }
+},
+{
+  "model": "panopticum.componenttype",
+  "pk": 12,
+  "fields": {
+    "name": "Frontend App",
+    "order": 12
+  }
+},
+{
+  "model": "panopticum.componentmodel",
+  "pk": 1,
+  "fields": {
+    "name": "My IdP",
+    "description": "Example of a primary IdP component",
+    "life_status": "mature",
+    "type": 10,
+    "data_privacy_class": 4,
+    "category": 1,
+    "subcategory": null,
+    "vendor": 1
+  }
+},
+{
+  "model": "panopticum.componentmodel",
+  "pk": 2,
+  "fields": {
+    "name": "My API Gateway",
+    "description": "",
+    "life_status": "new",
+    "type": 10,
+    "data_privacy_class": 3,
+    "category": 1,
+    "subcategory": null,
+    "vendor": 1
+  }
+},
+{
+  "model": "panopticum.componentmodel",
+  "pk": 3,
+  "fields": {
+    "name": "My PostgreSQL DB",
+    "description": "",
+    "life_status": "mature",
+    "type": 8,
+    "data_privacy_class": 4,
+    "category": 2,
+    "subcategory": null,
+    "vendor": 3
+  }
+},
+{
+  "model": "panopticum.requirementstatustype",
+  "pk": 1,
+  "fields": {
+    "owner": "component owner"
+  }
+},
+{
+  "model": "panopticum.requirementstatustype",
+  "pk": 2,
+  "fields": {
+    "owner": "requirement reviewer"
+  }
+},
+{
+  "model": "panopticum.requirementstatustype",
+  "pk": 3,
+  "fields": {
+    "owner": "overall"
+  }
+},
+{
+  "model": "panopticum.requirementstatus",
+  "pk": 1,
+  "fields": {
+    "name": "unknown",
+    "description": "",
+    "allow_for": [
+      1,
+      2,
+      3
+    ]
+  }
+},
+{
+  "model": "panopticum.requirementstatus",
+  "pk": 2,
+  "fields": {
+    "name": "not ready",
+    "description": "Requirement declined by approver",
+    "allow_for": [
+      1,
+      2,
+      3
+    ]
+  }
+},
+{
+  "model": "panopticum.requirementstatus",
+  "pk": 3,
+  "fields": {
+    "name": "ready",
+    "description": "Requirement approved",
+    "allow_for": [
+      1,
+      2,
+      3
+    ]
+  }
+},
+{
+  "model": "panopticum.requirementstatus",
+  "pk": 4,
+  "fields": {
+    "name": "n/a",
+    "description": "not applicable. That requirement doesn't need for that component",
+    "allow_for": [
+      1,
+      3
+    ]
+  }
+},
+{
+  "model": "panopticum.requirementstatus",
+  "pk": 5,
+  "fields": {
+    "name": "waiting",
+    "description": "waiting for approval",
+    "allow_for": [
+      3
+    ]
+  }
+},
+{
+  "model": "panopticum.requirementstatusentry",
+  "pk": 153,
+  "fields": {
+    "status": 3,
+    "type": 1,
+    "requirement": 1,
+    "notes": "",
+    "component_version": 2
+  }
+},
+{
+  "model": "panopticum.requirementstatusentry",
+  "pk": 154,
+  "fields": {
+    "status": 3,
+    "type": 3,
+    "requirement": 1,
+    "notes": "OK",
+    "component_version": 2
+  }
+},
+{
+  "model": "panopticum.requirementstatusentry",
+  "pk": 155,
+  "fields": {
+    "status": 4,
+    "type": 1,
+    "requirement": 2,
+    "notes": "",
+    "component_version": 2
+  }
+},
+{
+  "model": "panopticum.requirementstatusentry",
+  "pk": 156,
+  "fields": {
+    "status": 5,
+    "type": 3,
+    "requirement": 2,
+    "notes": "Waiting for approval...",
+    "component_version": 2
+  }
+},
+{
+  "model": "panopticum.requirementstatusentry",
+  "pk": 157,
+  "fields": {
+    "status": 1,
+    "type": 1,
+    "requirement": 3,
+    "notes": "",
+    "component_version": 2
+  }
+},
+{
+  "model": "panopticum.requirementstatusentry",
+  "pk": 158,
+  "fields": {
+    "status": 1,
+    "type": 3,
+    "requirement": 3,
+    "notes": "?",
+    "component_version": 2
+  }
+},
+{
+  "model": "panopticum.requirementstatusentry",
+  "pk": 159,
+  "fields": {
+    "status": 1,
+    "type": 1,
+    "requirement": 4,
+    "notes": "",
+    "component_version": 2
+  }
+},
+{
+  "model": "panopticum.requirementstatusentry",
+  "pk": 160,
+  "fields": {
+    "status": 1,
+    "type": 3,
+    "requirement": 4,
+    "notes": "?",
+    "component_version": 2
+  }
+},
+{
+  "model": "panopticum.requirementstatusentry",
+  "pk": 161,
+  "fields": {
+    "status": 1,
+    "type": 1,
+    "requirement": 5,
+    "notes": "",
+    "component_version": 2
+  }
+},
+{
+  "model": "panopticum.requirementstatusentry",
+  "pk": 162,
+  "fields": {
+    "status": 1,
+    "type": 3,
+    "requirement": 5,
+    "notes": "?",
+    "component_version": 2
+  }
+},
+{
+  "model": "panopticum.requirementstatusentry",
+  "pk": 163,
+  "fields": {
+    "status": 1,
+    "type": 1,
+    "requirement": 6,
+    "notes": "",
+    "component_version": 2
+  }
+},
+{
+  "model": "panopticum.requirementstatusentry",
+  "pk": 164,
+  "fields": {
+    "status": 1,
+    "type": 3,
+    "requirement": 6,
+    "notes": "?",
+    "component_version": 2
+  }
+},
+{
+  "model": "panopticum.requirementstatusentry",
+  "pk": 165,
+  "fields": {
+    "status": 1,
+    "type": 1,
+    "requirement": 7,
+    "notes": "",
+    "component_version": 2
+  }
+},
+{
+  "model": "panopticum.requirementstatusentry",
+  "pk": 166,
+  "fields": {
+    "status": 1,
+    "type": 3,
+    "requirement": 7,
+    "notes": "?",
+    "component_version": 2
+  }
+},
+{
+  "model": "panopticum.requirementstatusentry",
+  "pk": 167,
+  "fields": {
+    "status": 1,
+    "type": 1,
+    "requirement": 8,
+    "notes": "",
+    "component_version": 2
+  }
+},
+{
+  "model": "panopticum.requirementstatusentry",
+  "pk": 168,
+  "fields": {
+    "status": 1,
+    "type": 3,
+    "requirement": 8,
+    "notes": "?",
+    "component_version": 2
+  }
+},
+{
+  "model": "panopticum.requirementstatusentry",
+  "pk": 169,
+  "fields": {
+    "status": 1,
+    "type": 1,
+    "requirement": 9,
+    "notes": "",
+    "component_version": 2
+  }
+},
+{
+  "model": "panopticum.requirementstatusentry",
+  "pk": 170,
+  "fields": {
+    "status": 1,
+    "type": 3,
+    "requirement": 9,
+    "notes": "?",
+    "component_version": 2
+  }
+},
+{
+  "model": "panopticum.requirementstatusentry",
+  "pk": 171,
+  "fields": {
+    "status": 3,
+    "type": 1,
+    "requirement": 10,
+    "notes": "",
+    "component_version": 2
+  }
+},
+{
+  "model": "panopticum.requirementstatusentry",
+  "pk": 172,
+  "fields": {
+    "status": 3,
+    "type": 3,
+    "requirement": 10,
+    "notes": "OK",
+    "component_version": 2
+  }
+},
+{
+  "model": "panopticum.requirementstatusentry",
+  "pk": 173,
+  "fields": {
+    "status": 3,
+    "type": 2,
+    "requirement": 11,
+    "notes": "",
+    "component_version": 2
+  }
+},
+{
+  "model": "panopticum.requirementstatusentry",
+  "pk": 174,
+  "fields": {
+    "status": 3,
+    "type": 1,
+    "requirement": 11,
+    "notes": "",
+    "component_version": 2
+  }
+},
+{
+  "model": "panopticum.requirementstatusentry",
+  "pk": 175,
+  "fields": {
+    "status": 3,
+    "type": 3,
+    "requirement": 11,
+    "notes": "OK",
+    "component_version": 2
+  }
+},
+{
+  "model": "panopticum.requirementstatusentry",
+  "pk": 176,
+  "fields": {
+    "status": 4,
+    "type": 1,
+    "requirement": 12,
+    "notes": "",
+    "component_version": 2
+  }
+},
+{
+  "model": "panopticum.requirementstatusentry",
+  "pk": 177,
+  "fields": {
+    "status": 3,
+    "type": 3,
+    "requirement": 12,
+    "notes": "N/A",
+    "component_version": 2
+  }
+},
+{
+  "model": "panopticum.requirementstatusentry",
+  "pk": 178,
+  "fields": {
+    "status": 1,
+    "type": 1,
+    "requirement": 13,
+    "notes": "",
+    "component_version": 2
+  }
+},
+{
+  "model": "panopticum.requirementstatusentry",
+  "pk": 179,
+  "fields": {
+    "status": 1,
+    "type": 3,
+    "requirement": 13,
+    "notes": "?",
+    "component_version": 2
+  }
+},
+{
+  "model": "panopticum.requirementstatusentry",
+  "pk": 180,
+  "fields": {
+    "status": 1,
+    "type": 1,
+    "requirement": 14,
+    "notes": "",
+    "component_version": 2
+  }
+},
+{
+  "model": "panopticum.requirementstatusentry",
+  "pk": 181,
+  "fields": {
+    "status": 1,
+    "type": 3,
+    "requirement": 14,
+    "notes": "?",
+    "component_version": 2
+  }
+},
+{
+  "model": "panopticum.requirementstatusentry",
+  "pk": 182,
+  "fields": {
+    "status": 1,
+    "type": 1,
+    "requirement": 15,
+    "notes": "",
+    "component_version": 2
+  }
+},
+{
+  "model": "panopticum.requirementstatusentry",
+  "pk": 183,
+  "fields": {
+    "status": 1,
+    "type": 3,
+    "requirement": 15,
+    "notes": "?",
+    "component_version": 2
+  }
+},
+{
+  "model": "panopticum.requirementstatusentry",
+  "pk": 184,
+  "fields": {
+    "status": 1,
+    "type": 1,
+    "requirement": 16,
+    "notes": "",
+    "component_version": 2
+  }
+},
+{
+  "model": "panopticum.requirementstatusentry",
+  "pk": 185,
+  "fields": {
+    "status": 1,
+    "type": 3,
+    "requirement": 16,
+    "notes": "?",
+    "component_version": 2
+  }
+},
+{
+  "model": "panopticum.requirementstatusentry",
+  "pk": 186,
+  "fields": {
+    "status": 1,
+    "type": 1,
+    "requirement": 17,
+    "notes": "",
+    "component_version": 2
+  }
+},
+{
+  "model": "panopticum.requirementstatusentry",
+  "pk": 187,
+  "fields": {
+    "status": 1,
+    "type": 3,
+    "requirement": 17,
+    "notes": "?",
+    "component_version": 2
+  }
+},
+{
+  "model": "panopticum.requirementstatusentry",
+  "pk": 188,
+  "fields": {
+    "status": 1,
+    "type": 1,
+    "requirement": 18,
+    "notes": "",
+    "component_version": 2
+  }
+},
+{
+  "model": "panopticum.requirementstatusentry",
+  "pk": 189,
+  "fields": {
+    "status": 1,
+    "type": 3,
+    "requirement": 18,
+    "notes": "?",
+    "component_version": 2
+  }
+},
+{
+  "model": "panopticum.requirementstatusentry",
+  "pk": 190,
+  "fields": {
+    "status": 1,
+    "type": 1,
+    "requirement": 19,
+    "notes": "",
+    "component_version": 2
+  }
+},
+{
+  "model": "panopticum.requirementstatusentry",
+  "pk": 191,
+  "fields": {
+    "status": 1,
+    "type": 3,
+    "requirement": 19,
+    "notes": "?",
+    "component_version": 2
+  }
+},
+{
+  "model": "panopticum.requirementstatusentry",
+  "pk": 192,
+  "fields": {
+    "status": 1,
+    "type": 1,
+    "requirement": 20,
+    "notes": "",
+    "component_version": 2
+  }
+},
+{
+  "model": "panopticum.requirementstatusentry",
+  "pk": 193,
+  "fields": {
+    "status": 1,
+    "type": 3,
+    "requirement": 20,
+    "notes": "?",
+    "component_version": 2
+  }
+},
+{
+  "model": "panopticum.requirementstatusentry",
+  "pk": 194,
+  "fields": {
+    "status": 1,
+    "type": 1,
+    "requirement": 21,
+    "notes": "",
+    "component_version": 2
+  }
+},
+{
+  "model": "panopticum.requirementstatusentry",
+  "pk": 195,
+  "fields": {
+    "status": 1,
+    "type": 3,
+    "requirement": 21,
+    "notes": "?",
+    "component_version": 2
+  }
+},
+{
+  "model": "panopticum.requirementstatusentry",
+  "pk": 196,
+  "fields": {
+    "status": 3,
+    "type": 1,
+    "requirement": 22,
+    "notes": "",
+    "component_version": 2
+  }
+},
+{
+  "model": "panopticum.requirementstatusentry",
+  "pk": 197,
+  "fields": {
+    "status": 3,
+    "type": 3,
+    "requirement": 22,
+    "notes": "OK",
+    "component_version": 2
+  }
+},
+{
+  "model": "panopticum.requirementstatusentry",
+  "pk": 198,
+  "fields": {
+    "status": 3,
+    "type": 1,
+    "requirement": 23,
+    "notes": "",
+    "component_version": 2
+  }
+},
+{
+  "model": "panopticum.requirementstatusentry",
+  "pk": 199,
+  "fields": {
+    "status": 3,
+    "type": 3,
+    "requirement": 23,
+    "notes": "OK",
+    "component_version": 2
+  }
+},
+{
+  "model": "panopticum.requirementstatusentry",
+  "pk": 200,
+  "fields": {
+    "status": 3,
+    "type": 1,
+    "requirement": 24,
+    "notes": "",
+    "component_version": 2
+  }
+},
+{
+  "model": "panopticum.requirementstatusentry",
+  "pk": 201,
+  "fields": {
+    "status": 3,
+    "type": 3,
+    "requirement": 24,
+    "notes": "OK",
+    "component_version": 2
+  }
+},
+{
+  "model": "panopticum.requirementstatusentry",
+  "pk": 202,
+  "fields": {
+    "status": 3,
+    "type": 1,
+    "requirement": 25,
+    "notes": "",
+    "component_version": 2
+  }
+},
+{
+  "model": "panopticum.requirementstatusentry",
+  "pk": 203,
+  "fields": {
+    "status": 3,
+    "type": 3,
+    "requirement": 25,
+    "notes": "OK",
+    "component_version": 2
+  }
+},
+{
+  "model": "panopticum.requirementstatusentry",
+  "pk": 204,
+  "fields": {
+    "status": 4,
+    "type": 1,
+    "requirement": 26,
+    "notes": "",
+    "component_version": 2
+  }
+},
+{
+  "model": "panopticum.requirementstatusentry",
+  "pk": 205,
+  "fields": {
+    "status": 3,
+    "type": 3,
+    "requirement": 26,
+    "notes": "N/A",
+    "component_version": 2
+  }
+},
+{
+  "model": "panopticum.requirementstatusentry",
+  "pk": 206,
+  "fields": {
+    "status": 1,
+    "type": 2,
+    "requirement": 7,
+    "notes": "",
+    "component_version": 2
+  }
+},
+{
+  "model": "panopticum.requirementstatusentry",
+  "pk": 207,
+  "fields": {
+    "status": 2,
+    "type": 2,
+    "requirement": 8,
+    "notes": "",
+    "component_version": 2
+  }
+},
+{
+  "model": "panopticum.requirementstatusentry",
+  "pk": 208,
+  "fields": {
+    "status": 3,
+    "type": 2,
+    "requirement": 10,
+    "notes": "",
+    "component_version": 2
+  }
+},
+{
+  "model": "panopticum.requirementstatusentry",
+  "pk": 209,
+  "fields": {
+    "status": 3,
+    "type": 2,
+    "requirement": 12,
+    "notes": "",
+    "component_version": 2
+  }
+},
+{
+  "model": "panopticum.requirementstatusentry",
+  "pk": 210,
+  "fields": {
+    "status": 3,
+    "type": 2,
+    "requirement": 22,
+    "notes": "",
+    "component_version": 2
+  }
+},
+{
+  "model": "panopticum.requirementstatusentry",
+  "pk": 211,
+  "fields": {
+    "status": 3,
+    "type": 2,
+    "requirement": 23,
+    "notes": "",
+    "component_version": 2
+  }
+},
+{
+  "model": "panopticum.requirementstatusentry",
+  "pk": 212,
+  "fields": {
+    "status": 3,
+    "type": 2,
+    "requirement": 24,
+    "notes": "",
+    "component_version": 2
+  }
+},
+{
+  "model": "panopticum.requirementstatusentry",
+  "pk": 213,
+  "fields": {
+    "status": 3,
+    "type": 2,
+    "requirement": 25,
+    "notes": "",
+    "component_version": 2
+  }
+},
+{
+  "model": "panopticum.requirementstatusentry",
+  "pk": 214,
+  "fields": {
+    "status": 3,
+    "type": 2,
+    "requirement": 26,
+    "notes": "",
+    "component_version": 2
+  }
+},
+{
+  "model": "panopticum.requirementstatusentry",
+  "pk": 215,
+  "fields": {
+    "status": 1,
+    "type": 1,
+    "requirement": 1,
+    "notes": "",
+    "component_version": 1
+  }
+},
+{
+  "model": "panopticum.requirementstatusentry",
+  "pk": 216,
+  "fields": {
+    "status": 1,
+    "type": 3,
+    "requirement": 1,
+    "notes": "?",
+    "component_version": 1
+  }
+},
+{
+  "model": "panopticum.requirementstatusentry",
+  "pk": 217,
+  "fields": {
+    "status": 1,
+    "type": 1,
+    "requirement": 2,
+    "notes": "",
+    "component_version": 1
+  }
+},
+{
+  "model": "panopticum.requirementstatusentry",
+  "pk": 218,
+  "fields": {
+    "status": 1,
+    "type": 3,
+    "requirement": 2,
+    "notes": "?",
+    "component_version": 1
+  }
+},
+{
+  "model": "panopticum.requirementstatusentry",
+  "pk": 219,
+  "fields": {
+    "status": 1,
+    "type": 1,
+    "requirement": 3,
+    "notes": "",
+    "component_version": 1
+  }
+},
+{
+  "model": "panopticum.requirementstatusentry",
+  "pk": 220,
+  "fields": {
+    "status": 1,
+    "type": 3,
+    "requirement": 3,
+    "notes": "?",
+    "component_version": 1
+  }
+},
+{
+  "model": "panopticum.requirementstatusentry",
+  "pk": 221,
+  "fields": {
+    "status": 1,
+    "type": 1,
+    "requirement": 4,
+    "notes": "",
+    "component_version": 1
+  }
+},
+{
+  "model": "panopticum.requirementstatusentry",
+  "pk": 222,
+  "fields": {
+    "status": 1,
+    "type": 3,
+    "requirement": 4,
+    "notes": "?",
+    "component_version": 1
+  }
+},
+{
+  "model": "panopticum.requirementstatusentry",
+  "pk": 223,
+  "fields": {
+    "status": 1,
+    "type": 1,
+    "requirement": 5,
+    "notes": "",
+    "component_version": 1
+  }
+},
+{
+  "model": "panopticum.requirementstatusentry",
+  "pk": 224,
+  "fields": {
+    "status": 1,
+    "type": 3,
+    "requirement": 5,
+    "notes": "?",
+    "component_version": 1
+  }
+},
+{
+  "model": "panopticum.requirementstatusentry",
+  "pk": 225,
+  "fields": {
+    "status": 1,
+    "type": 1,
+    "requirement": 6,
+    "notes": "",
+    "component_version": 1
+  }
+},
+{
+  "model": "panopticum.requirementstatusentry",
+  "pk": 226,
+  "fields": {
+    "status": 1,
+    "type": 3,
+    "requirement": 6,
+    "notes": "?",
+    "component_version": 1
+  }
+},
+{
+  "model": "panopticum.requirementstatusentry",
+  "pk": 227,
+  "fields": {
+    "status": 1,
+    "type": 1,
+    "requirement": 7,
+    "notes": "",
+    "component_version": 1
+  }
+},
+{
+  "model": "panopticum.requirementstatusentry",
+  "pk": 228,
+  "fields": {
+    "status": 1,
+    "type": 3,
+    "requirement": 7,
+    "notes": "?",
+    "component_version": 1
+  }
+},
+{
+  "model": "panopticum.requirementstatusentry",
+  "pk": 229,
+  "fields": {
+    "status": 1,
+    "type": 1,
+    "requirement": 8,
+    "notes": "",
+    "component_version": 1
+  }
+},
+{
+  "model": "panopticum.requirementstatusentry",
+  "pk": 230,
+  "fields": {
+    "status": 1,
+    "type": 3,
+    "requirement": 8,
+    "notes": "?",
+    "component_version": 1
+  }
+},
+{
+  "model": "panopticum.requirementstatusentry",
+  "pk": 231,
+  "fields": {
+    "status": 1,
+    "type": 1,
+    "requirement": 9,
+    "notes": "",
+    "component_version": 1
+  }
+},
+{
+  "model": "panopticum.requirementstatusentry",
+  "pk": 232,
+  "fields": {
+    "status": 1,
+    "type": 3,
+    "requirement": 9,
+    "notes": "?",
+    "component_version": 1
+  }
+},
+{
+  "model": "panopticum.requirementstatusentry",
+  "pk": 233,
+  "fields": {
+    "status": 1,
+    "type": 1,
+    "requirement": 10,
+    "notes": "",
+    "component_version": 1
+  }
+},
+{
+  "model": "panopticum.requirementstatusentry",
+  "pk": 234,
+  "fields": {
+    "status": 1,
+    "type": 3,
+    "requirement": 10,
+    "notes": "?",
+    "component_version": 1
+  }
+},
+{
+  "model": "panopticum.requirementstatusentry",
+  "pk": 235,
+  "fields": {
+    "status": 1,
+    "type": 1,
+    "requirement": 11,
+    "notes": "",
+    "component_version": 1
+  }
+},
+{
+  "model": "panopticum.requirementstatusentry",
+  "pk": 236,
+  "fields": {
+    "status": 1,
+    "type": 3,
+    "requirement": 11,
+    "notes": "?",
+    "component_version": 1
+  }
+},
+{
+  "model": "panopticum.requirementstatusentry",
+  "pk": 237,
+  "fields": {
+    "status": 1,
+    "type": 1,
+    "requirement": 12,
+    "notes": "",
+    "component_version": 1
+  }
+},
+{
+  "model": "panopticum.requirementstatusentry",
+  "pk": 238,
+  "fields": {
+    "status": 1,
+    "type": 3,
+    "requirement": 12,
+    "notes": "?",
+    "component_version": 1
+  }
+},
+{
+  "model": "panopticum.requirementstatusentry",
+  "pk": 239,
+  "fields": {
+    "status": 1,
+    "type": 1,
+    "requirement": 13,
+    "notes": "",
+    "component_version": 1
+  }
+},
+{
+  "model": "panopticum.requirementstatusentry",
+  "pk": 240,
+  "fields": {
+    "status": 1,
+    "type": 3,
+    "requirement": 13,
+    "notes": "?",
+    "component_version": 1
+  }
+},
+{
+  "model": "panopticum.requirementstatusentry",
+  "pk": 241,
+  "fields": {
+    "status": 1,
+    "type": 1,
+    "requirement": 14,
+    "notes": "",
+    "component_version": 1
+  }
+},
+{
+  "model": "panopticum.requirementstatusentry",
+  "pk": 242,
+  "fields": {
+    "status": 1,
+    "type": 3,
+    "requirement": 14,
+    "notes": "?",
+    "component_version": 1
+  }
+},
+{
+  "model": "panopticum.requirementstatusentry",
+  "pk": 243,
+  "fields": {
+    "status": 1,
+    "type": 1,
+    "requirement": 15,
+    "notes": "",
+    "component_version": 1
+  }
+},
+{
+  "model": "panopticum.requirementstatusentry",
+  "pk": 244,
+  "fields": {
+    "status": 1,
+    "type": 3,
+    "requirement": 15,
+    "notes": "?",
+    "component_version": 1
+  }
+},
+{
+  "model": "panopticum.requirementstatusentry",
+  "pk": 245,
+  "fields": {
+    "status": 1,
+    "type": 1,
+    "requirement": 16,
+    "notes": "",
+    "component_version": 1
+  }
+},
+{
+  "model": "panopticum.requirementstatusentry",
+  "pk": 246,
+  "fields": {
+    "status": 1,
+    "type": 3,
+    "requirement": 16,
+    "notes": "?",
+    "component_version": 1
+  }
+},
+{
+  "model": "panopticum.requirementstatusentry",
+  "pk": 247,
+  "fields": {
+    "status": 1,
+    "type": 1,
+    "requirement": 17,
+    "notes": "",
+    "component_version": 1
+  }
+},
+{
+  "model": "panopticum.requirementstatusentry",
+  "pk": 248,
+  "fields": {
+    "status": 1,
+    "type": 3,
+    "requirement": 17,
+    "notes": "?",
+    "component_version": 1
+  }
+},
+{
+  "model": "panopticum.requirementstatusentry",
+  "pk": 249,
+  "fields": {
+    "status": 1,
+    "type": 1,
+    "requirement": 18,
+    "notes": "",
+    "component_version": 1
+  }
+},
+{
+  "model": "panopticum.requirementstatusentry",
+  "pk": 250,
+  "fields": {
+    "status": 1,
+    "type": 3,
+    "requirement": 18,
+    "notes": "?",
+    "component_version": 1
+  }
+},
+{
+  "model": "panopticum.requirementstatusentry",
+  "pk": 251,
+  "fields": {
+    "status": 1,
+    "type": 1,
+    "requirement": 19,
+    "notes": "",
+    "component_version": 1
+  }
+},
+{
+  "model": "panopticum.requirementstatusentry",
+  "pk": 252,
+  "fields": {
+    "status": 1,
+    "type": 3,
+    "requirement": 19,
+    "notes": "?",
+    "component_version": 1
+  }
+},
+{
+  "model": "panopticum.requirementstatusentry",
+  "pk": 253,
+  "fields": {
+    "status": 1,
+    "type": 1,
+    "requirement": 20,
+    "notes": "",
+    "component_version": 1
+  }
+},
+{
+  "model": "panopticum.requirementstatusentry",
+  "pk": 254,
+  "fields": {
+    "status": 1,
+    "type": 3,
+    "requirement": 20,
+    "notes": "?",
+    "component_version": 1
+  }
+},
+{
+  "model": "panopticum.requirementstatusentry",
+  "pk": 255,
+  "fields": {
+    "status": 1,
+    "type": 1,
+    "requirement": 21,
+    "notes": "",
+    "component_version": 1
+  }
+},
+{
+  "model": "panopticum.requirementstatusentry",
+  "pk": 256,
+  "fields": {
+    "status": 1,
+    "type": 3,
+    "requirement": 21,
+    "notes": "?",
+    "component_version": 1
+  }
+},
+{
+  "model": "panopticum.requirementstatusentry",
+  "pk": 257,
+  "fields": {
+    "status": 1,
+    "type": 1,
+    "requirement": 22,
+    "notes": "",
+    "component_version": 1
+  }
+},
+{
+  "model": "panopticum.requirementstatusentry",
+  "pk": 258,
+  "fields": {
+    "status": 1,
+    "type": 3,
+    "requirement": 22,
+    "notes": "?",
+    "component_version": 1
+  }
+},
+{
+  "model": "panopticum.requirementstatusentry",
+  "pk": 259,
+  "fields": {
+    "status": 1,
+    "type": 1,
+    "requirement": 23,
+    "notes": "",
+    "component_version": 1
+  }
+},
+{
+  "model": "panopticum.requirementstatusentry",
+  "pk": 260,
+  "fields": {
+    "status": 1,
+    "type": 3,
+    "requirement": 23,
+    "notes": "?",
+    "component_version": 1
+  }
+},
+{
+  "model": "panopticum.requirementstatusentry",
+  "pk": 261,
+  "fields": {
+    "status": 1,
+    "type": 1,
+    "requirement": 24,
+    "notes": "",
+    "component_version": 1
+  }
+},
+{
+  "model": "panopticum.requirementstatusentry",
+  "pk": 262,
+  "fields": {
+    "status": 1,
+    "type": 3,
+    "requirement": 24,
+    "notes": "?",
+    "component_version": 1
+  }
+},
+{
+  "model": "panopticum.requirementstatusentry",
+  "pk": 263,
+  "fields": {
+    "status": 1,
+    "type": 1,
+    "requirement": 25,
+    "notes": "",
+    "component_version": 1
+  }
+},
+{
+  "model": "panopticum.requirementstatusentry",
+  "pk": 264,
+  "fields": {
+    "status": 1,
+    "type": 3,
+    "requirement": 25,
+    "notes": "?",
+    "component_version": 1
+  }
+},
+{
+  "model": "panopticum.requirementstatusentry",
+  "pk": 265,
+  "fields": {
+    "status": 1,
+    "type": 1,
+    "requirement": 26,
+    "notes": "",
+    "component_version": 1
+  }
+},
+{
+  "model": "panopticum.requirementstatusentry",
+  "pk": 266,
+  "fields": {
+    "status": 1,
+    "type": 3,
+    "requirement": 26,
+    "notes": "?",
+    "component_version": 1
+  }
+},
+{
+  "model": "panopticum.requirementstatusentry",
+  "pk": 267,
+  "fields": {
+    "status": 3,
+    "type": 2,
+    "requirement": 1,
+    "notes": "",
+    "component_version": 2
+  }
+},
+{
+  "model": "panopticum.requirementstatusentry",
+  "pk": 268,
+  "fields": {
+    "status": 1,
+    "type": 2,
+    "requirement": 2,
+    "notes": "",
+    "component_version": 2
+  }
+},
+{
+  "model": "panopticum.requirement",
+  "pk": 1,
+  "fields": {
+    "title": "Conformance",
+    "description": "Component doesn't duplicate others, has proper dependencies, has accurate description, etc"
+  }
+},
+{
+  "model": "panopticum.requirement",
+  "pk": 2,
+  "fields": {
+    "title": "Domain model",
+    "description": "Clear domain model description approved by architects"
+  }
+},
+{
+  "model": "panopticum.requirement",
+  "pk": 3,
+  "fields": {
+    "title": "Component diagram",
+    "description": ""
+  }
+},
+{
+  "model": "panopticum.requirement",
+  "pk": 4,
+  "fields": {
+    "title": "Sequence diagram",
+    "description": ""
+  }
+},
+{
+  "model": "panopticum.requirement",
+  "pk": 5,
+  "fields": {
+    "title": "DB usage policy",
+    "description": "Migration, connection, monitoring, security and other DB access policy"
+  }
+},
+{
+  "model": "panopticum.requirement",
+  "pk": 6,
+  "fields": {
+    "title": "API guideline",
+    "description": ""
+  }
+},
+{
+  "model": "panopticum.requirement",
+  "pk": 7,
+  "fields": {
+    "title": "OS autoupdate",
+    "description": ""
+  }
+},
+{
+  "model": "panopticum.requirement",
+  "pk": 8,
+  "fields": {
+    "title": "Vulnerability management",
+    "description": "Component has periodical vulnerabilities scan (e.g. static scan and external black box audit) and fixes"
+  }
+},
+{
+  "model": "panopticum.requirement",
+  "pk": 9,
+  "fields": {
+    "title": "Logs sanitization",
+    "description": ""
+  }
+},
+{
+  "model": "panopticum.requirement",
+  "pk": 10,
+  "fields": {
+    "title": "FIPS compliance",
+    "description": ""
+  }
+},
+{
+  "model": "panopticum.requirement",
+  "pk": 11,
+  "fields": {
+    "title": "GDPR compliance",
+    "description": ""
+  }
+},
+{
+  "model": "panopticum.requirement",
+  "pk": 12,
+  "fields": {
+    "title": "DataBase anonymisation",
+    "description": "Database replicas accessed by R&D teams should be anonymised, if any"
+  }
+},
+{
+  "model": "panopticum.requirement",
+  "pk": 13,
+  "fields": {
+    "title": "Design review",
+    "description": "Late involvement of operation team into the development process leads to delays for the release and bring operations problems for the component in production."
+  }
+},
+{
+  "model": "panopticum.requirement",
+  "pk": 14,
+  "fields": {
+    "title": "Deployment",
+    "description": "Component meets defined deployment requirements, e.g. deployed as kubernetes pod and takes DB credentials from env variables."
+  }
+},
+{
+  "model": "panopticum.requirement",
+  "pk": 15,
+  "fields": {
+    "title": "Safe restart",
+    "description": "Most of the updates and other operations on containers lead to downtime if the component keeps a state on the same container."
+  }
+},
+{
+  "model": "panopticum.requirement",
+  "pk": 16,
+  "fields": {
+    "title": "Backup and restore",
+    "description": "Operation team should be able to perform the consistent online backup of the component.\nOperation team should be able to restore the component if the component data is corrupted."
+  }
+},
+{
+  "model": "panopticum.requirement",
+  "pk": 17,
+  "fields": {
+    "title": "Databases access",
+    "description": "One database account used by several components is insecure and may lead to data corruption.\nDirect access to a database of another component may lead to data corruption, problems for another component, and incorrect results as well.\nNo way to easily check what is going to be changed in database schema within product upgrade."
+  }
+},
+{
+  "model": "panopticum.requirement",
+  "pk": 18,
+  "fields": {
+    "title": "Message queuing",
+    "description": ""
+  }
+},
+{
+  "model": "panopticum.requirement",
+  "pk": 19,
+  "fields": {
+    "title": "Scalability",
+    "description": "Component is horizontally scalable and has appropriate load balancing"
+  }
+},
+{
+  "model": "panopticum.requirement",
+  "pk": 20,
+  "fields": {
+    "title": "High Availability",
+    "description": "Component meets high-availability requirements and can survive in case of infrastructure outages"
+  }
+},
+{
+  "model": "panopticum.requirement",
+  "pk": 21,
+  "fields": {
+    "title": "Zero-downtime upgrade",
+    "description": "Component supports zero-downtime upgrade"
+  }
+},
+{
+  "model": "panopticum.requirement",
+  "pk": 22,
+  "fields": {
+    "title": "Metris",
+    "description": "Component provides all necessary metrics to understand if it works properly"
+  }
+},
+{
+  "model": "panopticum.requirement",
+  "pk": 23,
+  "fields": {
+    "title": "Logging completeness",
+    "description": "Component generates enough logs for easy troubleshooting"
+  }
+},
+{
+  "model": "panopticum.requirement",
+  "pk": 24,
+  "fields": {
+    "title": "Logging format",
+    "description": "Logging format is compliant with company standards (e.g. has proper JSON schema)"
+  }
+},
+{
+  "model": "panopticum.requirement",
+  "pk": 25,
+  "fields": {
+    "title": "Logging storage",
+    "description": "Logs are being delivered to proper logs storage and has proper retention configured"
+  }
+},
+{
+  "model": "panopticum.requirement",
+  "pk": 26,
+  "fields": {
+    "title": "HTTP requests tracing",
+    "description": "Component supports HTTP tracing for easy requests path tracking"
+  }
+},
+{
+  "model": "panopticum.requirementset",
+  "pk": 1,
+  "fields": {
+    "name": "Architecture Requirements",
+    "description": "",
+    "doc_link": "",
+    "requirements": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+    ],
+    "owner_groups": []
+  }
+},
+{
+  "model": "panopticum.requirementset",
+  "pk": 2,
+  "fields": {
+    "name": "Security & Compliance",
+    "description": "",
+    "doc_link": "",
+    "requirements": [
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+    ],
+    "owner_groups": []
+  }
+},
+{
+  "model": "panopticum.requirementset",
+  "pk": 3,
+  "fields": {
+    "name": "Operational Requirements",
+    "description": "identifies a component needs, which based on its architecture, technologies and other details;\r\nseek ways to apply what operation team learned and experienced to ensure the high availability and reliability of a service operating in production with minimization of costs;\r\nIs a prerequisite for DCO team to accept a component and put a component into production.",
+    "doc_link": "",
+    "requirements": [
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21
+    ],
+    "owner_groups": []
+  }
+},
+{
+  "model": "panopticum.requirementset",
+  "pk": 4,
+  "fields": {
+    "name": "Maintenance Requirements",
+    "description": "",
+    "doc_link": "",
+    "requirements": [
+      22,
+      23,
+      24,
+      25,
+      26
+    ],
+    "owner_groups": []
+  }
+},
+{
+  "model": "panopticum.componentversionmodel",
+  "pk": 1,
+  "fields": {
+    "component": 1,
+    "version": "1.0",
+    "comments": "",
+    "owner_maintainer": null,
+    "owner_responsible_qa": 1,
+    "dev_raml": "",
+    "dev_repo": "",
+    "dev_public_repo": "",
+    "dev_jira_component": "",
+    "dev_build_jenkins_job": "",
+    "dev_docs": "",
+    "dev_public_docs": "",
+    "dev_commit_link": "",
+    "dev_api_is_public": "unknown",
+    "qa_applicable": true,
+    "qa_manual_tests_status": "med",
+    "qa_manual_tests_notes": "Manual tests are good",
+    "qa_manual_tests_signoff": null,
+    "qa_unit_tests_status": "high",
+    "qa_unit_tests_notes": "90% code coverage",
+    "qa_unit_tests_signoff": null,
+    "qa_e2e_tests_status": "low",
+    "qa_e2e_tests_notes": "",
+    "qa_e2e_tests_signoff": null,
+    "qa_perf_tests_status": "none",
+    "qa_perf_tests_notes": "",
+    "qa_perf_tests_signoff": null,
+    "qa_longhaul_tests_status": "med",
+    "qa_longhaul_tests_notes": "",
+    "qa_longhaul_tests_signoff": null,
+    "qa_security_tests_status": "none",
+    "qa_security_tests_notes": "",
+    "qa_security_tests_signoff": null,
+    "qa_api_tests_status": "med",
+    "qa_api_tests_notes": "",
+    "qa_api_tests_signoff": null,
+    "qa_anonymisation_tests_status": "n/a",
+    "qa_anonymisation_tests_notes": "",
+    "qa_anonymisation_tests_signoff": null,
+    "qa_upgrade_tests_status": "n/a",
+    "qa_upgrade_tests_notes": "",
+    "qa_upgrade_tests_signoff": null,
+    "update_date": "2024-03-10T23:04:17.928Z",
+    "deleted": false,
+    "meta_compliance_rating": 0,
+    "meta_mt_rating": 0,
+    "meta_op_rating": 0,
+    "meta_qa_rating": 59,
+    "meta_rating": 30,
+    "meta_profile_completeness": 21,
+    "meta_profile_not_filled_fields": "Architecture Requirements: API guideline (owner), Architecture Requirements: Component diagram (owner), Architecture Requirements: Conformance (owner), Architecture Requirements: DB usage policy (owner), Architecture Requirements: Domain model (owner), Architecture Requirements: Sequence diagram (owner), Maintenance Requirements: HTTP requests tracing (owner), Maintenance Requirements: Logging completeness (owner), Maintenance Requirements: Logging format (owner), Maintenance Requirements: Logging storage (owner), Maintenance Requirements: Metris (owner), Operational Requirements: Backup and restore (owner), Operational Requirements: Databases access (owner), Operational Requirements: Deployment (owner), Operational Requirements: Design review (owner), Operational Requirements: High Availability (owner), Operational Requirements: Message queuing (owner), Operational Requirements: Safe restart (owner), Operational Requirements: Scalability (owner), Operational Requirements: Zero-downtime upgrade (owner), Security & Compliance: DataBase anonymisation (owner), Security & Compliance: FIPS compliance (owner), Security & Compliance: GDPR compliance (owner), Security & Compliance: Logs sanitization (owner), Security & Compliance: OS autoupdate (owner), Security & Compliance: Vulnerability management (owner), Summary: dev_api_is_public, Summary: dev_docs, Summary: dev_jira_component, Summary: dev_raml, Summary: dev_repo, Summary: owner_maintainer",
+    "meta_bad_rating_fields": "",
+    "meta_searchstr_locations": "{Cloud Datacenter}",
+    "meta_searchstr_product_versions": "{My cloud product}",
+    "owner_product_manager": [
+      1
+    ],
+    "owner_program_manager": [
+      1
+    ],
+    "owner_escalation_list": [
+      1
+    ],
+    "owner_expert": [
+      1
+    ],
+    "owner_architect": [],
+    "dev_language": [],
+    "dev_framework": [],
+    "dev_database": [],
+    "dev_orm": [],
+    "dev_logging": [],
+    "meta_locations": [
+      1
+    ],
+    "meta_product_versions": [
+      1
+    ]
+  }
+},
+{
+  "model": "panopticum.componentversionmodel",
+  "pk": 2,
+  "fields": {
+    "component": 3,
+    "version": "14",
+    "comments": "PostgreSQL v14",
+    "owner_maintainer": null,
+    "owner_responsible_qa": 1,
+    "dev_raml": "n/a",
+    "dev_repo": "",
+    "dev_public_repo": "",
+    "dev_jira_component": "",
+    "dev_build_jenkins_job": "",
+    "dev_docs": "Docs https://www.postgresql.org/",
+    "dev_public_docs": "",
+    "dev_commit_link": "",
+    "dev_api_is_public": "unknown",
+    "qa_applicable": false,
+    "qa_manual_tests_status": "unknown",
+    "qa_manual_tests_notes": "",
+    "qa_manual_tests_signoff": null,
+    "qa_unit_tests_status": "unknown",
+    "qa_unit_tests_notes": "",
+    "qa_unit_tests_signoff": null,
+    "qa_e2e_tests_status": "unknown",
+    "qa_e2e_tests_notes": "",
+    "qa_e2e_tests_signoff": null,
+    "qa_perf_tests_status": "unknown",
+    "qa_perf_tests_notes": "",
+    "qa_perf_tests_signoff": null,
+    "qa_longhaul_tests_status": "high",
+    "qa_longhaul_tests_notes": "",
+    "qa_longhaul_tests_signoff": null,
+    "qa_security_tests_status": "high",
+    "qa_security_tests_notes": "",
+    "qa_security_tests_signoff": null,
+    "qa_api_tests_status": "high",
+    "qa_api_tests_notes": "",
+    "qa_api_tests_signoff": null,
+    "qa_anonymisation_tests_status": "high",
+    "qa_anonymisation_tests_notes": "",
+    "qa_anonymisation_tests_signoff": null,
+    "qa_upgrade_tests_status": "high",
+    "qa_upgrade_tests_notes": "",
+    "qa_upgrade_tests_signoff": null,
+    "update_date": "2024-03-11T01:31:46.605Z",
+    "deleted": false,
+    "meta_compliance_rating": 0,
+    "meta_mt_rating": 0,
+    "meta_op_rating": 0,
+    "meta_qa_rating": 100,
+    "meta_rating": 37,
+    "meta_profile_completeness": 11,
+    "meta_profile_not_filled_fields": "Architecture Requirements: API guideline (owner), Architecture Requirements: Component diagram (owner), Architecture Requirements: Conformance (owner), Architecture Requirements: DB usage policy (owner), Architecture Requirements: Domain model (owner), Architecture Requirements: Sequence diagram (owner), Maintenance Requirements: HTTP requests tracing (owner), Maintenance Requirements: Logging completeness (owner), Maintenance Requirements: Logging format (owner), Maintenance Requirements: Logging storage (owner), Maintenance Requirements: Metris (owner), Operational Requirements: Backup and restore (owner), Operational Requirements: Databases access (owner), Operational Requirements: Deployment (owner), Operational Requirements: Design review (owner), Operational Requirements: High Availability (owner), Operational Requirements: Message queuing (owner), Operational Requirements: Safe restart (owner), Operational Requirements: Scalability (owner), Operational Requirements: Zero-downtime upgrade (owner), Security & Compliance: DataBase anonymisation (owner), Security & Compliance: FIPS compliance (owner), Security & Compliance: GDPR compliance (owner), Security & Compliance: Logs sanitization (owner), Security & Compliance: OS autoupdate (owner), Security & Compliance: Vulnerability management (owner), Summary: dev_api_is_public, Summary: dev_jira_component, Summary: dev_repo, Summary: owner_maintainer",
+    "meta_bad_rating_fields": "",
+    "meta_searchstr_locations": "{Cloud Datacenter}",
+    "meta_searchstr_product_versions": "{My cloud product}",
+    "owner_product_manager": [],
+    "owner_program_manager": [],
+    "owner_escalation_list": [
+      1
+    ],
+    "owner_expert": [],
+    "owner_architect": [],
+    "dev_language": [
+      4
+    ],
+    "dev_framework": [],
+    "dev_database": [],
+    "dev_orm": [],
+    "dev_logging": [],
+    "meta_locations": [
+      1
+    ],
+    "meta_product_versions": [
+      1
+    ]
+  }
+},
+{
+  "model": "panopticum.componentdependencymodel",
+  "pk": 1,
+  "fields": {
+    "type": "strong_rw",
+    "component": 3,
+    "version": 1,
+    "notes": "Main database"
+  }
+},
+{
+  "model": "panopticum.deploymentlocationclassmodel",
+  "pk": 1,
+  "fields": {
+    "name": "Cloud Datacenter",
+    "shortname": "Cloud Datacenter",
+    "description": "The component can be deployed in a cloud datacenter operated by operations team",
+    "order": 1
+  }
+},
+{
+  "model": "panopticum.deploymentlocationclassmodel",
+  "pk": 2,
+  "fields": {
+    "name": "On-prem",
+    "shortname": "On-prem",
+    "description": "The component can be deployed in a customer on-prem environment",
+    "order": 2
+  }
+},
+{
+  "model": "panopticum.deploymentenvironmentmodel",
+  "pk": 1,
+  "fields": {
+    "name": "Kubernetes"
+  }
+},
+{
+  "model": "panopticum.deploymentenvironmentmodel",
+  "pk": 2,
+  "fields": {
+    "name": "Linux VM"
+  }
+},
+{
+  "model": "panopticum.deploymentenvironmentmodel",
+  "pk": 3,
+  "fields": {
+    "name": "Windows VM"
+  }
+},
+{
+  "model": "panopticum.productfamilymodel",
+  "pk": 1,
+  "fields": {
+    "name": "My cloud products family"
+  }
+},
+{
+  "model": "panopticum.productfamilymodel",
+  "pk": 2,
+  "fields": {
+    "name": "My on-prem products family"
+  }
+},
+{
+  "model": "panopticum.productversionmodel",
+  "pk": 1,
+  "fields": {
+    "shortname": "My cloud product",
+    "name": "My cloud product",
+    "family": 1,
+    "order": 1
+  }
+},
+{
+  "model": "panopticum.productversionmodel",
+  "pk": 2,
+  "fields": {
+    "shortname": "My on-prem product",
+    "name": "My on-prem product",
+    "family": 2,
+    "order": 2
+  }
+},
+{
+  "model": "panopticum.componentdeploymentmodel",
+  "pk": 1,
+  "fields": {
+    "name": "",
+    "location_class": 1,
+    "product_version": 1,
+    "is_new_deployment": false,
+    "environment": 1,
+    "component_version": 1,
+    "runtime": null,
+    "service_name": "",
+    "binary_name": "",
+    "notes": "",
+    "open_ports": []
+  }
+},
+{
+  "model": "panopticum.componentdeploymentmodel",
+  "pk": 2,
+  "fields": {
+    "name": "PosrgreSQL 14",
+    "location_class": 1,
+    "product_version": 1,
+    "is_new_deployment": false,
+    "environment": 2,
+    "component_version": 2,
+    "runtime": null,
+    "service_name": "",
+    "binary_name": "",
+    "notes": "",
+    "open_ports": []
+  }
+}
+]

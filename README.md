@@ -253,9 +253,10 @@ python3 ./manage.py createsuperuser
 ```
 
 ### Load initial fixtures
+It is required to load some default pre-created types and data from fixtures:
 
 ```
-DJANGO_SETTINGS_MODULE=panopticum_django.settings PYTHONPATH=. django-admin loaddata init.json
+python3 ./manage.py loaddata demo.json  # 'demo.json' is used for initial review and evaluation, one can use 'minimal.json' for production as well
 ```
 
 ### Authenticate via Active Directory
