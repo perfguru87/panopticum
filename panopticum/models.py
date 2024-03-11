@@ -271,6 +271,12 @@ class ComponentModel(models.Model):
         return "%s" % self.name
 
 
+# proxy model for filtering components without component version in admin panel
+class FilteredComponent(ComponentModel):
+    class Meta:
+        proxy = True
+
+
 class RequirementStatusType(models.Model):
     """ Who owner of that status? Component owner or signee or somebody else """
     owner = models.CharField(max_length=24)
@@ -769,3 +775,103 @@ class JiraIssue(django_atlassian.models.djira.Issue):
 
     def delete(self, *args, **kwargs):
         return
+
+
+class Credential(models.Model):
+    name = models.CharField(max_length=64, primary_key=True, unique=True)
+    username = models.CharField(max_length=64)
+    password = models.CharField(max_length=64)
+    description = models.CharField(max_length=512, null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.name}"
+
+
+class ExternalService(models.Model):
+    name = models.CharField(max_length=64)
+    link = models.CharField(
+        max_length=2048,
+        blank=True,
+        null=True,
+        help_text="Link to service for example " "http://example.com",
+    )
+    ignore_ssl = models.BooleanField(verbose_name="Ignore SSL certificate")
+    credentials = models.ForeignKey( 
+        Credential, on_delete=models.SET_NULL, null=True, blank=True
+    )
+
+    def __str__(self):
+        return f"Service - {self.name}"
+
+
+class DocType(models.Model):
+    name = models.CharField(max_length=64, unique=True)
+
+    def __str__(self):
+        return f"{self.name}"
+
+
+class DocLink(models.Model):
+    name = models.CharField(max_length=64, blank=True, null=True)
+    type = models.ForeignKey(DocType, on_delete=models.CASCADE)
+    url = models.URLField(max_length=2048, help_text="Url for document")
+    component_version = models.ForeignKey(
+        ComponentVersionModel, on_delete=models.CASCADE, related_name="document_links"
+    )
+
+    def __str__(self):
+        return f"{self.name}"
+
+    class Meta:
+        unique_together = ['type', 'url', 'component_version']
+
+
+class ComponentWidget(models.Model):
+    widget = models.CharField(max_length=32, unique=True)
+    show_for_all_release_family = models.BooleanField(default=False,
+                                                      help_text='This flag overrides options selected '
+                                                                'in release family field')
+    release_family = models.ManyToManyField(ProductFamilyModel, blank=True,
+                                            help_text='Show widget for components under these release families.')
+
+
+class StaticLinksCategoryModel(models.Model):
+    name = models.CharField(max_length=64, unique=True, help_text="Name of category", null=False, blank=False)
+    description = models.CharField(max_length=255, null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.name}"
+
+
+class StaticLinksModel(models.Model):
+    name = models.CharField(max_length=128, unique=True, help_text="Name of link", null=False, blank=False)
+    url = models.URLField(max_length=2048, null=False, blank=False)
+    category = models.ForeignKey(StaticLinksCategoryModel, null=True, blank=True, on_delete=models.PROTECT)
+    image = models.ImageField(upload_to='static_links', null=True, blank=True)
+    description = models.CharField(max_length=255, null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.name}"
+
+    def save(self, *args, **kwargs):
+        if self.image:
+            new_image = self.reduce_image_size(self.image)
+            self.image = new_image
+        super().save(*args, **kwargs)
+
+    @staticmethod
+    def reduce_image_size(image):
+        img = Image.open(image)
+        old_size = img.size
+        new_size = (1024, 768)
+        if old_size > new_size:
+            img.thumbnail(new_size, Image.LANCZOS)
+        thumb_io = BytesIO()
+        img.save(thumb_io, format='webp', quality=99)
+        new_image = File(thumb_io, name=f'{image.name.split(".")[0]}.webp')
+        return new_image
+
+    @property
+    def image_url(self):
+        if self.image and hasattr(self.image, 'url'):
+            return self.image.url

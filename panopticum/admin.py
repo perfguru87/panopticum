@@ -1,7 +1,9 @@
 import typing
 
+import django.contrib.admin.sites
 import django.forms
 from django.contrib import admin
+from admin_searchable_dropdown.filters import AutocompleteFilter
 from django.forms.widgets import SelectMultiple, NumberInput, TextInput, Textarea, Select
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
@@ -15,16 +17,14 @@ from panopticum.models import *
 OWNER_STATUS_PERMISSION = 'panopticum.change_owner_status'
 SIGNEE_STATUS_PERMISSION = 'panopticum.change_signee_status'
 
-formfields_large = {models.ForeignKey: {'widget': Select(attrs={'width': '300px', 'style': 'width:300px'})},
-                    models.ManyToManyField: {'widget': SelectMultiple(attrs={'size': '7', 'width': '300px', 'style': 'width:300px'})},
+formfields_large = {
                     models.IntegerField: {'widget': NumberInput(attrs={'width': '300px', 'style': 'width:300px'})},
                     models.CharField: {'widget': TextInput(attrs={'width': '300px', 'style': 'width:300px'})},
                     models.URLField: {'widget': TextInput(attrs={'width': '300px', 'style': 'width:300px'})},
                     models.TextField: {'widget': Textarea(attrs={'rows': 2, 'cols': 60})},
                     }
 
-formfields_small = {models.ForeignKey: {'widget': Select(attrs={'width': '150px', 'style': 'width:150px'})},
-                    models.ManyToManyField: {'widget': SelectMultiple(attrs={'size': '3', 'width': '150px', 'style': 'width:150px'})},
+formfields_small = {
                     models.IntegerField: {'widget': NumberInput(attrs={'width': '150px', 'style': 'width:150px'})},
                     models.CharField: {'widget': TextInput(attrs={'width': '150px', 'style': 'width:150px'})},
                     models.URLField: {'widget': TextInput(attrs={'width': '150px', 'style': 'width:150px'})},
@@ -36,6 +36,7 @@ class UserAdmin(django.contrib.auth.admin.UserAdmin):
     readonly_fields = ['image', ]
     list_display = ('username', 'first_name', 'last_name', 'is_staff', 'title', 'department')
     change_form_template = 'loginas/change_form.html'
+    search_fields = ('username', 'first_name', 'last_name')
 
     fieldsets = (
         (None, {'fields': ('username', 'password')}),
@@ -85,6 +86,49 @@ class ComponentDeploymentAdmin(admin.TabularInline):
     autocomplete_fields = ['open_ports', ]
 
 
+class ProductFamilyAdmin(admin.ModelAdmin):
+    search_fields = ('name',)
+    list_display = ['name']
+    model = ProductFamilyModel
+
+
+class ProductVersionAdmin(admin.ModelAdmin):
+    model = ProductVersionModel
+    search_fields = ['name', 'shortname']
+    # Exclude showing status since there is no release permission to check with
+    exclude = ('status',)
+
+
+class LanguageAdmin(admin.ModelAdmin):
+    model = ProgrammingLanguageModel
+    search_fields = ["name", ]
+
+
+class FrameworkAdmin(admin.ModelAdmin):
+    model = FrameworkModel
+    search_fields = ['name', ]
+
+
+class DatabaseAdmin(admin.ModelAdmin):
+    model = DatabaseVendorModel
+    search_fields = ['name', ]
+
+
+class ORMAdmin(admin.ModelAdmin):
+    model = ORMModel
+    search_fields = ['name', ]
+
+
+class LoggerAdmin(admin.ModelAdmin):
+    model = LoggerModel
+    search_fields = ['name', ]
+
+
+class RuntimeAdmin(admin.ModelAdmin):
+    model = RuntimeModel
+    search_fields = ['name', ]
+
+
 class RequirementInlineAdmin(admin.TabularInline):
     model = Requirement
 
@@ -93,7 +137,8 @@ class RequirementForm(django.forms.ModelForm):
     """ Custom admin form for Requirement row. We merge 2 requirement statuses to Requirement row.
     Pay attention: we does not have model for Requirement row. We do not need it until we can calculate it
     from requirement statues by django admin form and frontend """
-    owner_status = panopticum.fields.RequirementStatusChoiceField(queryset=RequirementStatus.objects.all(),
+    owner_status = panopticum.fields.RequirementStatusChoiceField(queryset=RequirementStatus.objects.
+                                                                  filter(allow_for=REQ_OWNER_STATUS),
                                                                   label='Readiness')
     owner_notes = django.forms.CharField(label='notes',
                                          widget=django.forms.Textarea({'rows': '2'}),
@@ -145,7 +190,8 @@ class RequirementForm(django.forms.ModelForm):
 
         super().__init__(*args, **kwargs)
 
-        if 'instance' in kwargs:  # disable defined requirement. We disallow to change requirement title after save
+        # disable defined requirement. We disallow to change requirement title after save
+        if 'instance' in kwargs:
             self.fields['requirement'].disabled = True
         if not self.user.has_perm(OWNER_STATUS_PERMISSION):
             self.fields['owner_status'].disabled = True
@@ -163,10 +209,39 @@ class RequirementForm(django.forms.ModelForm):
         )
 
     def is_valid(self):
+        # If maintainer is changed, reset list of errors, retrieve statuses from previous maintainer
+        # and re-validate form
+        if self._ownership_changed():
+            self._errors = None
+            self.data[self.add_prefix('owner_status')] = self.initial.get('owner_status') or \
+                                                         self.base_fields['owner_status'].initial
+            self.data[self.add_prefix('owner_notes')] = self.initial.get('owner_notes')
+
+            self.data[self.add_prefix('approve_status')] = self.initial.get('approve_status') or \
+                                                           self.base_fields['approve_status'].initial
+            self.data[self.add_prefix('approve_notes')] = self.initial.get('approve_notes')
+            self.full_clean()
+            # Append maintainer to changed data array to save approve status
+            self.ownership_is_changed = True
+
         # skip validation for 3 empty requirement rows that added bellow
         if 'requirement' not in self.cleaned_data:
             return True
         return super().is_valid()
+
+    def _ownership_changed(self):
+        if not hasattr(self.instance, 'component_version') or not getattr(self.instance.component_version, 'id', 0):
+            return
+        component_version = ComponentVersionModel.objects.get(id=self.instance.component_version.id)
+
+        changed_owner_maintainer_id = int(self.data.get('owner_maintainer', 0) or 0)
+        original_owner_maintainer_id = getattr(component_version.owner_maintainer, 'id', 0)
+
+        changed_owner_responsible_qa_id = int(self.data.get('owner_responsible_qa', 0) or 0)
+        original_owner_responsible_qa_id = getattr(component_version.owner_responsible_qa, 'id', 0)
+
+        return original_owner_maintainer_id != changed_owner_maintainer_id or \
+               original_owner_responsible_qa_id != changed_owner_responsible_qa_id
 
     def _save_status(self, field_prefix, type_pk):
         status = self.cleaned_data[f'{field_prefix}_status']
@@ -273,7 +348,7 @@ class RequirementStatusEntryAdmin(admin.TabularInline):
         return super().get_formset(request, obj, **kwargs)
 
     def get_queryset(self, request):
-        qs =super().get_queryset(request)
+        qs = super().get_queryset(request)
         # show requirements available for requirement set owners only
         if not request.user.has_perm(OWNER_STATUS_PERMISSION) and \
                 request.user.has_perm(SIGNEE_STATUS_PERMISSION):
@@ -315,30 +390,108 @@ class RequirementStatusEntryAdmin(admin.TabularInline):
 class RequirementAdmin(admin.ModelAdmin):
     list_display = ['title']
     model = Requirement
+    search_fields = ('title',)
 
 
 class RequirementSetAdmin(admin.ModelAdmin):
     filter_horizontal = ['requirements', 'owner_groups']
     list_display = ['name']
     model = RequirementSet
+    search_fields = ('name',)
 
 
 class ComponentAdmin(admin.ModelAdmin):
-    search_fields = ['name']
+    search_fields = ('name',)
     list_display = ['name', 'type', 'data_privacy_class', 'category', 'subcategory', 'vendor']
     model = ComponentModel
+
+    def has_change_permission(self, request, obj=None):
+        return request.user.groups.filter(name='Architects').exists() or request.user.is_superuser
+
+    def has_add_permission(self, request, obj=None):
+        return self.has_change_permission(request)
+
+    def has_delete_permission(self, request, obj=None):
+        return self.has_change_permission(request)
+
+
+@admin.register(FilteredComponent)
+class FilteredComponentAdmin(ComponentAdmin):
+
+    def get_form(self, request, obj=None, **kwargs):
+        """Override the get_form and extend the 'exclude' keyword arg"""
+        if obj:
+            kwargs.update({
+                'exclude': getattr(kwargs, 'exclude', tuple()) + ('releases',),
+            })
+        return super(ComponentAdmin, self).get_form(request, obj, **kwargs)
+
+    def get_search_results(self, request, queryset, search_term):
+        queryset, use_distinct = super().get_search_results(request, queryset, search_term)
+        queryset = self.filter_by_version_exists(queryset).filter(name__icontains=search_term)
+        return queryset, use_distinct
+
+    @staticmethod
+    def filter_by_version_exists(queryset):
+        """ Filter component by component version existing. We will hold only component that does not have any
+         component version """
+        return queryset.filter(component_versions__isnull=True)
+
+
+class DocTypeAdmin(admin.ModelAdmin):
+    pass
+
+
+class DocLinkFormset(django.forms.models.BaseInlineFormSet):
+
+    def clean(self):
+        required_types = []
+        types = []
+        for form in self.forms:
+            try:
+                types.append(form.cleaned_data['type'])
+            except (AttributeError, KeyError):
+                pass
+        deleted_types = [f.cleaned_data['type'] for f in self.deleted_forms]
+        for dt in deleted_types:
+            types.remove(dt)
+        required_types = set(required_types) - set(types)
+        if required_types:
+            error_message = f'You must have {", ".join([t.name for t in required_types])} document type'
+            if len(required_types) > 1:
+                error_message += 's'
+            raise django.forms.ValidationError(error_message)
+
+
+class DocLinkInline(admin.TabularInline):
+    formset = DocLinkFormset
+    formfield_overrides = formfields_large
+    model = DocLink
+    classes = ('collapse', 'no-upper')
+    verbose_name = "Document link"
+    verbose_name_plural = "Document links"
+    extra = 0
+    template = 'admin/panopticum/doc_link_edit_inline.html'
 
 
 class ComponentVersionAdmin(admin.ModelAdmin):
     formfield_overrides = formfields_large
     search_fields = ['component__name', 'version']
+    list_display = ['component', 'version']
     autocomplete_fields = ['owner_maintainer',
                            'owner_responsible_qa',
                            'owner_product_manager',
                            'owner_program_manager',
                            'owner_expert',
                            'owner_escalation_list',
-                           'owner_architect']
+                           'owner_architect',
+                           'component',
+                           'dev_language',
+                           'dev_framework',
+                           'dev_database',
+                           'dev_orm',
+                           'dev_logging'
+                          ]
 
     inlines = (ComponentDependencyAdmin, ComponentDeploymentAdmin, RequirementStatusEntryAdmin)
 
@@ -480,6 +633,58 @@ class ComponentVersionAdmin(admin.ModelAdmin):
                   'all': ('/static/css/admin.css',)
               }
 
+class CredentialsForm(django.forms.ModelForm):
+    class Meta:
+        model = Credential
+        fields = '__all__'
+        widgets = {
+            'password': django.forms.PasswordInput()
+        }
+
+
+class CredentialsAdmin(admin.ModelAdmin):
+    model = Credential
+    form = CredentialsForm
+    list_display = ('name', 'username', 'description')
+
+
+class ExternalServiceAdmin(admin.ModelAdmin):
+    model = ExternalService
+    list_display = ('name', 'link')
+    search_fields = ('name',)
+
+
+class StaticLinksCategoryAdmin(admin.ModelAdmin):
+    model = StaticLinksCategoryModel
+    search_fields = ('name',)
+    list_display = ('name',)
+
+
+class StaticLinksAdmin(admin.ModelAdmin):
+    model = StaticLinksModel
+    search_fields = ['name', 'url']
+    list_display = ['name', 'url', 'category']
+    readonly_fields = ['preview']
+    fieldsets = [
+        (None, {'fields': ('name', 'url', 'category', 'description')}),
+        ('Image', {'fields': (('image', 'preview'),)}),
+    ]
+
+    def preview(self, obj):
+        max_size = 100
+        print(f'\n photo width:  {obj.image.width}\n')
+        if obj.image.height < max_size and obj.image.width < max_size:
+            max_size = max(obj.image.height, obj.image.width)
+
+        ratio = obj.image.width / obj.image.height
+        if obj.image.width >= obj.image.height:
+            width = max_size * ratio
+            height = max_size
+        else:
+            height = max_size / ratio
+            width = max_size
+        return mark_safe(f'<img src="{obj.image.url}" width="{width}" height={height} />')
+
 
 admin.site.register(User, UserAdmin)
 admin.site.register(CountryModel)
@@ -488,14 +693,14 @@ admin.site.register(OrgDepartmentModel)
 admin.site.register(PersonRoleModel)
 
 admin.site.register(SoftwareVendorModel)
-admin.site.register(DatabaseVendorModel)
-admin.site.register(ProductFamilyModel)
-admin.site.register(ProductVersionModel)
-admin.site.register(ProgrammingLanguageModel)
-admin.site.register(FrameworkModel)
-admin.site.register(RuntimeModel)
-admin.site.register(ORMModel)
-admin.site.register(LoggerModel)
+admin.site.register(DatabaseVendorModel, DatabaseAdmin)
+admin.site.register(ProductFamilyModel, ProductFamilyAdmin)
+admin.site.register(ProductVersionModel, ProductVersionAdmin)
+admin.site.register(ProgrammingLanguageModel, LanguageAdmin)
+admin.site.register(FrameworkModel, FrameworkAdmin)
+admin.site.register(RuntimeModel, RuntimeAdmin)
+admin.site.register(ORMModel, ORMAdmin)
+admin.site.register(LoggerModel, LoggerAdmin)
 admin.site.register(ComponentType)
 admin.site.register(ComponentDataPrivacyClassModel)
 admin.site.register(ComponentCategoryModel)
@@ -507,3 +712,6 @@ admin.site.register(DeploymentEnvironmentModel)
 admin.site.register(TCPPortModel, TCPPortAdmin)
 admin.site.register(RequirementSet, RequirementSetAdmin)
 admin.site.register(Requirement, RequirementAdmin)
+admin.site.register(ExternalService, ExternalServiceAdmin)
+admin.site.register(StaticLinksCategoryModel, StaticLinksCategoryAdmin)
+admin.site.register(StaticLinksModel, StaticLinksAdmin)

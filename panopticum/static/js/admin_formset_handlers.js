@@ -183,5 +183,22 @@ class RequirementsStorage {
                 });
             });
         });
+
+        //#region Handling 'window.onbeforeunload' event for componentversionmodel_form.
+        addOnBeforeUnload = function () {
+            window.onbeforeunload = function() { return "You have unsaved changes. Do you want to leave this page ?"; }
+        }
+        removeOnBeforeUnload = function () {
+            window.onbeforeunload = null
+        }
+        addBeforeUnloadEvent = function (form_name) {
+            $(`${form_name} select`).change(addOnBeforeUnload);
+            $(`${form_name} tr.add-row a`).click(addOnBeforeUnload);
+            $(`${form_name} td.delete a.inline-deletelink`).click(addOnBeforeUnload);
+            $(`${form_name} input[type="text"], ${form_name}  textarea`).keydown(addOnBeforeUnload);
+            $(`${form_name} input[type="submit"]`).click(removeOnBeforeUnload);
+        }
+        addBeforeUnloadEvent('form');
+        //#endregion
     });
 })(django.jQuery);
