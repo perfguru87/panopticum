@@ -528,7 +528,7 @@ class ComponentVersionModel(models.Model):
 
     def _update_meta_rating(self):
         max_signoff_count = RequirementSet.objects.all().aggregate(count=django.db.models.Count('requirements'))['count']
-        positive_signoff_count = self.statuses.filter(status__id__in=[REQ_STATUS_READY, REQ_STATUS_NOT_APPLICABLE]).count()
+        positive_signoff_count = self.statuses.filter(type__id__in=[REQ_OVERALL_STATUS,], status__id__in=[REQ_STATUS_READY, REQ_STATUS_NOT_APPLICABLE]).count()
         negative_signoff_count = max_signoff_count - positive_signoff_count
 
         if self.qa_applicable:
