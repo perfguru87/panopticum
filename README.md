@@ -197,7 +197,7 @@ sudo port install py36-psycopg2
 ### Install Django and other requirements
 
 ```
-sudo pip3.6 install -r requirements.txt
+sudo pip3 install -r requirements.txt
 ```
 
 ### Install WSGI
