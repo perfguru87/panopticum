@@ -2259,5 +2259,267 @@
     "notes": "",
     "open_ports": []
   }
+},
+{
+  "model": "panopticum.techradarquadrant",
+  "pk": 1,
+  "fields": {
+    "name": "Dev Tools",
+    "position": 0,
+    "description": ""
+  }
+},
+{
+  "model": "panopticum.techradarquadrant",
+  "pk": 2,
+  "fields": {
+    "name": "Methods & Patterns",
+    "position": 1,
+    "description": ""
+  }
+},
+{
+  "model": "panopticum.techradarquadrant",
+  "pk": 3,
+  "fields": {
+    "name": "Databases & Services",
+    "position": 2,
+    "description": ""
+  }
+},
+{
+  "model": "panopticum.techradarquadrant",
+  "pk": 4,
+  "fields": {
+    "name": "Languages & Frameworks",
+    "position": 3,
+    "description": ""
+  }
+},
+{
+  "model": "panopticum.techradarring",
+  "pk": 1,
+  "fields": {
+    "name": "ADOPT",
+    "position": 0,
+    "description": "",
+    "color": "#5ba300"
+  }
+},
+{
+  "model": "panopticum.techradarring",
+  "pk": 2,
+  "fields": {
+    "name": "TRIAL",
+    "position": 1,
+    "description": "",
+    "color": "#009eb0"
+  }
+},
+{
+  "model": "panopticum.techradarring",
+  "pk": 3,
+  "fields": {
+    "name": "ASSESS",
+    "position": 2,
+    "description": "",
+    "color": "#c7ba00"
+  }
+},
+{
+  "model": "panopticum.techradarring",
+  "pk": 4,
+  "fields": {
+    "name": "HOLD",
+    "position": 3,
+    "description": "",
+    "color": "#e09b96"
+  }
+},
+{
+  "model": "panopticum.historicaltechradarentry",
+  "pk": 1,
+  "fields": {
+    "id": 1,
+    "label": "REST API",
+    "description": "",
+    "moved": 0,
+    "link": "",
+    "active": true,
+    "quadrant": 2,
+    "ring": 1,
+    "history_date": "2024-03-13T01:40:58.509Z",
+    "history_change_reason": null,
+    "history_type": "+",
+    "history_user": 1
+  }
+},
+{
+  "model": "panopticum.historicaltechradarentry",
+  "pk": 2,
+  "fields": {
+    "id": 2,
+    "label": "Microservices",
+    "description": "",
+    "moved": 0,
+    "link": "",
+    "active": true,
+    "quadrant": 2,
+    "ring": 1,
+    "history_date": "2024-03-13T01:41:14.020Z",
+    "history_change_reason": null,
+    "history_type": "+",
+    "history_user": 1
+  }
+},
+{
+  "model": "panopticum.historicaltechradarentry",
+  "pk": 3,
+  "fields": {
+    "id": 3,
+    "label": "RabbitMQ",
+    "description": "",
+    "moved": -1,
+    "link": "",
+    "active": true,
+    "quadrant": 3,
+    "ring": 4,
+    "history_date": "2024-03-13T01:41:31.998Z",
+    "history_change_reason": null,
+    "history_type": "+",
+    "history_user": 1
+  }
+},
+{
+  "model": "panopticum.historicaltechradarentry",
+  "pk": 4,
+  "fields": {
+    "id": 4,
+    "label": "MySQL",
+    "description": "",
+    "moved": 0,
+    "link": "",
+    "active": true,
+    "quadrant": 3,
+    "ring": 4,
+    "history_date": "2024-03-13T01:41:54.365Z",
+    "history_change_reason": null,
+    "history_type": "+",
+    "history_user": 1
+  }
+},
+{
+  "model": "panopticum.historicaltechradarentry",
+  "pk": 5,
+  "fields": {
+    "id": 5,
+    "label": "Python 2",
+    "description": "",
+    "moved": 0,
+    "link": "",
+    "active": true,
+    "quadrant": 4,
+    "ring": 4,
+    "history_date": "2024-03-13T01:42:13.528Z",
+    "history_change_reason": null,
+    "history_type": "+",
+    "history_user": 1
+  }
+},
+{
+  "model": "panopticum.historicaltechradarentry",
+  "pk": 6,
+  "fields": {
+    "id": 6,
+    "label": "Python 3",
+    "description": "",
+    "moved": 0,
+    "link": "",
+    "active": true,
+    "quadrant": 4,
+    "ring": 1,
+    "history_date": "2024-03-13T01:42:30.111Z",
+    "history_change_reason": null,
+    "history_type": "+",
+    "history_user": 1
+  }
+},
+{
+  "model": "panopticum.techradarentry",
+  "pk": 1,
+  "fields": {
+    "label": "REST API",
+    "description": "",
+    "quadrant": 2,
+    "ring": 1,
+    "moved": 0,
+    "link": "",
+    "active": true
+  }
+},
+{
+  "model": "panopticum.techradarentry",
+  "pk": 2,
+  "fields": {
+    "label": "Microservices",
+    "description": "",
+    "quadrant": 2,
+    "ring": 1,
+    "moved": 0,
+    "link": "",
+    "active": true
+  }
+},
+{
+  "model": "panopticum.techradarentry",
+  "pk": 3,
+  "fields": {
+    "label": "RabbitMQ",
+    "description": "",
+    "quadrant": 3,
+    "ring": 4,
+    "moved": -1,
+    "link": "",
+    "active": true
+  }
+},
+{
+  "model": "panopticum.techradarentry",
+  "pk": 4,
+  "fields": {
+    "label": "MySQL",
+    "description": "",
+    "quadrant": 3,
+    "ring": 4,
+    "moved": 0,
+    "link": "",
+    "active": true
+  }
+},
+{
+  "model": "panopticum.techradarentry",
+  "pk": 5,
+  "fields": {
+    "label": "Python 2",
+    "description": "",
+    "quadrant": 4,
+    "ring": 4,
+    "moved": 0,
+    "link": "",
+    "active": true
+  }
+},
+{
+  "model": "panopticum.techradarentry",
+  "pk": 6,
+  "fields": {
+    "label": "Python 3",
+    "description": "",
+    "quadrant": 4,
+    "ring": 1,
+    "moved": 0,
+    "link": "",
+    "active": true
+  }
 }
 ]

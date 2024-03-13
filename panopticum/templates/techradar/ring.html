@@ -1,0 +1,61 @@
+{% extends "layout/_base.html" %}
+
+{% block title %} Tech Radar Ring {% endblock title %}
+
+{% block scripts %}
+  {{ block.super }}
+ <script src="https://cdnjs.cloudflare.com/ajax/libs/element-ui/2.13.0/index.js"></script>
+ <script src="https://cdnjs.cloudflare.com/ajax/libs/element-ui/2.13.0/locale/en.min.js"></script>
+ <script src="https://cdn.jsdelivr.net/npm/vue2-filters/dist/vue2-filters.min.js"></script>
+ <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.15/lodash.min.js"></script>
+ <script src="/static/vendors/techradar/radar.js"></script>
+ <script src="/static/vendors/d3js/d3.v4.min.js"></script>
+ 
+{% endblock %}
+
+{% block stylesheets %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/element-ui/2.13.0/theme-chalk/index.css">
+  {{ block.super }}
+{% endblock stylesheets %}
+
+{% block content %}
+<div v-cloak class="right_col dashboard" role="main" id="vue-component">
+
+  <div class="row top_tiles title_left">
+    <div class="col-sm-12 tile">
+      <h3>Technology Radar</h3>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-sm-12 tile ">
+      <div class="row">
+        <div class="col-xs-12">
+          <el-card class="box-card is-always-shadow">
+            <widget-techradar-ring></widget-techradar-ring>
+          </el-card>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block extra_js %}
+  {{ block.super }}
+<script>
+
+function vue_component_init() {
+    ELEMENT.locale(ELEMENT.lang.en);
+    {% include "vue/widget-techradar-ring.js" %}
+    const app = new Vue({
+        el: "#vue-component"
+    })
+}
+
+$(document).ready(function() {
+    vue_component_init();
+});
+</script>
+
+</div></div>
+{% endblock %}

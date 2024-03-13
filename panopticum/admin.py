@@ -3,7 +3,6 @@ import typing
 import django.contrib.admin.sites
 import django.forms
 from django.contrib import admin
-from admin_searchable_dropdown.filters import AutocompleteFilter
 from django.forms.widgets import SelectMultiple, NumberInput, TextInput, Textarea, Select
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
@@ -715,3 +714,7 @@ admin.site.register(Requirement, RequirementAdmin)
 admin.site.register(ExternalService, ExternalServiceAdmin)
 admin.site.register(StaticLinksCategoryModel, StaticLinksCategoryAdmin)
 admin.site.register(StaticLinksModel, StaticLinksAdmin)
+
+admin.site.register(TechradarRing)
+admin.site.register(TechradarQuadrant)
+admin.site.register(TechradarEntry)

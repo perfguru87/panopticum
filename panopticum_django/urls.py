@@ -42,6 +42,9 @@ router.register(r'component_data_privacy_class', views.ComponentDataPrivacyClass
 router.register(r'user', views.UserDetail)
 router.register(r'token', views.Token)
 router.register(r'issue', views.JiraIssueView)
+router.register(r'techradar_quadrants', views.TechradarQuadrantViewSet)
+router.register(r'techradar_rings', views.TechradarRingViewSet)
+router.register(r'techradar_entries', views.TechradarEntryViewSet)
 
 
 urlpatterns = [
@@ -51,6 +54,9 @@ urlpatterns = [
     url('^dashboard/components.html', views.dashboard_components, name='Components'),
     url('^requirementset/', views.requirementset, name='team'),
     url('^dashboard/links.html', views.dashboard_components, name='Links'),
+    url('^techradar/ring.html', views.techradar_ring, name='Tech Radar'),
+    url('^techradar/table.html', views.techradar_table, name='Tech Radar'),
+    url('^techradar/config.json', views.techradar_config),
     path('api/login/', rest_framework.authtoken.views.obtain_auth_token),
     path('api/login/', views.LoginAPIView.as_view()),
     path('accounts/', include('django.contrib.auth.urls')),

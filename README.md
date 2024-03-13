@@ -104,6 +104,7 @@ Key components' attributes:
 - Components registry: category, language, framework, maintainers, dependencies, etc
 - Component requirements management and sign-off: autotests, operational, compliance, maintainability, etc
 - Users sync-up from Active Directory (maintaners, product managers, QA experts)
+- Tech Radar (inspired by ![Zalando Tech Radar](https://github.com/zalando/tech-radar))
 - REST API
 
 # Todo

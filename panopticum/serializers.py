@@ -319,3 +319,30 @@ class HistoricalRequirementStatusEntrySerializer(serializers.ModelSerializer):
     class Meta:
         model = getattr(panopticum.models, 'HistoricalRequirementStatusEntry')
         fields = '__all__'
+
+
+class TechradarRingSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TechradarRing
+        fields = '__all__'
+
+
+class TechradarQuadrantSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TechradarQuadrant
+        fields = '__all__'
+
+
+class TechradarEntrySerializer(serializers.ModelSerializer):
+    ring = serializers.SerializerMethodField()
+    quadrant = serializers.SerializerMethodField()
+
+    class Meta:
+        model = TechradarEntry
+        fields = '__all__'
+
+    def get_ring(self, obj):
+        return obj.ring.position
+
+    def get_quadrant(self, obj):
+        return obj.quadrant.position

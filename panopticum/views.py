@@ -218,9 +218,35 @@ def dashboard_team(request):
     return render_page(request, 'dashboard/team.html')
 
 
+def techradar_ring(request):
+    return render_page(request, 'techradar/ring.html')
+
+
+def techradar_table(request):
+    return render_page(request, 'techradar/table.html')
+
+
+def techradar_config(request):
+    return render_page(request, 'techradar/config.json')
+
+
+
 class JiraIssueView(viewsets.ModelViewSet):
     queryset = JiraIssue.objects.all()
     serializer_class = IssueSerializer
     permission_classes = (permissions.IsAuthenticated,)
 
 
+class TechradarRingViewSet(RelativeURLViewSet):
+    queryset = TechradarRing.objects.all().order_by('position')
+    serializer_class = TechradarRingSerializer
+
+
+class TechradarQuadrantViewSet(RelativeURLViewSet):
+    queryset = TechradarQuadrant.objects.all().order_by('position')
+    serializer_class = TechradarQuadrantSerializer
+
+
+class TechradarEntryViewSet(RelativeURLViewSet):
+    queryset = TechradarEntry.objects.all()
+    serializer_class = TechradarEntrySerializer

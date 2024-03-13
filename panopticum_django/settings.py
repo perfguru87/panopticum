@@ -187,7 +187,13 @@ ADMIN_REORDER = (
          'panopticum.RuntimeModel',
          'panopticum.ORMModel',
          'panopticum.LoggerModel',
-     )}
+     )},
+    {'app': 'panopticum', 'label': 'techradar',
+     'models': (
+         'panopticum.TechradarRing',
+         'panopticum.TechradarQuadrant',
+         'panopticum.TechradarEntry',
+     )},
 )
 
 
