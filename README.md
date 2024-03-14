@@ -3,27 +3,16 @@ Table of Contents
 
    * [Summary](#summary)
    * [Panopticum Philosophy](#panopticum-philosophy)
-   * [Workflow](#workflow)
-      * [Data Model](#data-model)
-      * [Initial data seeding](#initial-data-seeding)
-      * [Regular workflow:](#regular-workflow)
-   * [Features](#features)
-   * [Todo](#todo)
-      * [Requirements](#requirements)
-      * [Installation](#installation)
-         * [Install PostgreSQL](#install-postgresql)
-         * [Install python3](#install-python3)
-         * [Install Django and other requirements](#install-django-and-other-requirements)
-         * [Install WSGI](#install-wsgi)
-         * [Connecting to a database](#connecting-to-a-database)
-         * [Configuring JIRA account](#configuring-jira-account)
-         * [Create DB schema (apply migrations)](#create-db-schema-apply-migrations)
-         * [Create Django admin panel superuser](#create-django-admin-panel-superuser)
-         * [Authenticate via Active Directory](#authenticate-via-active-directory)
-      * [Running the server](#running-the-server)
-      * [Running at docker-compose](#running-at-docker-compose)
+   * [Panopticum Overview](#panopticum-overview)
+      * [Data model](#data-model)
+      * [Usage scenario](#usage-scenario)
+      * [Features](#features)
+   * [Installation](#installation)
+      * [Option #1 - Using docker](#option-1---using-docker)
+      * [Option #2 - Manual installation](#option-2---manual-installation)
+   * [Tools](#installation)
       * [Active Directory users import](#active-directory-users-import)
-      * [Data model visualization](#data-model-visualization)
+      * [Data model visualization](#data-model-visualization) 
       
 # Summary
 Software services registry for IT, RnD, DevOps, Support, Maintenance, Documentation and Operations teams. It could be used to document and link all your microservices together before and after they go live.
@@ -71,9 +60,9 @@ in the system. Also it helps `experts` to maintain a set of standard recomendati
 unit tests, performance test, troubleshooting guide, etc) and even define mandatory sign-off procedure before a
 component goes to production. Ironically, components are treated as `prisoners` and experts teams as `jailers` and so `panopticum` plays a role of centralized place to see all the bad and good guys. :-)
 
-# Workflow
+# Panopticum overview
 
-### Data Model
+## Data model
 
 Panopticum database objects and their relations:
 
@@ -84,30 +73,31 @@ Key components' attributes:
 - `Data privacy class` - represents what kind of data a component is managing: customer data, customer secrets, metadata, etc
 - `Location class` - different components can be deployed in different locations: datacenter, on-prem, customer PC, mobile phone, etc
 
-### Initial data seeding
+## Usage scenario
 
-1. Import users from Active Directory (or create them manually)
-2. Create requirements groups and requirements in the admin panel
-3. Fill-in standard models like: Component Data Privacy class, Category, Vendors, etc 
+Initial data seeding:
+
+1. Create requirements groups and requirements in the admin panel
+2. Fill-in standard models like: Frameworks, Languages, Component Data Privacy class, Category, Vendors, etc 
+3. Import users from Active Directory (or create them manually)
 4. Import initial set of microservices, their attributes and relations using Excel import function
 
-[TODO example]
+Once components list is created:
 
-### Regular workflow: 
+5. Component owners can add new components or update information about a component in the admin panel
+6. Experts' teams' leaders can review the requirements completion and sign-off components
 
-4. Component owners add new components or update information about a component in the admin panel
-5. Experts' teams' leaders sign-off requirements before a component goes public
-6. Product Managers and RnD unit managers monitor overall status and plan the resources accordingly
+## Features
 
-# Features
+Current features:
 
 - Components registry: category, language, framework, maintainers, dependencies, etc
 - Component requirements management and sign-off: autotests, operational, compliance, maintainability, etc
 - Users sync-up from Active Directory (maintaners, product managers, QA experts)
-- Tech Radar (inspired by ![Zalando Tech Radar](https://github.com/zalando/tech-radar))
+- Tech Radar (inspired by [Zalando Tech Radar](https://github.com/zalando/tech-radar))
 - REST API
 
-# Todo
+Possible upcoming features ideas:
 
 HIGH PRIO
 - Component tags, search by components tags in dashboard
@@ -115,11 +105,10 @@ HIGH PRIO
 - Property change audit (author and time of every property change)
 - Component data change history widget (who changed what, like in JIRA)
 - Roles: allow users to manage only their components (QA manages QA fields, Dev - manage dev fields, etc)
-- Export whole data to XLS
+- Export to XLS
 - Embed static documentation page
 - Add endpoints (URL to component mapping)
 - New field: service is highly loaded
-- Component 'dependee'
 
 MED PRIO
 - New release approval checklist
@@ -150,15 +139,92 @@ LOW PRIO
 - Org chart browser
 - Git repos branches browser
 
-## Requirements
+# Installation
+
+The key requirements are:
 
 - Python3.7+
 - Django3.1+
 
-## Installation
+## Option #1 - Using docker
 
-### Install PostgreSQL
-This step is optional, you can choose whatever DB you prefer for Django
+### Installing the Docker
+
+#### Ubuntu 22.04
+
+```bash
+sudo apt update
+sudo apt install -y apt-transport-https ca-certificates curl software-properties-common
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+echo \
+"deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu \
+$(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+sudo apt update
+sudo apt install -y docker-ce docker-ce-cli containerd.io
+sudo apt install -y python3-pip docker==6.1.3
+```
+
+#### CentOS 9
+
+```bash
+sudo dnf update
+sudo dnf remove docker
+sudo dnf install -y dnf-plugins-core
+sudo dnf config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+sudo dnf install -y docker-ce docker-ce-cli containerd.io
+sudo systemctl enable docker
+sudo systemctl start docker
+sudo dnf install -y python3-pip
+sudo pip3 install docker-compose docker==6.1.3
+```
+
+#### Mac OS
+
+See docker [instruction](https://docs.docker.com/desktop/install/mac-install/)
+Also, you have to install python-pip and then:
+
+```bash
+pip3 install docker-compose
+```
+
+### Configuring settings & credentials (optional)
+
+You can update credentials and settings in:
+```bash
+./compose/panopticum/settings_local.py
+./compose/nginx/nginx-server.conf
+```
+
+### Staring the Panopticum service
+
+```bash
+docker-compose up -d
+```
+
+Service will be available at http://127.0.0.1:80/
+
+### Creating initial data
+
+By deafault, Panopticum starts with empty database and has no any admin users, so you may want to create some:
+
+```bash
+docker-compose run --rm web python manage.py createsuperuser
+```
+
+After the superuser creation you have to initialize some initial content:
+```bash
+docker-compose run --rm web python manage.py loaddata demo.json  # use 'minimal.json' instead of 'demo' to load bare minimum content 
+```
+
+## Option #2 - Manual installation
+
+Manual installation can be useful if you want to debug or change the source code
+
+### Installing a Database
+
+You can choose whatever DB you prefer for Django, so here is just an example for PostgreSQL
+
+CentOS-7:
 
 ```
 sudo rpm -Uvh https://yum.postgresql.org/11/redhat/rhel-7-x86_64/pgdg-redhat-repo-latest.noarch.rpm
@@ -170,37 +236,49 @@ sudo -u postgres psql
 postgres=# create database panopticum;
 postgres=# create user panopticum with encrypted password 'my secret password';
 postgres=# grant all privileges on database panopticum to panopticum;
-sudo echo "host all all 127.0.0.1/32 md5" > /var/lib/pgsql/11/data/pg_hba.conf
+sudo echo "host all all 127.0.0.1/32 md5" >> /var/lib/pgsql/11/data/pg_hba.conf
 sudo systemctl restart postgresql-11
 ```
 
-### Install python3
+CentOS-9:
+
+```
+sudo yum install postgresq-server postgresql-contrib
+sudo /usr/bin/postgresql-setup initdb
+sudo systemctl enable postgresql
+sudo systemctl start postgresql
+sudo -u postgres psql
+postgres=# create database panopticum;
+postgres=# create user panopticum with encrypted password 'my secret password';
+postgres=# grant all privileges on database panopticum to panopticum;
+sudo echo "host all all 127.0.0.1/32 md5" >> /var/lib/pgsql/data/pg_hba.conf
+sudo systemctl restart postgresql
+```
+
+### Installing python3 modules
 
 CentOS-7:
 ```
 sudo yum -y install https://centos7.iuscommunity.org/ius-release.rpm
-sudo yum -y install python36
-sudo yum -y install python36-pip
-sudo yum -y install python36-psycopg2
+sudo yum -y install python36 python36-pip python36-devel
+```
 
+CentOS-9:
+```
+sudo yum -y install python3-pip python3-devel openldap-devel
 ```
 
 MacOS:
 
-Install [Mac port](https://www.macports.org/install.php) first
+No specific python3 installation steps required, since it should be already on your system
 
-Then:
-```
-sudo port install py36-psycopg2
-```
-
-### Install Django and other requirements
+### Installing Django and other requirements
 
 ```
 sudo pip3 install -r requirements.txt
 ```
 
-### Install WSGI
+### Installing WSGI
 
 https://docs.djangoproject.com/en/2.1/howto/deployment/wsgi/uwsgi/
 
@@ -209,16 +287,22 @@ CentOS-7:
 yum -y install uwsgi uwsgi-plugin-python3
 ```
 
+CentOS-9
+```
+pip3 install uwsgi
+```
+
 ### Connecting to a database
-By default django uses the sqlite database, but you can define the connection to your database in the panopticum_django/settings_local.py file:
+
+By default, django uses the SQLite database, but you can define the connection to your database in the panopticum_django/settings_local.py file:
 ```
 cat >> panopticum_django/settings_local.py << EOD
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'panopticum',
-        'USER': 'panopticum',
-        'PASSWORD': 'my secret password',
+        'NAME': 'panopticum_db',
+        'USER': 'panopticum_user',
+        'PASSWORD': 'panopticum_password',
         'HOST': '127.0.0.1',
         'PORT': '5432',
     }
@@ -228,19 +312,15 @@ PAGE_TITLE = 'My Components Registry'
 EOD
 ```
 
-NOTE: please refere to Django [documentation](https://docs.djangoproject.com/en/2.1/ref/databases/) to see which databases are supported. For example Django 2.1 supports PosgtreSQL-9.4 and higher so it will not work on default CentOS-7 which has PostgreSQL-9.2 out of the box
+NOTE: please refer to Django [documentation](https://docs.djangoproject.com/en/3.1/ref/databases/) to see which databases are supported.
 
-### Configuring JIRA account
-In order to support JIRA issues detection in notes/comments and highligh them with tooltips you can configure
+### Configuring JIRA integration (optional)
 
-```
-cat >> panopticum_django/settings_local.py << EOD
-JIRA_CONFIG = {
-    'URL': 'https://jira.mycompany.com/',
-    'USER': 'panopticum',
-    'PASSWORD': 'my secret password'
-}
-```
+In order to support JIRA issues detection in notes/comments and highlighting them with tooltips you can configure appropriate environment variables:
+
+    JIRA_URL=
+    JIRA_USER=
+    JIRA_PASSWORD=
 
 ### Create DB schema (apply migrations)
 ```
@@ -248,19 +328,20 @@ python3 ./manage.py migrate
 ```
 
 ### Create Django admin panel superuser
-
 ```
 python3 ./manage.py createsuperuser
 ```
 
 ### Load initial fixtures
+
 It is required to load some default pre-created types and data from fixtures:
 
 ```
 python3 ./manage.py loaddata demo.json  # 'demo.json' is used for initial review and evaluation, one can use 'minimal.json' for production as well
 ```
 
-### Authenticate via Active Directory
+### Integration with Active Directory
+
 In order to use AD `settings_local.py` should contain the following:
 ```python
 import ldap
@@ -314,31 +395,23 @@ AUTH_LDAP_FOREIGNKEY_USER_ATTR_MAP = {
 ```
 For more information please refer to [documentation](https://django-auth-ldap.readthedocs.io/en/latest/authentication.html).
 
-## Running the server
-
+### Running the server
 ```
 python3 ./manage.py runserver 0.0.0.0:8000
 ```
 
-## Running at docker-compose
-
-```bash
-pip install docker-compose
-docker-compose up -d
-```
-
-Service will available at http://127.0.0.1:8080/
+# Tools
 
 ## Active Directory users import
 
 For import users from your Active Directory use:
 
 ```
-python3  manage.py ad-sync
+python3 ./manage.py ad-sync
 ```
 
 ## Data model visualization
 
 ```
-python3 manage.py graph_models -a -g -o model.png
+python3 ./manage.py graph_models -a -g -o model.png
 ```

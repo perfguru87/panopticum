@@ -119,15 +119,24 @@ DATABASES = {
         'PORT': os.environ.get('DB_PORT', None),
         'CONN_MAX_AGE': os.environ.get('DB_CONN_MAX_AGE', 0),
     },
-    'jira': {
-            'ENGINE': 'django_atlassian.backends.jira',
-            'NAME': os.environ.get('JIRA_URL'),
-            'USER': os.environ.get('JIRA_USER'),
-            'PASSWORD': os.environ.get('JIRA_PASSWORD'),
-            'SECURITY': '',
-        },
-
 }
+
+if 'JIRA_URL' in os.environ:
+    jira_url = os.environ.get('JIRA_URL')
+    verify_ssl_env_var = bool(int(os.environ.get('VERIFY_SSL', True)))
+    ca_bundle = os.environ.get('CA_CERT', '')
+    # Use CA bundle to verify internal resources connectivity if VERIFY_SSL is enabled
+    # and the CA_CERT variable is present
+    verify = ca_bundle if verify_ssl_env_var and ca_bundle else verify_ssl_env_var
+
+    DATABASES['jira'] = {
+        'ENGINE': 'django_atlassian.backends.jira',
+        'NAME': jira_url,
+        'USER': os.environ.get('JIRA_USER'),
+        'PASSWORD': os.environ.get('JIRA_PASSWORD'),
+        'SECURITY': '',
+        'VERIFY': verify,
+    }
 
 DATABASE_ROUTERS = ['django_atlassian.router.Router']
 
@@ -226,14 +235,6 @@ MEDIA_URL = '/media/'
 
 DEFAULT_FILE_STORAGE = 'database_files.storage.DatabaseStorage'
 AUTH_USER_MODEL = 'panopticum.User'
-
-# JIRA settings.
-JIRA_CONFIG = {
-    # 'URL': 'https://example.com',
-    # 'USER': 'some_user',
-    # 'PASSWORD': ''
-}
-
 
 
 # This will only allow admins to log in as other users, as long as

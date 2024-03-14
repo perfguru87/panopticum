@@ -18,6 +18,8 @@ psycopg2-binary==2.9.5
 pillow
 scalpl
 iso3166
+docker==6.1.3
 
 git+https://github.com/den-gts/django-database-files-3000.git
 git+https://github.com/perfguru87/django-atlassian.git
+

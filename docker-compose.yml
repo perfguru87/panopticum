@@ -2,26 +2,46 @@ version: '3'
 services:
   db:
     image: postgres
+    container_name: panopticum_db
     ports:
-      - "5432:5432"
+      - "5433:5432"
     environment:
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: panopticum
+      POSTGRES_USER: panopticum_user
+      POSTGRES_PASSWORD: panopticum_password
+      POSTGRES_DB: panopticum_db
     volumes:
       - ./data:/var/lib/postgresql/data
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 6000M
+        reservations:
+          cpus: '1'
+          memory: 4000M
   web:
     build: .
+    container_name: panopticum_backend
     ports:
       - "8000:8000"
     volumes:
-      - ./compose/panopticum/settings_local.py:/usr/src/app/settings_local.py:ro
+      - ./compose/panopticum/settings_local.py:/opt/panopticum/panopticum_django/settings_local.py:ro
     depends_on:
       - init
       - db
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 1000M
+        reservations:
+          cpus: '1'
+          memory: 500M
   nginx:
     image: nginx
+    container_name: panopticum_nginx
     ports:
-      - "8080:80"
+      - "80:80"
     volumes:
       - ./panopticum/static:/etc/nginx/html:ro
       - ./compose/nginx:/etc/nginx/conf.d:ro
@@ -30,6 +50,7 @@ services:
       - db
   init:
     build: .
+    container_name: panopticum_migrate
     command: python manage.py migrate
     depends_on:
       - db
