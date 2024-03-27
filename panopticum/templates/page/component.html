@@ -277,7 +277,12 @@ function vue_component_init() {
           getIdFromHref(href) {
             const idPattern = new RegExp("^.*/(\\d+)/?(?:\\?.+)?$");
               return Number(idPattern.exec(href)[1]);
-
+          },
+          getUrlParameter(param) {
+            const queryString = window.location.search;
+            console.log("query string: ", queryString);
+            const urlParams = new URLSearchParams(queryString);
+            return urlParams.get(param);
           },
           changeVersion() {
             if (this.component) {
@@ -311,7 +316,7 @@ function vue_component_init() {
           const [component, versions, requirementsets] = await Promise.all(requests)
           if (versions.length) {
             currentVersion  = await axios.get(`/api/component_version/${versions[0].id}/?format=json`).then(resp => resp.data);
-            this.selectedVersion = currentVersion.id;
+//            this.selectedVersion = currentVersion.id;
           }
           component.latest_version = currentVersion;
           this.versions = versions;
@@ -319,8 +324,15 @@ function vue_component_init() {
           this.component = component;
           this.loading = false;
           this.$nextTick(function () {
-              update_component_page_elements(this.component);
+            update_component_page_elements(this.component);
           });
+
+          const currentVer = parseInt(this.getUrlParameter('version_id'));
+          if (currentVer && this.versions.some(version => version.id === currentVer)) {
+            this.selectedVersion = currentVer;
+          } else if (this.versions.length > 0) {
+            this.selectedVersion = this.versions[0].id;
+          }
         },
     });
 }
