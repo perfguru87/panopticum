@@ -1,4 +1,4 @@
-Django==3.1.*
+Django==4.2.*
 django-auth-ldap
 django-cors-headers
 django-datatable-view
