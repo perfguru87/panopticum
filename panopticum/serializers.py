@@ -75,7 +75,8 @@ class ProductVersionSerializer(serializers.ModelSerializer):
 class UserSerializer(QueryFieldsMixin, serializers.ModelSerializer):
     class Meta:
         model = get_user_model()
-        exclude = ('password', )
+        fields = ('id', 'username', 'email', 'manager')
+
 
 class SoftwareVendorSerializer(serializers.ModelSerializer):
     class Meta:
