@@ -307,7 +307,7 @@ function vue_component_init() {
                    console.log(error);
                    this.errored = true
                 }),
-              axios.get(`/api/component_version/?format=json&ordering=-release_date&component=${this.getIdFromHref(window.location.pathname)}`)
+              axios.get(`/api/component_version/?format=json&ordering=-id&component=${this.getIdFromHref(window.location.pathname)}`)
                 .then(response => response.data.results),
               axios.get(`/api/requirement_set/?format=json`)
                 .then(response => response.data.results)
