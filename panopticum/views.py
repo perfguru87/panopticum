@@ -5,6 +5,7 @@ from django.shortcuts import render
 from django.conf import settings
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
+from functools import wraps
 
 from rest_framework import viewsets, permissions, views
 from rest_framework.response import Response
@@ -192,11 +193,22 @@ class LoginAPIView(APIView):
             return Response({"error": "not valid credentials"}, 401)
 
 
-@login_required
+def is_login_required(view_func):
+    @wraps(view_func)
+    def _wrapped_view(request, *args, **kwargs):
+        if settings.PAGE_AUTH_REQUIRED:
+            return login_required(view_func)(request, *args, **kwargs)
+        else:
+            return view_func(request, *args, **kwargs)
+    return _wrapped_view
+
+
+@is_login_required
 def render_page(request, template, context=None):
     _context = {
         'categories': ComponentCategoryModel.objects.all().order_by('order'),
         'requirementSets': RequirementSet.objects.all().order_by('id'),
+        'PAGE_AUTH_REQUIRED': settings.PAGE_AUTH_REQUIRED,
         'JIRA_BASE_URL': settings.DATABASES.get('jira', {}).get('NAME')
     }
     if context:

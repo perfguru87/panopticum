@@ -21,10 +21,6 @@
       <h2>{% firstof user.first_name user.username %}</h2>
     </div>
 
-  {% else %}
-    <div class="profile_info">
-      <h2><a href="{% url 'login' %}?next={{ request.get_full_path }}">Login</a></h2>
-    </div>
   {% endif %}
   </div>
   <!-- /menu profile quick info -->
