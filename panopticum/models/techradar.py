@@ -1,6 +1,7 @@
 import django.forms
 from django.db import models
 from simple_history.models import HistoricalRecords
+from ckeditor.fields import RichTextField
 
 class RingPosition(models.IntegerChoices):
     INNER = 0, "Inner"
@@ -9,10 +10,10 @@ class RingPosition(models.IntegerChoices):
     OUTER = 3, "Outer"
 
 class QuadrantPosition(models.IntegerChoices):
-    INNER = 0, "Bottom Right"
-    FIRST = 1, "Bottom Left"
-    SECOND = 2, "Top Left"
-    OUTER = 3, "Top Right"
+    BOTTOM_RIGHT = 0, "Bottom Right"
+    BOTTOM_LEFT = 1, "Bottom Left"
+    TOP_LEFT = 2, "Top Left"
+    TOP_RIGHT = 3, "Top Right"
 
 TECH_RADAR_MOVE = (
     (0, "Not moved"),
@@ -61,3 +62,8 @@ class TechradarEntry(models.Model):
 
     def __str__(self):
         return self.__unicode__()
+
+
+class TechradarInfo(models.Model):
+    order = models.IntegerField("Section order")
+    content = RichTextField("Custom HTML text representing a Technology Radar details section")

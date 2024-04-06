@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     'loginas',
     'django_atlassian',
     'panopticum',
+    'ckeditor'
 ]
 
 REST_FRAMEWORK = {

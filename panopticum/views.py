@@ -193,13 +193,15 @@ class LoginAPIView(APIView):
 
 
 @login_required
-def render_page(request, template):
-    context = {
+def render_page(request, template, context=None):
+    _context = {
         'categories': ComponentCategoryModel.objects.all().order_by('order'),
         'requirementSets': RequirementSet.objects.all().order_by('id'),
         'JIRA_BASE_URL': settings.DATABASES.get('jira', {}).get('NAME')
     }
-    return render(request, template, context)
+    if context:
+        _context.update(context)
+    return render(request, template, _context)
 
 
 def component(request):
@@ -219,7 +221,12 @@ def dashboard_team(request):
 
 
 def techradar_ring(request):
-    return render_page(request, 'techradar/ring.html')
+    context = {
+        'techradar_infos': TechradarInfo.objects.all().order_by('order'),
+        'techradar_rings': TechradarRing.objects.all().order_by('position'),
+        'techradar_quadrants': TechradarQuadrant.objects.all().order_by('position')
+    }
+    return render_page(request, 'techradar/ring.html', context)
 
 
 def techradar_table(request):

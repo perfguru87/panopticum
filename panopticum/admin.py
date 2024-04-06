@@ -721,6 +721,7 @@ admin.site.register(ExternalService, ExternalServiceAdmin)
 admin.site.register(StaticLinksCategoryModel, StaticLinksCategoryAdmin)
 admin.site.register(StaticLinksModel, StaticLinksAdmin)
 
+admin.site.register(TechradarInfo)
 admin.site.register(TechradarRing)
 admin.site.register(TechradarQuadrant)
 admin.site.register(TechradarEntry)

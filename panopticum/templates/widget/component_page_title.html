@@ -1,8 +1,6 @@
 {% verbatim %}<div class="title_left">
            <h3>
-             <span v-cloak>[[ component.category.name ]]
-              | [[ component.name ]]
-             </span>
+             <span v-cloak>[[ component.category.name ]] | [[ component.name ]]</span>
              <el-select v-if="versions.length > 1" v-model="selectedVersion" placeholder="no versions" size="mini" style="width: 90px; top: -3px;">
                <el-option
                  v-for="version in versions"
@@ -11,6 +9,6 @@
                  :value="version.id">
                </el-option>
              </el-select>
-             &nbsp;<small><a target=_blank :href="`/admin/panopticum/componentversionmodel/${selectedVersion}/change/`"><i class='fa fa-edit'></i></a></small>
+             <small><a target=_blank :href="`/admin/panopticum/componentversionmodel/${selectedVersion}/change/`"><i class='fa fa-edit'></i></a></small>
            </h3>
          </div>{% endverbatim %}

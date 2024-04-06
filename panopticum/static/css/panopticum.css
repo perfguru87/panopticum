@@ -252,6 +252,7 @@ p.component-links span:first-child {
 }
 
 .title_left h3 { margin-top: 15px; font-size: 22px; }
+.title_left h3 i.fa { margin-left: 5px; }
 .title_left span div { margin-left: 5px; }
 
 .body { color: #4a5159; }
@@ -575,3 +576,17 @@ div.owner {
 
 /* Dashboards */
 .dashboard { height: 100vh; display: flex; flex-direction: column; overflow: auto; }
+
+/* Techradar */
+table.techradar_info { float: left; display: table-cell; margin: 10px 15px 15px 0px; width: auto; }
+table.techradar_info th {
+    font-weight: bold;
+    border-left: 1px solid #fff;
+    border-bottom: 1px solid #aaa;
+    background-color: #ddd;
+    padding: 1px 5px 1px 5px;
+}
+table.techradar_info th:first-child { border-left: 1px solid #ddd; }
+table.techradar_info th:last-child { border-right: 1px solid #ddd; }
+
+table.techradar_info td { padding: 1px 5px 1px 5px; border: 1px solid #eee; }

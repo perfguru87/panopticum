@@ -1,0 +1,27 @@
+<div class="row">
+  <div class="col-sm-12 tile ">
+    <el-card class="box-card is-always-shadow">
+      {% for info in techradar_infos %}
+        {{ info.content|safe }}
+      {% endfor %}
+
+      {% if techradar_rings %}
+        <table class="techradar_info">
+          <tr><th>RING</th><th>DESCRIPTION</th></tr>
+          {% for ring in techradar_rings %}
+            <tr><td><b><a href="/admin/panopticum/techradarring/{{ ring.id }}/change/">{{ ring.name }}</a></b></td><td> {{ ring.description }} </td></tr>
+          {% endfor %}
+        </table>
+      {% endif %}
+
+      {% if techradar_quadrants %}
+        <table class="techradar_info">
+          <tr><th>QUADRANT</th><th>DESCRIPTION</th></tr>
+          {% for quadrant in techradar_quadrants %}
+            <tr><td><b><a href='/admin/panopticum/techradarquadrant/{{ quadrant.id }}/change/'>{{ quadrant.name }}</a></b></td><td> {{ quadrant.description }} </td></tr>
+          {% endfor %}
+        </table>
+      {% endif %}
+    </el-card>
+  </div>
+</div>

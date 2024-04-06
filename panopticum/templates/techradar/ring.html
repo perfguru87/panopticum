@@ -23,21 +23,21 @@
 
   <div class="row top_tiles title_left">
     <div class="col-sm-12 tile">
-      <h3>Technology Radar</h3>
+      <h3><span>Technology Radar</span>
+      <small><a href="/admin/panopticum/techradarentry/" target="_blank" title='Edit Technology Radar entries'><i class='fa fa-edit'></i></a></small></h3>
     </div>
   </div>
 
   <div class="row">
     <div class="col-sm-12 tile ">
-      <div class="row">
-        <div class="col-xs-12">
-          <el-card class="box-card is-always-shadow">
-            <widget-techradar-ring></widget-techradar-ring>
-          </el-card>
-        </div>
-      </div>
+      <el-card class="box-card is-always-shadow">
+        <widget-techradar-ring></widget-techradar-ring>
+      </el-card>
     </div>
   </div>
+
+  {% include "techradar/info.html" %}
+
 </div>
 {% endblock %}
 {% block extra_js %}
