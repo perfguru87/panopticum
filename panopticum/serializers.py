@@ -211,7 +211,7 @@ class RequirementStatusEntrySerializer(serializers.HyperlinkedModelSerializer):
 class RequirementSetSimpleSerializer(serializers.ModelSerializer):
     class Meta:
         model = RequirementSet
-        fields = ['id', 'name']
+        fields = ['id', 'name', 'doc_link']
 
 
 class RequirementSetSerializer(serializers.ModelSerializer):

@@ -7,6 +7,7 @@ Vue.component('widget-requirements', {
         statuses: [],
         table: [],
         title: "",
+        doc_link: "",
         description: "",
         statusDefinitions: []
       }
@@ -43,6 +44,7 @@ Vue.component('widget-requirements', {
                 rs = this.$props.requirementsets[i];
                 if (rs.id == this.$props.requirementsetid) {
                     this.title = rs.name;
+                    this.doc_link = rs.doc_link;
                     this.description = rs.description;
                     this.requirements = rs.requirements;
                     break;
@@ -54,11 +56,12 @@ Vue.component('widget-requirements', {
             for (let requirement of this.requirements) {
                 let ownerStatus = this.statuses.find(el => requirement.id == this.getId(el.requirement) && el.type == "component owner")
                 if (ownerStatus == undefined) {
-                    this.table.push({title: requirement.title, status: null, signoffStatus: null, notes: ''})
+                    this.table.push({title: requirement.title, doc_link: requirement.doc_link, status: null, signoffStatus: null, notes: ''})
                 } else {
                     let signeeStatus = this.statuses.find(el => requirement.id == this.getId(el.requirement) && el.type == "requirement reviewer");
                     this.table.push({
                         title: requirement.title,
+                        doc_link: requirement.doc_link,
                         status: ownerStatus, 
                         notes: ownerStatus.notes,
                         signoffStatus: signeeStatus,
@@ -86,7 +89,7 @@ Vue.component('widget-requirements', {
     template: `
     {% verbatim %}<el-card v-if='title'>
         <div slot="header" class="clearfix">
-                <h2>{{title }}</h2>
+                <h2>{{title }} <small v-if=doc_link><a v-bind:href="doc_link" target=_blank><i class='fa fa-external-link'></i></a></h2>
                 <span class='pa-component-rating' v-if='component_version.op_applicable'>
                         {{ component_version.meta_op_rating }}%
                 </span>
