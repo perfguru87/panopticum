@@ -597,6 +597,13 @@ class ComponentVersionModel(models.Model):
         self.meta_searchstr_product_versions = ", ".join(["{%s}" % p.name for p in self.meta_product_versions.all()])
         super().save()
 
+    def delete_with_dependencies(self):
+        # Clearing the many-to-many relationships
+        self.depends_on.clear()
+
+        # Once all many-to-many links are cleared, delete the object itself
+        self.delete()
+
     def save(self, *args, **kwargs):
 
         super().save(*args, **kwargs)
@@ -638,8 +645,8 @@ class ComponentDependencyModel(models.Model):
                             "R/O - component reads data from the other, BUT doesn't modify state of another component; "
                             "W/O - component doesn't get any data from the other, BUT can modify it's state;")
 
-    component = models.ForeignKey(ComponentModel, on_delete=models.PROTECT)
-    version = models.ForeignKey(ComponentVersionModel, on_delete=models.PROTECT)
+    component = models.ForeignKey(ComponentModel, on_delete=models.CASCADE)
+    version = models.ForeignKey(ComponentVersionModel, on_delete=models.CASCADE)
     notes = panopticum.fields.SmartTextField("Dependency notes")
 
 
@@ -733,7 +740,7 @@ class ComponentDeploymentModel(models.Model):
                                     on_delete=models.PROTECT)
     component_version = models.ForeignKey(ComponentVersionModel,
                                           related_name='deployments',
-                                          on_delete=models.PROTECT)
+                                          on_delete=models.CASCADE)
     runtime = models.ForeignKey(RuntimeModel,
                                 related_name='deployments',
                                 on_delete=models.PROTECT,

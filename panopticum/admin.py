@@ -601,7 +601,6 @@ class ComponentVersionAdmin(admin.ModelAdmin):
             inline_admin_formsets.append(inline_admin_formset)
         return inline_admin_formsets
 
-
     def _clone(self, obj):
         old_depends_on = ComponentDependencyModel.objects.filter(version=obj.id).order_by('id')
 
@@ -625,6 +624,13 @@ class ComponentVersionAdmin(admin.ModelAdmin):
         obj.meta_update_date = datetime.datetime.now()
         obj.meta_deleted = False
         super().save_model(request, obj, form, change)
+
+    def delete_model(self, request, obj):
+        obj.delete_with_dependencies()
+
+    def delete_queryset(self, request, queryset):
+        for obj in queryset:
+            obj.delete_with_dependencies()
 
     class Media:
         js = ('/static/js/admin.js',)
