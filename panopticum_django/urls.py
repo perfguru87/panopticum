@@ -15,8 +15,7 @@ Including another URLconf
 """
 from django.conf.urls.static import static
 from django.contrib import admin
-from django.urls import path, re_path
-from django.conf.urls import url, include
+from django.urls import path, re_path, include
 from django.shortcuts import redirect
 
 from rest_framework import routers
@@ -50,17 +49,17 @@ router.register(r'techradar_entries', views.TechradarEntryViewSet)
 urlpatterns = [
     path('', lambda request: redirect('/dashboard/components.html', permanent=False)),  # Redirect root URL
     path('admin/', admin.site.urls),
-    url('^component/', views.component, name='Component'),
-    url('^dashboard/components.html', views.dashboard_components, name='Components'),
-    url('^requirementset/', views.requirementset, name='team'),
-    url('^dashboard/links.html', views.dashboard_components, name='Links'),
-    url('^techradar/ring.html', views.techradar_ring, name='Tech Radar'),
-    url('^techradar/table.html', views.techradar_table, name='Tech Radar'),
-    url('^techradar/config.json', views.techradar_config),
+    re_path('^component/', views.component, name='Component'),
+    re_path('^dashboard/components.html', views.dashboard_components, name='Components'),
+    re_path('^requirementset/', views.requirementset, name='team'),
+    re_path('^dashboard/links.html', views.dashboard_components, name='Links'),
+    re_path('^techradar/ring.html', views.techradar_ring, name='Tech Radar'),
+    re_path('^techradar/table.html', views.techradar_table, name='Tech Radar'),
+    re_path('^techradar/config.json', views.techradar_config),
     path('api/login/', rest_framework.authtoken.views.obtain_auth_token),
     path('api/login/', views.LoginAPIView.as_view()),
     path('accounts/', include('django.contrib.auth.urls')),
-    url('^api/', include(router.urls)),
+    re_path('^api/', include(router.urls)),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

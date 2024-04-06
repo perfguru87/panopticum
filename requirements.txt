@@ -7,7 +7,7 @@ django-filter
 django-modeladmin-reorder
 django-loginas
 django-simple-history
-djangorestframework==3.12.4
+djangorestframework
 djangorestframework-datatables
 djangorestframework-filters==1.0.0.dev0
 djangorestframework-queryfields

@@ -12,6 +12,10 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 
 import os
 import sys
+import django
+from django.utils.translation import gettext
+django.utils.translation.ugettext = gettext
+
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -240,6 +244,8 @@ AUTH_USER_MODEL = 'panopticum.User'
 # This will only allow admins to log in as other users, as long as
 # those users are not admins themselves:
 CAN_LOGIN_AS = lambda request, target_user: request.user.is_superuser and not target_user.is_superuser
+
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 curr_dir = os.path.abspath(os.path.dirname(__file__))
 if os.path.exists(os.path.join(curr_dir, "settings_local.py")):
