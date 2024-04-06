@@ -35,7 +35,7 @@ class ProductVersionViewSet(RelativeURLViewSet):
 
 
 class HistoryComponentVersionViewSet(RelativeURLViewSet):
-    queryset = ComponentVersionModel.history.all()
+    queryset = ComponentVersionModel.history.all().order_by('-id')
     serializer_class = HistoricalComponentVersionSerializer
     filterset_fields = '__all__'
 
@@ -62,15 +62,15 @@ class DeploymentLocationClassViewSet(RelativeURLViewSet):
 
 
 class ComponentVersionViewSet(viewsets.ModelViewSet):  # relativeURLViewSet will broke fields query filtering
-    queryset = ComponentVersionModel.objects.all()
+    queryset = ComponentVersionModel.objects.all().order_by('-id')
     serializer_class = ComponentVersionSerializer
     filter_class = panopticum.filters.ComponentVersionFilter
     filterset_fileds = "__all__"
-    ordering_fields = ('component__name', 'version')
+    ordering_fields = ('-version')
 
     def get_queryset(self):
         req_set = self.request.query_params.get('requirement_set')
-        return ComponentVersionModel.objects.with_rating(req_set)
+        return ComponentVersionModel.objects.with_rating(req_set).order_by(self.ordering_fields)
 
 
 class ComponentTypeViewSet(RelativeURLViewSet):
