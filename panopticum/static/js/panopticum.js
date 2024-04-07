@@ -64,8 +64,10 @@ function pa_tooltip_from_list(title, str) {
     str = str.replace(/\, /g, '<br>- ');
     str = str.replace(/\,/g, '<br>- ');
     if (title && str)
-        return title + '<br>- ' + str;
-    return title + str;
+        str = title + '<br>- ' + str;
+    else
+        str = title + str;
+    return "<div style='white-space: nowrap;'>" + str + "</div>";
 }
 
 function pa_tooltip_jira_issue(jira_issue) {

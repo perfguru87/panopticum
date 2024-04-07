@@ -19,7 +19,9 @@
               <td>
                 <div style='display: block; height: 25px; width: 60px; margin-bottom: 10px;'>
                   <div style='height: 25px; width: 60px; border-radius: 5px;'>
-                    <span v-cloak v-if="component.latest_version.meta_rating" class='pa-component-rating pa-component-rating-large'>[[ component.latest_version.meta_rating ]]%</span>
+                    <span v-cloak v-if="component.latest_version.meta_rating" id="component-rating-text"
+                        data-toggle='tooltip' data-placement='bottom' data-container="body"
+                        class='guage-value pa-component-rating pa-component-rating-large'>[[ component.latest_version.meta_rating ]]%</span>
                     <span v-cloak v-else class='pa-component-rating pa-component-rating-large'>n/a</span>
                   </div>
                 </div>
