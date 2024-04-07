@@ -73,7 +73,7 @@ Vue.component('dashboard-components', {
     },
     async fetchComponentsVersions(queryParams) {
       const offset = (this.currentPage - 1) * this.pageLimit;
-      const fields = 'id,owner_maintainer,version,component,deployments,dev_raml,dev_repo,dev_jira_component,dev_docs'
+      const fields = 'id,owner_maintainer,version,component,deployments,dev_raml,dev_repo,dev_issuetracker_component,dev_docs'
       let url = `/api/component_version/?format=json&ordering=component__name&limit=${this.pageLimit}&offset=${offset}&fields=${fields}`;
       this.cancelSearch();
       this.cancelSource = axios.CancelToken.source();
@@ -352,9 +352,9 @@ Vue.component('dashboard-components', {
       width="60" 
         label="JIRA">
         <template slot-scope="scope">
-          <a :href="scope.row.componentVersion.dev_jira_component" 
+          <a :href="scope.row.componentVersion.dev_issuetracker_component" 
           class="el-icon-link" 
-          v-if="scope.row.componentVersion.dev_jira_component && scope.row.componentVersion.dev_jira_component.startsWith('http')"></a>
+          v-if="scope.row.componentVersion.dev_issuetracker_component && scope.row.componentVersion.dev_issuetracker_component.startsWith('http')"></a>
         </template>
       </el-table-column>
       <el-table-column

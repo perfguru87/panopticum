@@ -512,7 +512,7 @@ class ComponentVersionAdmin(admin.ModelAdmin):
                                   ('owner_expert', 'owner_escalation_list'), 'owner_architect')}),
         ('Development', {'classes': ('collapse',),
                           'fields': ('dev_language', 'dev_framework', 'dev_database', 'dev_orm', 'dev_logging',
-                                     ('dev_raml', 'dev_jira_component'),
+                                     ('dev_raml', 'dev_issuetracker_component'),
                                      ('dev_repo', 'dev_public_repo'),
                                      ('dev_docs', 'dev_public_docs'),
                                      ('dev_build_jenkins_job', 'dev_api_is_public'))}),

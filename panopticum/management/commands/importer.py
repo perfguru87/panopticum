@@ -506,7 +506,7 @@ class Utility:
                                    component_id=comp_obj.id,
                                    defaults={
                                        'comments': 'SEED',
-                                       'dev_jira_component': '',
+                                       'dev_issuetracker_component': '',
                                        'dev_build_jenkins_job': '',
                                        'meta_deleted': False,
                                        'dev_commit_link': ''
@@ -520,7 +520,7 @@ class Utility:
         if update_record is True or created is True:
             try:
                 comp_ver_obj.comments = 'SEED'
-                comp_ver_obj.dev_jira_component = ''  # dont have info
+                comp_ver_obj.dev_issuetracker_component = ''  # dont have info
                 comp_ver_obj.dev_build_jenkins_job = ''  # dont have info
                 comp_ver_obj.dev_commit_link = ''  # dont have info
                 comp_ver_obj.dev_api_is_public = ''  # dont have info

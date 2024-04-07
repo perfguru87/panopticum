@@ -382,7 +382,7 @@ class ComponentVersionModel(models.Model):
     dev_raml = panopticum.fields.SmartTextField("RAML link", help_text=links_help_msg)
     dev_repo = panopticum.fields.SmartTextField("Repository", help_text=links_help_msg)
     dev_public_repo = panopticum.fields.SmartTextField("Public Repository", help_text=links_help_msg)
-    dev_jira_component = panopticum.fields.SmartTextField("JIRA component", help_text=links_help_msg)
+    dev_issuetracker_component = panopticum.fields.SmartTextField("Issue tracker component", help_text=links_help_msg)
     dev_build_jenkins_job = panopticum.fields.SmartTextField("Jenkins job to build the component", help_text=links_help_msg)
     dev_docs = panopticum.fields.SmartTextField("Documentation entry page", help_text=links_help_msg)
     dev_public_docs = panopticum.fields.SmartTextField("Public Documentation", help_text=links_help_msg)
@@ -488,7 +488,7 @@ class ComponentVersionModel(models.Model):
     def _get_profile_must_fields(self):
         ret = ['owner_maintainer', 'owner_responsible_qa', 'owner_product_manager', 'owner_program_manager',
                 'owner_escalation_list', 'owner_expert', 'owner_architect',
-                'dev_language', 'dev_raml', 'dev_repo', 'dev_jira_component', 'dev_docs', 'dev_api_is_public']
+                'dev_language', 'dev_raml', 'dev_repo', 'dev_issuetracker_component', 'dev_docs', 'dev_api_is_public']
 
         if self.qa_applicable:
             ret += list(ComponentVersionModel.get_quality_assurance_fields())
