@@ -19,7 +19,8 @@ class Requirement {
 }
 
 class RequirementGroup {
-    constructor(name, doc_link, description) {
+    constructor(id, name, doc_link, description) {
+        this.id = id;
         this.name = name;
         this.doc_link = doc_link;
         this.description = description;
@@ -50,22 +51,22 @@ class RequirementsStorage {
         this.default = "Other";
     }
 
-    update_group(group_name, group_doc_link, group_description) {
+    update_group(group_id, group_name, group_doc_link, group_description) {
         if (!this.groups.has(group_name))
-            this.groups.set(group_name, new RequirementGroup(group_name, group_doc_link, group_description));
+            this.groups.set(group_name, new RequirementGroup(group_id, group_name, group_doc_link, group_description));
         return this.groups.get(group_name);
     }
 
-    update_requirement(id, name, allowed = false, tr = null, group_name = null, group_doc_link = null, group_description = null) {
+    update_requirement(id, name, allowed = false, tr = null, group_id = 0, group_name = null, group_doc_link = null, group_description = null) {
         id = parseInt(id);
         if (!id)
             return null;
 
         if (group_name == null) {
             if (!this.requirements.has(id))
-                this.requirements.set(id, this.update_group(this.default, "", "").update_requirement(id, name));
+                this.requirements.set(id, this.update_group(-1, this.default, "", "").update_requirement(id, name));
         } else {
-            var g = this.update_group(group_name, group_doc_link, group_description);
+            var g = this.update_group(group_id, group_name, group_doc_link, group_description);
             if (this.requirements.has(id)) {
                 g.requirements.set(id, this.requirements.get(id));
                 this.requirements.get(id).group.remove_requirement(id);
@@ -124,7 +125,7 @@ class RequirementsStorage {
 
             $.each(data.results, function(key, group) {
                 $.each($(group.requirements), function(key, req_json) {
-                    var req = storage.update_requirement(req_json.id, req_json.title, false, null, group.name, group.doc_link, group.description);
+                    var req = storage.update_requirement(req_json.id, req_json.title, false, null, group.id, group.name, group.doc_link, group.description);
                     if (req && req.allowed && !req.dom_tr)
                         add_row(req);
                 });
@@ -155,9 +156,12 @@ class RequirementsStorage {
                 if (group.doc_link)
                     doc_link = " (<a href='" + group.doc_link + "'>doc link</a>)";
 
-                var header = "<tr class='group-name'><td colspan=" + colspan + "><b>" + group.name + "</b>" + doc_link + "</td></tr>";
+                var requirement_set_id = 'requirement-set-' + group.id;
+
+                var header = "<tr class='group-name'><td colspan=" + colspan + "><b><span id='requirement-set-title-" + group.id + "'>" + group.name +
+                             "</span></b>" + doc_link + "</td></tr>";
                 if (group.description)
-                    header += "<tr><td style='font-size: 11px; padding-top: 5px;' colspan='" + colspan + "'>" +
+                    header += "<tr for='" + requirement_set_id + "'><td style='font-size: 11px; padding-top: 5px;' colspan='" + colspan + "'>" +
                               group.description + "</td></tr>";
 
                 group.requirements.forEach(function(req, id) {
@@ -179,7 +183,33 @@ class RequirementsStorage {
                     $(tr).removeClass("row2");
                     $(tr).addClass(cl);
                     $(attach_before).before(tr);
+                    $(tr).attr('for', requirement_set_id);
                     cl = cl == "row1" ? "row2" : "row1";
+                });
+
+                var requirement_set_title = "#requirement-set-title-" + group.id;
+                var excluded_requirement_set_checkbox = "input[name='excluded_requirement_set'][value='" + group.id + "']";
+                var applicable_requirement_set_checkbox = "#applicable-requirement-set-" + group.id; 
+                var requirement_set_section = "tr[for='" + requirement_set_id + "']";
+
+                $(requirement_set_title).after("<input style='margin-left: 5px'; type='checkbox' id='applicable-requirement-set-" + group.id + "'></input>");
+
+                if ($(excluded_requirement_set_checkbox).is(":checked")) {
+                    $(requirement_set_section).hide();
+                    $(applicable_requirement_set_checkbox).prop('checked', false);
+                } else {
+                    $(requirement_set_section).show();
+                    $(applicable_requirement_set_checkbox).prop('checked', true);
+                }
+
+                $(applicable_requirement_set_checkbox).change(function() {
+                    if (this.checked) {
+                        $(requirement_set_section).show();
+                        $(excluded_requirement_set_checkbox).prop("checked", false);
+                    } else {
+                        $(requirement_set_section).hide();
+                        $(excluded_requirement_set_checkbox).prop("checked", true);
+                    }
                 });
             });
         });

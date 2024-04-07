@@ -8,6 +8,7 @@ from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 import django.core.exceptions
 from django.contrib.auth.models import AnonymousUser
+from django.forms.widgets import CheckboxSelectMultiple
 
 # Register your models here.
 import panopticum.fields
@@ -308,13 +309,11 @@ class RequirementForm(django.forms.ModelForm):
             signee_status = None
             owner_status = None
 
-            if 'approve_status' in self.changed_data or 'approve_notes' in self.changed_data:
-                signee_status = self._save_status('approve', REQ_SIGNEE_STATUS)
+            if 'owner_status' in self.changed_data:  # reset sign off if readiness is changed
+                if not self.user.has_perm(SIGNEE_STATUS_PERMISSION):
+                    self.cleaned_data['approve_status'] = RequirementStatus.objects.get(pk=REQ_STATUS_UNKNOWN)
 
-            elif 'owner_status' in self.changed_data:  # reset sign off if readiness is changed
-                self.cleaned_data['approve_status'] = RequirementStatus.objects.get(pk=REQ_STATUS_UNKNOWN)
-                signee_status = self._save_status('approve', REQ_SIGNEE_STATUS)
-
+            signee_status = self._save_status('approve', REQ_SIGNEE_STATUS)
             owner_status = self._save_status('owner', REQ_OWNER_STATUS)
             return self._save_overall_status(owner_status, signee_status)
 
@@ -473,7 +472,17 @@ class DocLinkInline(admin.TabularInline):
     template = 'admin/panopticum/doc_link_edit_inline.html'
 
 
+class ComponentVersionModelForm(django.forms.ModelForm):
+    class Meta:
+        model = ComponentVersionModel
+        fields = '__all__'
+        widgets = {
+            'excluded_requirement_set': CheckboxSelectMultiple(),
+        }
+
+
 class ComponentVersionAdmin(admin.ModelAdmin):
+    form = ComponentVersionModelForm
     formfield_overrides = formfields_large
     search_fields = ['component__name', 'version']
     list_display = ['component', 'version']
@@ -507,7 +516,7 @@ class ComponentVersionAdmin(admin.ModelAdmin):
                                      ('dev_repo', 'dev_public_repo'),
                                      ('dev_docs', 'dev_public_docs'),
                                      ('dev_build_jenkins_job', 'dev_api_is_public'))}),
-
+        ('Requiremet set', {'classes': ('collapse', 'hidden'), 'fields': ('excluded_requirement_set',)}), # hidden and handled by admin_formset_handlers.js
         ('Quality Assurance', {'classes': ('collapse', 'show_hide_applicable'),
                           'fields': ('qa_applicable',
                                      ('qa_manual_tests_status', 'qa_manual_tests_notes'),
@@ -625,6 +634,12 @@ class ComponentVersionAdmin(admin.ModelAdmin):
         obj.meta_deleted = False
         super().save_model(request, obj, form, change)
 
+    def save_related(self, request, form, formsets, change):
+        # save_related() is used to recalculate rating after saving the RequirementStatusEntry
+        super().save_related(request, form, formsets, change)
+        obj = form.instance
+        obj.update_rating()
+
     def delete_model(self, request, obj):
         obj.delete_with_dependencies()
 
@@ -633,10 +648,10 @@ class ComponentVersionAdmin(admin.ModelAdmin):
             obj.delete_with_dependencies()
 
     class Media:
-        js = ('/static/js/admin.js',)
         css = {
                   'all': ('/static/css/admin.css',)
               }
+
 
 class CredentialsForm(django.forms.ModelForm):
     class Meta:

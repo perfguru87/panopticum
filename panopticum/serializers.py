@@ -202,6 +202,18 @@ class RequirementStatusEntrySerializer(serializers.HyperlinkedModelSerializer):
         model = RequirementStatusEntry
         fields = '__all__'
 
+    def to_representation(self, instance):
+        ret = super().to_representation(instance)
+        # Assuming 'component_version' is a ForeignKey in RequirementStatusEntry
+        # and 'allowed_requirement_set' is a ManyToMany field in ComponentVersion
+        sets = instance.requirement.sets.all()
+        if len(sets) == 0:
+            return ret
+        if instance.component_version.excluded_requirement_set.filter(id=sets[0].id).exists():
+            # Override the status field
+            ret['status'] = f'/api/status/{REQ_STATUS_NOT_APPLICABLE}/'
+        return ret
+
     def get_requirement_sets(self, obj):
         # This method is called for each RequirementStatusEntry to get its related RequirementSets
         requirement = obj.requirement
@@ -281,9 +293,6 @@ class ComponentVersionSerializer(QueryFieldsMixin, ComponentVersionSerializerSim
     max_qa_score = serializers.IntegerField(read_only=True)
     qa_score = serializers.IntegerField(read_only=True)
     max_signoff_count = serializers.IntegerField(read_only=True)
-    positive_signoff_count = serializers.IntegerField(read_only=True)
-    negative_signoff_count = serializers.IntegerField(read_only=True)
-    unknown_signoff_count = serializers.IntegerField(read_only=True)
 
     dependent = serializers.SerializerMethodField()
 

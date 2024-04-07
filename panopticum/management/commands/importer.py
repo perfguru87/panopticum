@@ -529,7 +529,6 @@ class Utility:
                 comp_ver_obj.compliance_api_notes = ''  # dont have info
 
                 # operational readiness fields
-                comp_ver_obj.op_applicable = False  # dont have info
                 comp_ver_obj.op_guide_status = 'unknown'  # dont have info
                 comp_ver_obj.op_guide_notes = ''  # dont have info
                 comp_ver_obj.op_failover_status = 'unknown'  # dont have info

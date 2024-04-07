@@ -68,10 +68,6 @@ class ComponentVersionViewSet(viewsets.ModelViewSet):  # relativeURLViewSet will
     filterset_fileds = "__all__"
     ordering_fields = ('-version')
 
-    def get_queryset(self):
-        req_set = self.request.query_params.get('requirement_set')
-        return ComponentVersionModel.objects.with_rating(req_set).order_by(self.ordering_fields)
-
 
 class ComponentTypeViewSet(RelativeURLViewSet):
     queryset = ComponentType.objects.all()

@@ -338,38 +338,6 @@ class RequirementSet(models.Model):
         return self.__unicode__()
 
 
-class ComponentManager(models.Manager):
-
-    def with_rating(self, requirement_set_id=None):
-        """ Custom manager method for add calculated fields: total_signoff_count, positive_signoff_count,
-         negative_signoff_count, unknown_signoff_count. That useful for calculation overal component
-         version status """
-        annotate_filter_kwargs = dict(statuses__type=REQ_SIGNEE_STATUS)
-
-        if requirement_set_id:
-            max_signoff_count = RequirementSet.objects.get(pk=requirement_set_id).requirements.count()
-            annotate_filter_kwargs.update({'statuses__requirement__sets': requirement_set_id})
-        else:
-            max_signoff_count = RequirementSet.objects.all().aggregate(count=django.db.models.Count('requirements'))['count']
-
-        positive_signoff_count = django.db.models.Count('statuses', filter=django.db.models.Q(statuses__status=REQ_STATUS_READY,
-                                                                             **annotate_filter_kwargs))
-        negative_signoff_count = django.db.models.Count('statuses', filter=django.db.models.Q(statuses__status=REQ_STATUS_NOT_READY,
-                                                                               **annotate_filter_kwargs))
-
-        return self.model.objects.annotate(
-            rating = 100 * django.db.models.Count('statuses',
-                                         filter=django.db.models.Q(statuses__status=REQ_STATUS_READY,
-                                                                   **annotate_filter_kwargs),
-                                         output_field=django.db.models.FloatField())
-                  / float(max_signoff_count),
-            max_signoff_count = max_signoff_count - positive_signoff_count + positive_signoff_count,
-            positive_signoff_count = positive_signoff_count,
-            negative_signoff_count = negative_signoff_count,
-            unknown_signoff_count = max_signoff_count - positive_signoff_count - negative_signoff_count
-        )
-
-
 class ComponentVersionModel(models.Model):
     component = models.ForeignKey(ComponentModel, on_delete=models.PROTECT, related_name='component_version')
 
@@ -377,7 +345,6 @@ class ComponentVersionModel(models.Model):
                                help_text="note: component version instance will be cloned if you change version!")
     comments = models.TextField(blank=True, verbose_name="Version description", null=True)
     history = HistoricalRecords()
-    objects = ComponentManager()
 
     # dependencies
 
@@ -423,6 +390,8 @@ class ComponentVersionModel(models.Model):
 
     dev_api_is_public = panopticum.fields.NoPartialYesField("API is public")
 
+    # requirement sets
+    excluded_requirement_set = models.ManyToManyField(RequirementSet, related_name='excluded_requirement_set_of', verbose_name='Excluded Requirement Sets', blank=True)
 
     # quality assurance
     test_status_help_msg = "Subjective Dev/QA lead opinion on tests completeness, coverage, quality, etc"
@@ -470,13 +439,11 @@ class ComponentVersionModel(models.Model):
     deleted = models.BooleanField(default=False)
 
     meta_compliance_rating = models.IntegerField(default=0)
-    meta_mt_rating = models.IntegerField(default=0)
-    meta_op_rating = models.IntegerField(default=0)
     meta_qa_rating = models.IntegerField(default=0)
     meta_rating = models.IntegerField(default=0)
     meta_profile_completeness = models.IntegerField(default=0)
     meta_profile_not_filled_fields = models.TextField(default="")
-    meta_bad_rating_fields = models.TextField(default="")
+    meta_profile_not_signed_requirements = models.TextField(default="")
 
     # TODO: remove and switch to calculated field
     meta_locations = models.ManyToManyField('DeploymentLocationClassModel', help_text='cached component deployment locations',
@@ -487,14 +454,6 @@ class ComponentVersionModel(models.Model):
     # TODO: remove
     meta_searchstr_locations = models.TextField(blank=True)
     meta_searchstr_product_versions = models.TextField(blank=True)
-
-    def _get_rating(self):
-        max_status_rating = RequirementStatus.objects.aggregate(models.Max('rating'))['rating__max']
-        rating = self.statuses.filter(requirement__sets=1, type=2) \
-            .aggregate(rating__sum=models.Sum('status__rating'))['rating__sum']
-        max_rating = self.statuses.filter(requirement__sets=1,
-                                                       type=2).count() * max_status_rating
-        return rating / max_rating
 
     def _update_any_rating(self, target, condition, dictionary, fields):
         rating = 0
@@ -526,23 +485,6 @@ class ComponentVersionModel(models.Model):
         return self._update_any_rating('meta_qa_rating', 'qa_applicable', LOW_MED_HIGH_RATING,
                                        ComponentVersionModel.get_quality_assurance_fields())
 
-    def _update_meta_rating(self):
-        max_signoff_count = RequirementSet.objects.all().aggregate(count=django.db.models.Count('requirements'))['count']
-        positive_signoff_count = self.statuses.filter(type__id__in=[REQ_OVERALL_STATUS,], status__id__in=[REQ_STATUS_READY, REQ_STATUS_NOT_APPLICABLE]).count()
-        negative_signoff_count = max_signoff_count - positive_signoff_count
-
-        if self.qa_applicable:
-            max_qa_rating = len(ComponentVersionModel.get_quality_assurance_fields()) * max(LOW_MED_HIGH_RATING.values())
-            qa_rating = self.meta_qa_rating * max_qa_rating / 100.0
-        else:
-            max_qa_rating = 1
-            qa_rating = 1
-
-        if (max_qa_rating + max_signoff_count) > 0:
-            self.meta_rating = 100 * (positive_signoff_count + qa_rating) / (max_qa_rating + max_signoff_count)
-        else:
-            self.meta_rating = 0
-
     def _get_profile_must_fields(self):
         ret = ['owner_maintainer', 'owner_responsible_qa', 'owner_product_manager', 'owner_program_manager',
                 'owner_escalation_list', 'owner_expert', 'owner_architect',
@@ -557,30 +499,79 @@ class ComponentVersionModel(models.Model):
         d = model_to_dict(self)
         return 0 if d[field] in ("unknown", "", None, "?") else 1
 
-    def _update_profile_completeness(self):
+    def update_rating(self):
         completeness = 0
         max_completeness = 0
-        not_filled_fields = set()
+        not_filled_fields = []
 
         for f in self._get_profile_must_fields():
             if self._field_is_filled(f):
                 completeness += 1
             else:
-                not_filled_fields.add("Summary: " + f)
+                not_filled_fields.append("Summary: " + f)
             max_completeness += 1
 
-        for r in self.statuses.all():
-            if r.type == REQ_OVERALL_STATUS:
-                continue
-            if r.status in (REQ_STATUS_READY, REQ_STATUS_NOT_READY):
-                completeness += 1
-            else:
-                not_filled_fields.add("%s (%s)" % (r.requirement, "signee" if r.type == REQ_SIGNEE_STATUS else "owner"))
-            max_completeness += 1
+        max_requirements_count, not_filled_requirements, not_signed_requirements = self.get_requirements_status()
+        completeness += max_requirements_count - len(not_filled_requirements)
+        max_completeness += max_requirements_count
+        not_filled_fields += not_filled_requirements
 
-        self.meta_profile_completeness = int(100 * completeness / max_completeness)
+        if self.qa_applicable:
+            max_qa_rating = len(ComponentVersionModel.get_quality_assurance_fields()) * max(LOW_MED_HIGH_RATING.values())
+            qa_rating = self.meta_qa_rating * max_qa_rating / 100.0
+        else:
+            max_qa_rating = 0
+            qa_rating = 0
+
+        if (max_qa_rating + max_requirements_count) > 0:
+            self.meta_rating = int(100 * (max_requirements_count - len(not_signed_requirements) + float(qa_rating)) / (max_qa_rating + max_requirements_count))
+        else:
+            self.meta_rating = 100
+
+        if max_completeness:
+            self.meta_profile_completeness = int(100 * float(completeness) / max_completeness)
+        else:
+            self.meta_profile_completeness = 100
+
         self.meta_profile_not_filled_fields = ", ".join(sorted(not_filled_fields))
+        self.meta_profile_not_signed_requirements = ", ".join(sorted(not_signed_requirements))
+        self._update_meta_qa_rating()
+
         super().save()
+
+    def get_requirements_status(self, requirement_set_id=None):
+        requirement_sets = []
+
+        if requirement_set_id:
+            requirement_sets.append(requirement_set_id)
+        else:
+            for r in RequirementSet.objects.all():
+                requirement_sets.append(r.id)
+
+        max_requirements_count = 0
+        not_filled_fields = []
+        not_signed_requirements = []
+
+        owner_requirements = RequirementStatusEntry.objects.all().filter(component_version_id=self.id, type__id=REQ_OWNER_STATUS)
+        signee_requirements = RequirementStatusEntry.objects.all().filter(component_version_id=self.id, type__id=REQ_SIGNEE_STATUS)
+
+        for set_id in requirement_sets:
+            if self.excluded_requirement_set.filter(id=set_id).exists():
+                continue
+
+            max_requirements_count += RequirementSet.objects.get(pk=set_id).requirements.count()
+
+            for req in owner_requirements:
+                if req.requirement.sets.filter(id=set_id).exists():
+                    if req.status.id in (None, REQ_STATUS_UNKNOWN):
+                        not_filled_fields.append(str(req.requirement))
+
+            for req in signee_requirements:
+                if req.requirement.sets.filter(id=set_id).exists():
+                    if req.status.id != REQ_STATUS_READY:
+                        not_signed_requirements.append(str(req.requirement))
+
+        return max_requirements_count, not_filled_fields, not_signed_requirements
 
     def update_meta_locations_and_product_versions(self): # TODO: remove and switch to calculated fields
         locations = {}
@@ -609,9 +600,7 @@ class ComponentVersionModel(models.Model):
         super().save(*args, **kwargs)
 
         self.update_meta_locations_and_product_versions()
-        self._update_profile_completeness()
-        self._update_meta_qa_rating()
-        self._update_meta_rating()
+        self.update_rating()
         super().save()
 
     class Meta:

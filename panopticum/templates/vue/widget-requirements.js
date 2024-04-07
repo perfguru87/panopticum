@@ -4,9 +4,12 @@ Vue.component('widget-requirements', {
     data: function() {
       return {
         requirements: [],
+        applicable: true,
         statuses: [],
         table: [],
         title: "",
+        na_status: {id: window.REQ_STATUS_NOT_APPLICABLE },
+        id: 0,
         doc_link: "",
         description: "",
         statusDefinitions: []
@@ -43,6 +46,7 @@ Vue.component('widget-requirements', {
             for (let i = 0; i < this.$props.requirementsets.length; i++) {
                 rs = this.$props.requirementsets[i];
                 if (rs.id == this.$props.requirementsetid) {
+                    this.id = rs.id;
                     this.title = rs.name;
                     this.doc_link = rs.doc_link;
                     this.description = rs.description;
@@ -54,7 +58,9 @@ Vue.component('widget-requirements', {
         updateTable: function() {
             this.table = [];
             for (let requirement of this.requirements) {
-                let ownerStatus = this.statuses.find(el => requirement.id == this.getId(el.requirement) && el.type == "component owner")
+                let ownerStatus = this.statuses.find(el => requirement.id == this.getId(el.requirement) && el.type == "component owner");
+                if (this.$props.component_version.excluded_requirement_set.includes(this.id))
+                    this.applicable = false;
                 if (ownerStatus == undefined) {
                     this.table.push({title: requirement.title, doc_link: requirement.doc_link, status: null, signoffStatus: null, notes: ''})
                 } else {
@@ -62,9 +68,9 @@ Vue.component('widget-requirements', {
                     this.table.push({
                         title: requirement.title,
                         doc_link: requirement.doc_link,
-                        status: ownerStatus, 
-                        notes: ownerStatus.notes,
-                        signoffStatus: signeeStatus,
+                        status: this.applicable ? ownerStatus : this.na_status,
+                        notes: ownerStatus.notes || ((signeeStatus && signeeStatus.notes) ? ('signee: ' + signeeStatus.notes) : ''),
+                        signoffStatus: this.applicable ? signeeStatus : this.na_status,
                         signoffNotes: signeeStatus ? signeeStatus.notes : ""
                     })
                 }
@@ -89,17 +95,10 @@ Vue.component('widget-requirements', {
     template: `
     {% verbatim %}<el-card v-if='title'>
         <div slot="header" class="clearfix">
-                <h2>{{title }} <small v-if=doc_link><a v-bind:href="doc_link" target=_blank><i class='fa fa-external-link'></i></a></small></h2>
-                <span class='pa-component-rating' v-if='component_version.op_applicable'>
-                        {{ component_version.meta_op_rating }}%
-                </span>
-                <span class='pa-component-stars' v-if='component_version.op_applicable'>
-                        {{ component_version.meta_op_rating }}
-                </span>
-            </h4>
+            <h2>{{title }} <small v-if=doc_link><a v-bind:href="doc_link" target=_blank><i class='fa fa-external-link'></i></a></small></h2>
         </div>
 
-        <table class='status-table' v-bind:class="[ requirements ? '' : 'status-table-na']">
+        <table class='status-table' v-bind:class="[ (requirements && applicable) ? '' : 'status-table-na']">
             <thead>
             <tr>
                 <th>Requirement</th>
@@ -112,8 +111,14 @@ Vue.component('widget-requirements', {
             <tr v-for="row of table">
                 <td>{{ row.title }}</td>
 
-                <td><widget-signoff v-bind:status="row.status" v-bind:signoff-status="row.signoffStatus"></widget-signoff></td>
-                <td><widget-signoff v-bind:status="row.signoffStatus"></widget-signoff></td>
+                <td>
+                   <widget-signoff v-if="applicable" v-bind:status="row.status" v-bind:signoff-status="row.signoffStatus"></widget-signoff>
+                   <app-status v-else v-bind:status="na_status" v-bind:signoff-status="na_status"></app-status>
+                </td>
+                <td>
+                   <widget-signoff v-if="applicable" v-bind:status="row.signoffStatus"></widget-signoff>
+                   <app-status v-else v-bind:status="na_status"></app-status>
+                </td>
                 <td class='pa-replace-urls'><widget-note :short="true">{{ row.notes }}</widget-note></td>
             </tr>
             </tbody>

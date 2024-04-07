@@ -11,5 +11,5 @@
 
 fieldset.requirements-admin tr.has_original td { padding-top: 8px !important; }
 fieldset.requirements-admin tr.has_original td.original p { display: none; }
-fieldset.requirements-admin tr.group-name { background-color: #ddd; }
+fieldset.requirements-admin tr.group-name { background-color: #ddd; border-bottom: 2px solid #fff; }
 fieldset.requirements-admin span.req-name { white-space: nowrap; }

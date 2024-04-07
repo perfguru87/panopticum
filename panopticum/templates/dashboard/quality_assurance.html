@@ -162,7 +162,7 @@ function create_table() {
                     else if (data)
                         return "<a href='/admin/panopticum/componentversionmodel/" + row.id + "/change/' " +
                                " target=_blank data-toggle='tooltip' data-placement='left'" +
-                               " title='" + pa_tooltip_from_list('<b>Bad rating:</b>', row.meta_bad_rating_fields) +
+                               " title='" + pa_tooltip_from_list('<b>Non signed off requirements:</b>', row.meta_profile_not_signed_requirements) +
                                "'>" + data + "%</span>";
                     return "";
                 }

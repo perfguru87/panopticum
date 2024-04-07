@@ -1,8 +1,15 @@
 Vue.component('app-status', {
     props: [
-      'status', 
-      'light-icon'
+      'status',
+      'light-icon',
     ],
+    data: function() {
+      return {
+        REQ_STATUS_NOT_READY: window.REQ_STATUS_NOT_READY,
+        REQ_STATUS_READY: window.REQ_STATUS_READY,
+        REQ_STATUS_NOT_APPLICABLE: window.REQ_STATUS_NOT_APPLICABLE,
+      };
+    },
     computed: {
         classObject: function() {
             return {
@@ -16,10 +23,10 @@ Vue.component('app-status', {
     },
     template: `{% verbatim %}
     <span style='margin: 0px;'>
-        <i v-if="status && [3, 2].includes(status.id)" v-bind:class="classObject"></i>
-        <i v-else-if="status && [4].includes(status.id)" v-bind:class="classObject" style="font-size: 10px;">
-        N/A
-        </i>
+        <i v-if="status && [REQ_STATUS_NOT_READY, REQ_STATUS_READY].includes(status.id)" v-bind:class="classObject"></i>
+        <span v-else-if="status && [REQ_STATUS_NOT_APPLICABLE].includes(status.id)" v-bind:class="classObject" style="font-size: 12px; color: gray;">
+        n/a
+        </span>
         <i v-else class="unknown fa fa-question-circle"></i>
     </span>
     {% endverbatim %}`
