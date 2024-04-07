@@ -89,7 +89,7 @@ Vue.component('widget-requirements', {
     template: `
     {% verbatim %}<el-card v-if='title'>
         <div slot="header" class="clearfix">
-                <h2>{{title }} <small v-if=doc_link><a v-bind:href="doc_link" target=_blank><i class='fa fa-external-link'></i></a></h2>
+                <h2>{{title }} <small v-if=doc_link><a v-bind:href="doc_link" target=_blank><i class='fa fa-external-link'></i></a></small></h2>
                 <span class='pa-component-rating' v-if='component_version.op_applicable'>
                         {{ component_version.meta_op_rating }}%
                 </span>
