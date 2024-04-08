@@ -144,7 +144,7 @@ LOW PRIO
 The key requirements are:
 
 - Python3.7+
-- Django3.1+
+- Django4.0+
 
 ## Option #1 - Using docker
 
@@ -196,6 +196,22 @@ You can update credentials and settings in:
 ./compose/nginx/nginx-server.conf
 ```
 
+For local debug only purposes you can enable 0.0.0.0 and 127.0.0.1 as allowed hosts in the `./compose/panopticum/settings_local.py`
+file by uncommenting the following lines:
+
+```bash
+ALLOWED_HOSTS = ['0.0.0.0', '127.0.0.1', 'localhost']
+CSRF_TRUSTED_ORIGINS = ['http://0.0.0.0', 'http://127.0.0.1', 'http://localhost']
+```
+
+### Preparing the static content
+
+You have to prepare all the static files to be available for Panopticum and it's admin panel:
+
+```bash
+python3 manage.py collectstatic --no-input --clear
+```
+
 ### Staring the Panopticum service
 
 ```bash
@@ -206,7 +222,7 @@ Service will be available at http://127.0.0.1:80/
 
 ### Creating initial data
 
-By deafault, Panopticum starts with empty database and has no any admin users, so you may want to create some:
+By default, Panopticum starts with empty database and has no any admin users, so you may want to create some:
 
 ```bash
 docker-compose run --rm web python manage.py createsuperuser
@@ -215,6 +231,16 @@ docker-compose run --rm web python manage.py createsuperuser
 After the superuser creation you have to initialize some initial content:
 ```bash
 docker-compose run --rm web python manage.py loaddata demo.json  # use 'minimal.json' instead of 'demo' to load bare minimum content 
+```
+
+### Updating the Panopticum version
+
+As any other Django application Panopticum requires database schema to be updated when a new version released:
+
+```bash
+docker-compose stop web
+docker-compose build web
+docker-compose up -d
 ```
 
 ## Option #2 - Manual installation

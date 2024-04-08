@@ -13,3 +13,6 @@ DATABASES = {
 
 TIME_ZONE = 'Europe/Sofia'
 PAGE_TITLE = 'My Components Registry'
+
+# ALLOWED_HOSTS = ['0.0.0.0', '127.0.0.1', 'localhost']
+# CSRF_TRUSTED_ORIGINS = ['http://0.0.0.0', 'http://127.0.0.1', 'http://localhost']

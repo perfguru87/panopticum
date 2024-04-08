@@ -43,7 +43,7 @@ services:
     ports:
       - "80:80"
     volumes:
-      - ./panopticum/static:/etc/nginx/html:ro
+      - ./static:/etc/nginx/html:ro
       - ./compose/nginx:/etc/nginx/conf.d:ro
     depends_on:
       - web
