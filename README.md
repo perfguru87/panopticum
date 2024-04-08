@@ -154,6 +154,7 @@ The key requirements are:
 
 ```bash
 sudo apt update
+sudo apt install -u libsasl2-dev libldap2-dev libssl-dev
 sudo apt install -y apt-transport-https ca-certificates curl software-properties-common
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
 echo \
@@ -209,6 +210,7 @@ CSRF_TRUSTED_ORIGINS = ['http://0.0.0.0', 'http://127.0.0.1', 'http://localhost'
 You have to prepare all the static files to be available for Panopticum and it's admin panel:
 
 ```bash
+pip3 install -r requirements.txt
 python3 manage.py collectstatic --no-input --clear
 ```
 
