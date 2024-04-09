@@ -96,9 +96,16 @@ class DeploymentEnvironmentModelSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class RuntimeModelSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = RuntimeModel
+        fields = '__all__'
+
+
 class ComponentDeploymentSerializer(serializers.ModelSerializer):
     product_version = ProductVersionSerializer(read_only=True)
     environment = DeploymentEnvironmentModelSerializer(read_only=True)
+    runtime = RuntimeModelSerializer(read_only=True)
     location_class = DeploymentLocationClassSerializer(read_only=True)
     open_ports = serializers.SerializerMethodField()
 
