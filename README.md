@@ -205,15 +205,6 @@ ALLOWED_HOSTS = ['0.0.0.0', '127.0.0.1', 'localhost']
 CSRF_TRUSTED_ORIGINS = ['http://0.0.0.0', 'http://127.0.0.1', 'http://localhost']
 ```
 
-### Preparing the static content
-
-You have to prepare all the static files to be available for Panopticum and it's admin panel:
-
-```bash
-pip3 install -r requirements.txt
-python3 manage.py collectstatic --no-input --clear
-```
-
 ### Staring the Panopticum service
 
 ```bash
