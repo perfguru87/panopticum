@@ -20,7 +20,8 @@
       <tbody>
         <tr v-for='d in component.latest_version.deployments'>
           <td v-tooltip:right="[[ d.product_version.name ]]">[[ d.product_version.shortname]]</td>
-          <td>[[ d.is_new_deployment]]</td>
+          <td v-if="d.is_new_deployment">Yes</td>
+          <td v-else>No</td>
           <td>[[ d.location_class?.name ]]</td>
           <td>[[ d.environment?.name ]]</td>
           <td>[[ d.service_name ]]</td>
