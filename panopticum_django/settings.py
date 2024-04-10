@@ -45,8 +45,6 @@ INSTALLED_APPS = [
     'django_filters',
     'rest_framework',
     'rest_framework.authtoken',
-    'rest_framework_datatables',
-    'rest_framework_filters',
     'django_extensions',
     'corsheaders',
     'database_files',
@@ -63,15 +61,8 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.TokenAuthentication',
         'rest_framework.authentication.SessionAuthentication'
     ),
-    'DEFAULT_RENDERER_CLASSES': (
-        'rest_framework.renderers.JSONRenderer',
-        'rest_framework.renderers.BrowsableAPIRenderer',
-        'rest_framework_datatables.renderers.DatatablesRenderer',
-    ),
     'DEFAULT_FILTER_BACKENDS': (
-        'rest_framework_filters.backends.RestFrameworkFilterBackend',
-        'rest_framework.filters.OrderingFilter',
-        'rest_framework_datatables.filters.DatatablesFilterBackend',
+        'django_filters.rest_framework.DjangoFilterBackend',
     ),
     'DEFAULT_PAGINATION_CLASS': 'panopticum.pagination.CustomPagination',
     'PAGE_SIZE': 50,

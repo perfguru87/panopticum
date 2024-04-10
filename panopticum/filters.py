@@ -1,142 +1,191 @@
-import rest_framework_filters as filters
-from panopticum import models
+from django_filters import *
+from django.db import models
+from django.db.models.fields import *
+from panopticum import models as panopticum
+from django.db.models.fields.related import ForeignObjectRel
 
 
-class RequirementFilter(filters.FilterSet):
-    """ allow to filter requirements at REST API side """
+class NumberInFilter(BaseInFilter, NumberFilter):
+    pass
 
+
+class AutoFilterSet(FilterSet):
+
+    class AutoFilter:
+        def __init__(self, models, filter_type, map):
+            self.models = models
+            self.filter_type = filter_type
+            self.map = map
+
+    AUTO_FILTERS = [
+        AutoFilter((models.CharField, models.TextField), CharFilter, {'': 'iexact', '__icontains': 'icontains', '__contains': 'contains', '__startswith': 'startswith', '__istartswith': 'istartswith'}),
+        AutoFilter((models.IntegerField, models.AutoField, models.ManyToManyField, models.ForeignKey, models.OneToOneField), NumberFilter, {'': 'exact', '__lt': 'lt', '__gt': 'gt'}),
+        AutoFilter((models.IntegerField, models.AutoField, models.ManyToManyField), NumberInFilter, {'__in': 'in'}),
+        AutoFilter((models.BooleanField,), BooleanFilter, {'': None}),
+    ]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        model_fields_info = self.traverse_model_fields(self._meta.model)
+        for field_name, field in model_fields_info:
+            self.filters.update(self.add_filters_for_field(field_name, field))
+
+        # logging.info("-----------------------------")
+        # logging.info("model: %s" % str(self._meta.model))
+        # logging.info(",\n".join(str(f) for f in self.filters))
+
+    def traverse_model_fields(self, model, prefix='', visited_models=None, path=None):
+        if path is None:
+            path = []
+
+        # Prevent processing a model more than once to avoid infinite loops
+        if visited_models is not None:
+            if model in visited_models:
+                # stop recursion
+                return []
+            visited_models.add(model)
+
+        if len(path) > 3:
+           return []
+        if hasattr(model, 'autofilter_do_not_traverse'):
+           return []
+
+        fields_info = []
+
+        # for field in model._meta.get_fields(include_parents=True, include_hidden=True):
+        for field in model._meta.get_fields(include_hidden=True):
+            field_path = '__'.join(path + [field.name]) if path else field.name
+
+            if prefix == '':
+                visited_models = set()
+
+            if field.name.endswith("+"):
+                continue
+
+            if isinstance(field, (models.ForeignKey, models.OneToOneField, models.ManyToManyField)):
+                if isinstance(field, models.ManyToManyField):
+                    if not hasattr(field, 'related_name'):
+                        # skip inbound many-to-many references w/o relation name
+                        continue
+                    if prefix:
+                        # skip inbout many-to-many references of second+ order
+                        continue
+
+                # Append the field's own information
+                fields_info.append((field_path, field))
+
+                # Continue traversing into the related model
+                if hasattr(field, 'related_model'):
+                    related_model = field.related_model
+                    next_path = path + [field.name] if prefix else [field.name]
+                    fields_info.extend(self.traverse_model_fields(related_model, prefix=prefix + field_path, visited_models=visited_models, path=next_path))
+            elif isinstance(field, models.fields.reverse_related.ForeignObjectRel):
+                if not field.related_name:
+                    # skip inbound references without explicitly defined related name
+                    continue
+
+                if prefix:
+                    # skip inbound refernces of second+ order
+                    continue
+
+                related_name = field.get_accessor_name()
+                field_path = '__'.join(path + [related_name]) if path else related_name
+                # Append the reverse relationship's information
+                fields_info.append((field_path, field))
+
+                # Continue traversing into the related model
+                related_model = field.related_model
+                next_path = path + [related_name] if prefix else [related_name]
+                fields_info.extend(self.traverse_model_fields(related_model, prefix=prefix + field_path, visited_models=visited_models, path=next_path))
+            else:
+                # Handle direct fields
+                fields_info.append((field_path, field))
+
+        return fields_info
+
+    def add_filters_for_field(self, field_name, field):
+        filters = {}
+
+        for af in self.AUTO_FILTERS:
+            for model in af.models:
+                if not isinstance(field, model):
+                    continue
+
+                for suffix, lookup_expr in af.map.items():
+                    if lookup_expr:
+                        filters[field_name + suffix] = af.filter_type(field_name=f'{field_name}', lookup_expr=lookup_expr)
+                    else:
+                        filters[field_name + suffix] = af.filter_type(field_name=f'{field_name}')
+
+                if isinstance(field, (models.ForeignKey, models.OneToOneField, models.ManyToManyField)):
+                    filters[f'{field_name}'] = NumberFilter(field_name=f'{field_name}__id', lookup_expr="exact")
+                    filters[f'{field_name}__in'] = NumberInFilter(field_name=f'{field_name}__id', lookup_expr="in")
+
+        return filters
+
+
+class RequirementFilter(AutoFilterSet):
     class Meta:
-        model = models.Requirement
+        model = panopticum.Requirement
         fields = '__all__'
 
-class UserFilter(filters.FilterSet):
-    username = filters.AutoFilter(lookups='__all__')
+
+class UserFilter(AutoFilterSet):
     class Meta:
-        model = models.User
+        model = panopticum.User
         exclude = ('photo', )
 
-class CategoryFilter(filters.FilterSet):
-    class Meta:
-        model = models.ComponentCategoryModel
-        fields = '__all__'
 
-class ComponentFilter(filters.FilterSet):
-    name = filters.AutoFilter(lookups='__all__')
-    category = filters.RelatedFilter(CategoryFilter,
-                                     queryset=models.ComponentCategoryModel.objects.all())
-
+class CategoryFilter(AutoFilterSet):
     class Meta:
-        model = models.ComponentModel
-        fields = '__all__'
-
-class LocationClassFilter(filters.FilterSet):
-    class Meta:
-        model = models.DeploymentLocationClassModel
+        model = panopticum.ComponentCategoryModel
         fields = '__all__'
 
 
-class DeploymentEnvironmentFilter(filters.FilterSet):
+class ComponentFilter(AutoFilterSet):
     class Meta:
-        model = models.DeploymentEnvironmentModel
-        fields = '__all__'
-
-class ProductVersionFilter(filters.FilterSet):
-    class Meta:
-        model = models.ProductVersionModel
-        fields = '__all__'
-
-class RequirementStatusTypeFilter(filters.FilterSet):
-
-    class Meta:
-        model = models.RequirementStatusType
+        model = panopticum.ComponentModel
         fields = '__all__'
 
 
-class RequirementStatusFilter(filters.FilterSet):
-
+class LocationClassFilter(AutoFilterSet):
     class Meta:
-        model = models.RequirementStatus
+        model = panopticum.DeploymentLocationClassModel
         fields = '__all__'
 
 
-class RequirementStatusEntryFilter(filters.FilterSet):
-    requirement = filters.RelatedFilter(RequirementFilter,
-                                        field_name='requirement',
-                                        queryset=models.Requirement.objects.all(),
-                                        lookups='__all__')
-    component_version = filters.RelatedFilter('ComponentVersionFilter',
-                                        field_name='component_version',
-                                        queryset=models.ComponentVersionModel.objects.all(),
-                                        lookups='__all__')
-    status = filters.RelatedFilter(RequirementStatusFilter,
-                                   field_name='status',
-                                   queryset=models.RequirementStatus.objects.all(),
-                                   lookups='__all__')
-
+class DeploymentEnvironmentFilter(AutoFilterSet):
     class Meta:
-        model = models.RequirementStatusEntry
-        fields = '__all__'
-
-class DeploymentFilter(filters.FilterSet):
-    location_class = filters.RelatedFilter(LocationClassFilter,
-                                      field_name='location_class',
-                                      queryset=models.DeploymentLocationClassModel.objects.all(),
-                                      lookups='__all__')
-    environment = filters.RelatedFilter(DeploymentEnvironmentFilter,
-                                        field_name='environment',
-                                        lookups='__all__',
-                                        queryset=models.DeploymentEnvironmentModel.objects.all())
-    component_version = filters.RelatedFilter('ComponentVersionFilter',
-                                         field_name='component_version',
-                                          lookups='__all__',
-                                         queryset=models.ComponentVersionModel.objects.all()),
-    product_version = filters.RelatedFilter(ProductVersionFilter,
-                                            lookups='__all__',
-                                            queryset=models.ProductVersionModel.objects.all())
-
-    class Meta:
-        model = models.ComponentDeploymentModel
+        model = panopticum.DeploymentEnvironmentModel
         fields = '__all__'
 
 
-class ComponentVersionFilter(filters.FilterSet):
-    component = filters.RelatedFilter(ComponentFilter,
-                                      field_name='component',
-                                      queryset=models.ComponentModel.objects.all(),
-                                      lookups='__all__')
-    owner_maintainer = filters.RelatedFilter(UserFilter,
-                                             lookups='__all__',
-                                             queryset=models.User.objects.all(),
-                                             )
-    deployments = filters.RelatedFilter(DeploymentFilter,
-                                        field_name='deployments',
-                                        queryset=models.ComponentDeploymentModel.objects.all())
-    statuses = filters.RelatedFilter(RequirementStatusEntryFilter,
-                                     field_name='statuses',
-                                     queryset=models.RequirementStatusEntry.objects.all())
-    exclude_statuses = filters.BaseInFilter(field_name='statuses',
-                                            method='filter_exclude_statuses')
-    unknown_signoff_count = filters.NumberFilter()
-    negative_signoff_count = filters.NumberFilter()
-    max_signoff_count = filters.NumberFilter()
-    version = filters.AutoFilter(lookups='__all__')
-
+class ProductVersionFilter(AutoFilterSet):
     class Meta:
-        model = models.ComponentVersionModel
+        model = panopticum.ProductVersionModel
         fields = '__all__'
 
-    def filter_exclude_statuses(self, qs, name, value):
-        """ handle query params for excluding component version with some requirement statuses.
-        that useful for filtering component version that have not requirement statuses by some
-        requirement. It's equal to select "unknown" status at frontend filters. We exclude all
-        statuses except unknown: Ready, not ready, n/a. That case cover situation when component
-        version have not requirement status. If requirement status is not exist it equal "unknown" status"""
-        requirement = self.request.query_params.get('exclude_requirement')
-        req_type = self.request.query_params.get('exclude_type')
-        args = {}
-        if requirement:
-            args.update({'requirement__in': requirement.split(',')})
-        if req_type:
-            args.update({'type__in': req_type.split(',')})
 
-        return qs.exclude(statuses__in=models.RequirementStatusEntry.objects.filter(status__in=value, **args))
+class RequirementStatusTypeFilter(AutoFilterSet):
+    class Meta:
+        model = panopticum.RequirementStatusType
+        fields = '__all__'
+
+
+class RequirementStatusFilter(AutoFilterSet):
+    class Meta:
+        model = panopticum.RequirementStatus
+        fields = '__all__'
+
+
+class RequirementStatusEntryFilter(AutoFilterSet):
+    class Meta:
+        model = panopticum.RequirementStatusEntry
+        fields = []
+
+
+class ComponentVersionFilter(AutoFilterSet):
+    class Meta:
+        model = panopticum.ComponentVersionModel
+        fields = []

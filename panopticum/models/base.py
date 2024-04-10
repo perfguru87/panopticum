@@ -779,6 +779,8 @@ class Credential(models.Model):
     password = models.CharField(max_length=64)
     description = models.CharField(max_length=512, null=True, blank=True)
 
+    autofilter_do_not_traverse = True  # see filter.py
+
     def __str__(self):
         return f"{self.name}"
 

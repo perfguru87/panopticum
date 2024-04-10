@@ -5,6 +5,7 @@ from django.shortcuts import render
 from django.conf import settings
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
+from django_filters.rest_framework import DjangoFilterBackend
 from functools import wraps
 
 from rest_framework import viewsets, permissions, views
@@ -61,11 +62,12 @@ class DeploymentLocationClassViewSet(RelativeURLViewSet):
     serializer_class = DeploymentLocationClassSerializer
 
 
-class ComponentVersionViewSet(viewsets.ModelViewSet):  # relativeURLViewSet will broke fields query filtering
+class ComponentVersionViewSet(viewsets.ModelViewSet):
     queryset = ComponentVersionModel.objects.all().order_by('-id')
     serializer_class = ComponentVersionSerializer
-    filter_class = panopticum.filters.ComponentVersionFilter
-    filterset_fileds = "__all__"
+    filterset_class = panopticum.filters.ComponentVersionFilter
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = "__all__"
     ordering_fields = ('-version')
 
 
@@ -94,14 +96,16 @@ class RequirementViewSet(RelativeURLViewSet):
 class StatusViewSet(viewsets.ModelViewSet):
     queryset = RequirementStatus.objects.all()
     serializer_class = RequirementStatusSerializer
-    filter_class = panopticum.filters.RequirementStatusFilter
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = panopticum.filters.RequirementStatusFilter
     filterset_fields = '__all__'
 
 
 class RequirementStatusEntryViewSet(RelativeURLViewSet):
     queryset = RequirementStatusEntry.objects.all()
     serializer_class = RequirementStatusEntrySerializer
-    filter_class = panopticum.filters.RequirementStatusEntryFilter
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = panopticum.filters.RequirementStatusEntryFilter
     filterset_fields = '__all__'
 
     @action(detail=True)
@@ -117,20 +121,6 @@ class RequirementStatusEntryViewSet(RelativeURLViewSet):
         serializer = HistoricalRequirementStatusEntrySerializer(history_entries, many=True,
                                                                 context={'request': None})
         return Response(serializer.data)
-
-    def get_queryset(self):
-        queryset = super().get_queryset()
-        component_version = self.request.query_params.get('component_version')
-        requirementset = self.request.query_params.get('requirementset')
-
-        if component_version:
-            queryset = queryset.filter(component_version_id=component_version)
-
-        if requirementset:
-            # Filtering based on RequirementSet
-            queryset = queryset.filter(requirement__sets__id=requirementset)
-
-        return queryset
 
 
 class RequirementSetViewSet(RelativeURLViewSet):

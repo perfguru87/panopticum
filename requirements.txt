@@ -9,8 +9,8 @@ django-loginas
 django-simple-history
 django-ckeditor
 djangorestframework
-djangorestframework-datatables
-djangorestframework-filters==1.0.0.dev0
+#djangorestframework-datatables
+#djangorestframework-filters==1.0.0.dev0
 djangorestframework-queryfields
 whitenoise
 gevent
