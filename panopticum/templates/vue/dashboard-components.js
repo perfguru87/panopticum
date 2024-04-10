@@ -128,10 +128,16 @@ Vue.component('dashboard-components', {
       this.fetchComponentsVersions(queryParams);
     },
     isNewDeployment(deployments) { 
-      if (!this.currentProduct) return null;
-      return deployments.some(deployment => {
-        return deployment.product_version.id == this.currentProduct.id && deployment.is_new_deployment;
-      });
+      if (this.currentProduct) {
+        return deployments.some(deployment => {
+          return deployment.product_version.id == this.currentProduct.id && deployment.is_new_deployment;
+        });
+      } else {
+        return deployments.some(deployment => {
+          return deployment.is_new_deployment;
+        });
+      }
+      return false;
     },
     onCurrentPageChange() {
       this.applyFilters();
@@ -146,6 +152,7 @@ Vue.component('dashboard-components', {
               :loading="!products" 
               name='product'
               placeholder="product"
+              @input="watchFilters()"
               @change="watchFilters()" 
               clearable>
                   <el-option v-for="product in products" 
@@ -200,7 +207,7 @@ Vue.component('dashboard-components', {
           </el-row>
         </template>
         <template slot-scope="scope">
-          <a>{{ scope.row.componentVersion.version}}</a>
+          <a :href="'/component/' + scope.row.component.id + '?version_id=' + scope.row.componentVersion.id">{{ scope.row.componentVersion.version}}</a>
         </template>
       </el-table-column>
 
@@ -297,7 +304,7 @@ Vue.component('dashboard-components', {
         </template>
         <template slot-scope="scope">
           <a v-if="scope.row.componentVersion.owner_maintainer" :href="'mailto:' + scope.row.componentVersion.owner_maintainer.email">
-            {{ scope.row.componentVersion.owner_maintainer.first_name }} {{ scope.row.componentVersion.owner_maintainer.last_name }}
+            {{ scope.row.componentVersion.owner_maintainer.username }}
           </a>
         </template>
       </el-table-column>
@@ -316,7 +323,6 @@ Vue.component('dashboard-components', {
             clearable
             size="mini"
             placeholder=""
-            :disabled="!currentProduct"
             @change="watchFilters()">
               <el-option key="yes" label="Yes" :value="true"></el-option>
               <el-option key="no" label="No" :value="false"></el-option>
@@ -350,7 +356,7 @@ Vue.component('dashboard-components', {
       </el-table-column>
       <el-table-column
       width="60" 
-        label="JIRA">
+        label="Tracker">
         <template slot-scope="scope">
           <a :href="scope.row.componentVersion.dev_issuetracker_component" 
           class="el-icon-link" 
@@ -359,7 +365,7 @@ Vue.component('dashboard-components', {
       </el-table-column>
       <el-table-column
         width="60" 
-        label="docs">
+        label="Docs">
         <template slot-scope="scope">
           <a :href="scope.row.componentVersion.dev_docs" 
           class="el-icon-link" 
