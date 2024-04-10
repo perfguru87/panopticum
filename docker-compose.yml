@@ -11,6 +11,11 @@ services:
       POSTGRES_DB: panopticum_db
     volumes:
       - ./data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -d $$POSTGRES_DB -U $$POSTGRES_USER"]
+      interval: 2s
+      timeout: 2s
+      retries: 10
     deploy:
       resources:
         limits:
@@ -27,8 +32,10 @@ services:
     volumes:
       - ./compose/panopticum/settings_local.py:/opt/panopticum/panopticum_django/settings_local.py:ro
     depends_on:
-      - init
-      - db
+      init:
+        condition: service_completed_successfully
+      db:
+        condition: service_healthy
     deploy:
       resources:
         limits:
@@ -43,7 +50,6 @@ services:
     ports:
       - "80:80"
     volumes:
-      - ./static:/etc/nginx/html:ro
       - ./compose/nginx:/etc/nginx/conf.d:ro
     depends_on:
       - web
@@ -53,4 +59,5 @@ services:
     container_name: panopticum_migrate
     command: python manage.py migrate
     depends_on:
-      - db
+      db:
+        condition: service_healthy
