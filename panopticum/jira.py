@@ -4,19 +4,26 @@ import http.client
 
 import jira
 import scalpl
+import os
 
 
 class JiraProxy:
     """
-    Very simple and stupid JIRA issues proxy with fields filtering
+    Very simple JIRA issues proxy with fields filtering
     """
 
     def __init__(self):
-        self.jira = jira.JIRA(settings.JIRA_CONFIG['URL'], auth=(settings.JIRA_CONFIG['USER'], settings.JIRA_CONFIG['PASSWORD']))
+        if os.environ.get('JIRA_URL'):
+            self._jira = jira.JIRA(os.environ.get('JIRA_URL'), auth=(os.environ.get('JIRA_USER'), os.environ.get('JIRA_PASSWORD')))
+        else:
+            self._jira = None
 
     def get_issue(self, issue_key):
+        if self._jira is None:
+            return {'error': 'JIRA url is not configured'}, False, 500
+
         try:
-            ji = self.jira.issue(issue_key)
+            ji = self._jira.issue(issue_key)
         except jira.exceptions.JIRAError as e:
             return {'error': str(e.text)}, False, e.status_code
 

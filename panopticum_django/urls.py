@@ -45,7 +45,6 @@ router.register(r'techradar_quadrants', views.TechradarQuadrantViewSet)
 router.register(r'techradar_rings', views.TechradarRingViewSet)
 router.register(r'techradar_entries', views.TechradarEntryViewSet)
 
-
 urlpatterns = [
     path('', lambda request: redirect('/dashboard/components.html', permanent=False)),  # Redirect root URL
     path('admin/', admin.site.urls),
@@ -56,6 +55,7 @@ urlpatterns = [
     re_path('^techradar/ring.html', views.techradar_ring, name='Tech Radar'),
     re_path('^techradar/table.html', views.techradar_table, name='Tech Radar'),
     re_path('^techradar/config.json', views.techradar_config),
+    re_path(r'^api/jira_url/', views.JiraUrlView.as_view(), name='jira_url'),
     path('api/login/', rest_framework.authtoken.views.obtain_auth_token),
     path('api/login/', views.LoginAPIView.as_view()),
     path('accounts/', include('django.contrib.auth.urls')),

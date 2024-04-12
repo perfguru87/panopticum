@@ -1,3 +1,4 @@
+import os
 import django.http
 import rest_framework.decorators
 import rest_framework.status
@@ -195,7 +196,7 @@ def render_page(request, template, context=None):
         'categories': ComponentCategoryModel.objects.all().order_by('order'),
         'requirementSets': RequirementSet.objects.all().order_by('id'),
         'PAGE_AUTH_REQUIRED': settings.PAGE_AUTH_REQUIRED,
-        'JIRA_BASE_URL': settings.DATABASES.get('jira', {}).get('NAME')
+        'JIRA_BASE_URL': os.environ.get('JIRA_URL', '')
     }
     if context:
         _context.update(context)
@@ -235,11 +236,53 @@ def techradar_config(request):
     return render_page(request, 'techradar/config.json')
 
 
+#class JiraIssueView(views.APIView):
+#
+#    def validate(self, request):
+#
+#        # FIXME: authentication is required!
+#
+#        for field in ('URL', 'USER', 'PASSWORD'):
+#            if os.environ.get(field, None):
+#                raise JsonResponse({'error': '%s environment variable is not congigured' % field},
+#                                    safe=False, status=http.client.NOT_IMPLEMENTED)
+#
+#        if request.method != "GET":
+#            return JsonResponse({'error': '%s: method is not allowed' % request.method},
+#                                safe=False, status=http.client.METHOD_NOT_ALLOWED)
+#
+#        return None
+#
+#    def get(self, request, issue_key):
+#        r = self.validate(request)
+#        if r:
+#            return r
+#
+#        j = JiraProxy()
+#        body, safe, status = j.get_issue(issue_key)
+#        return JsonResponse(body, safe=safe, status=status)
+
 
 class JiraIssueView(viewsets.ModelViewSet):
     queryset = JiraIssue.objects.all()
     serializer_class = IssueSerializer
     permission_classes = (permissions.IsAuthenticated,)
+
+
+class JiraUrlView(views.APIView):
+
+    def _validate(self, request):
+        if request.method != "GET":
+            return JsonResponse({'error': '%s: method is not allowed' % request.method},
+                                safe=False, status=http.client.METHOD_NOT_ALLOWED)
+
+    def get(self, request):
+        r = self._validate(request)
+        if r:
+            return r
+
+        jira_url = os.environ.get('JIRA_URL', '')
+        return JsonResponse({'response': {'jira_url': jira_url}})
 
 
 class TechradarRingViewSet(RelativeURLViewSet):
