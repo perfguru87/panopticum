@@ -8,6 +8,9 @@ Vue.component('widget-links', {
   },
   computed: {
     linkedText() {
+      if (!this || this.text == undefined)
+        return '';
+
       let ret = this.text
         .split(/\s+/) // Split by whitespace
         .map(part => {

@@ -11,11 +11,11 @@
               <h4>Development</h4>
               <table class='col-3-center'>
                 <tr><td>Vendor</td><td>:</td><td><div v-cloak>[[ component.vendor.name ]]</div></td></tr>
-                <tr><td>Language</td><td>:</td><td><div v-cloak>[[ component.latest_version.dev_languages ]]</div></td></tr>
+                <tr><td>Language</td><td>:</td><td><div v-cloak>[[ component.latest_version?.dev_languages ]]</div></td></tr>
                 <tr><td>Type</td><td>:</td><td><div v-cloak>[[ component.type.name ]]</div></td></tr>
                 <tr><td>Life status</td><td>:</td><td><div v-cloak>[[ component.life_status ]]</div></td></tr>
-                <tr><td>API is public</td><td>:</td><td><div v-cloak>[[ component.latest_version.dev_api_is_public ]]</div></td></tr>
-                <tr><td>Data access</td><td>:</td><td><div v-cloak>[[ component.data_privacy_class.name ]]</div></td></tr>
+                <tr><td>API is public</td><td>:</td><td><div v-cloak>[[ component.latest_version?.dev_api_is_public ]]</div></td></tr>
+                <tr><td>Data access</td><td>:</td><td><div v-cloak>[[ component.data_privacy_class?.name ]]</div></td></tr>
               </table> 
             </div>
           </div>
@@ -23,12 +23,12 @@
             <div>
               <h4>Links</h4>
               <table class='col-3-center'>
-                <tr><td>RAML</td><td>:</td><td><widget-links v-cloak v-bind:text="component.latest_version.dev_raml"></widget-links></td></tr>
-                <tr><td>Repository</td><td>:</td><td><widget-links v-cloak :text="component.latest_version.dev_repo"></widget-links></td></tr>
-                <tr><td>Issue tracker</td><td>:</td><td><widget-links v-cloak :text="component.latest_version.dev_issuetracker_component"></widget-links></td></tr>
-                <tr><td>Public Docs</td><td>:</td><td><widget-links v-cloak :text="component.latest_version.dev_public_docs"></widget-links></td></tr>
-                <tr><td>Internal Docs</td><td>:</td><td><widget-links v-cloak :text="component.latest_version.dev_docs"></widget-links></td></tr>
-                <tr><td>Build job</td><td>:</td><td><widget-links v-cloak :text="component.latest_version.dev_build_jenkins_job"></widget-links></td></tr>
+                <tr><td>RAML</td><td>:</td><td><widget-links v-cloak v-bind:text="component.latest_version?.dev_raml || ''"></widget-links></td></tr>
+                <tr><td>Repository</td><td>:</td><td><widget-links v-cloak :text="component.latest_version?.dev_repo || ''"></widget-links></td></tr>
+                <tr><td>Issue tracker</td><td>:</td><td><widget-links v-cloak :text="component.latest_version?.dev_issuetracker_component || ''"></widget-links></td></tr>
+                <tr><td>Public Docs</td><td>:</td><td><widget-links v-cloak :text="component.latest_version?.dev_public_docs || ''"></widget-links></td></tr>
+                <tr><td>Internal Docs</td><td>:</td><td><widget-links v-cloak :text="component.latest_version?.dev_docs || ''"></widget-links></td></tr>
+                <tr><td>Build job</td><td>:</td><td><widget-links v-cloak :text="component?.latest_version?.dev_build_jenkins_job || ''"></widget-links></td></tr>
               </table>
             </div>
           </div>
