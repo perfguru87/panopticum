@@ -43,7 +43,14 @@ Vue.component('dashboard-components', {
     this.types = types;
     this.privacies = privacies;
     if (this.filters && this.filters.length) {
-      this.headerFilters = this.filters;
+      /* Update filters coming from #filters URL parameter */
+      this.headerFilters = this.headerFilters.map(headerFilter => {
+        const matchingFilter = this.filters.find(filter => filter.key === headerFilter.key);
+        if (matchingFilter) {
+          return { ...headerFilter, value: matchingFilter.value };
+        }
+        return headerFilter;
+      });
     } else {
       await this.fetchComponentsVersions();
     }
