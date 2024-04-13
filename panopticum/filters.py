@@ -2,7 +2,7 @@ from django_filters import *
 from django.db import models
 from django.db.models.fields import *
 from panopticum import models as panopticum
-from django.db.models.fields.related import ForeignObjectRel
+from django.db.models.fields.related import ForeignObjectRel, ManyToOneRel
 
 
 class NumberInFilter(BaseInFilter, NumberFilter):
@@ -24,16 +24,20 @@ class AutoFilterSet(FilterSet):
         AutoFilter((models.BooleanField,), BooleanFilter, {'': None}),
     ]
 
+    def log(self, msg):
+        # logging.info(msg)
+        pass
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.log("-----------------------------")
+        self.log("model: %s" % str(self._meta.model))
 
         model_fields_info = self.traverse_model_fields(self._meta.model)
         for field_name, field in model_fields_info:
             self.filters.update(self.add_filters_for_field(field_name, field))
 
-        # logging.info("-----------------------------")
-        # logging.info("model: %s" % str(self._meta.model))
-        # logging.info(",\n".join(str(f) for f in self.filters))
+        self.log(",\n".join(str(a) for a in self.filters.items()))
 
     def traverse_model_fields(self, model, prefix='', visited_models=None, path=None):
         if path is None:
@@ -60,18 +64,17 @@ class AutoFilterSet(FilterSet):
             if prefix == '':
                 visited_models = set()
 
+            self.log("field: %s|%s (%s)" % (prefix, field.name, field))
+
             if field.name.endswith("+"):
+                self.log("skip 1: %s|%s" % (prefix,field.name))
                 continue
 
-            if isinstance(field, (models.ForeignKey, models.OneToOneField, models.ManyToManyField)):
-                if isinstance(field, models.ManyToManyField):
-                    if not hasattr(field, 'related_name'):
-                        # skip inbound many-to-many references w/o relation name
-                        continue
-                    if prefix:
-                        # skip inbout many-to-many references of second+ order
-                        continue
+            if isinstance(field, (models.ManyToManyField, ManyToOneRel)):
+                self.log("skip 3: %s|%s" % (prefix, field.name))
+                continue
 
+            if isinstance(field, (models.ForeignKey, models.OneToOneField)):
                 # Append the field's own information
                 fields_info.append((field_path, field))
 
@@ -80,13 +83,15 @@ class AutoFilterSet(FilterSet):
                     related_model = field.related_model
                     next_path = path + [field.name] if prefix else [field.name]
                     fields_info.extend(self.traverse_model_fields(related_model, prefix=prefix + field_path, visited_models=visited_models, path=next_path))
-            elif isinstance(field, models.fields.reverse_related.ForeignObjectRel):
+            elif isinstance(field, ForeignObjectRel):
                 if not field.related_name:
                     # skip inbound references without explicitly defined related name
+                    self.log("skip 4: %s|%s" % (prefix, field.name))
                     continue
 
                 if prefix:
                     # skip inbound refernces of second+ order
+                    self.log("skip 5: %s|%s " % (prefix, field.name))
                     continue
 
                 related_name = field.get_accessor_name()
@@ -186,6 +191,29 @@ class RequirementStatusEntryFilter(AutoFilterSet):
 
 
 class ComponentVersionFilter(AutoFilterSet):
+    statuses__requirement = NumberFilter(method='filter_by_requirement')
+    deployments__location_class = NumberFilter(field_name='deployments__location_class__id')
+    deployments__product_version = NumberFilter(field_name='deployments__product_version__id')
+    deployments__is_new_deployment = BooleanFilter(field_name='deployments__is_new_deployment')
+
+    @property
+    def qs(self):
+        # Ensure the queryset is distinct
+        parent = super().qs
+        return parent.distinct()
+
+    def filter_by_requirement(self, queryset, name, value):
+        get = self.request.GET if self.request else {}
+
+        if 'statuses__status' in get and 'statuses__type' in get:
+            q = queryset.filter(statuses__requirement__id=value,
+                                statuses__status__id=get.get('statuses__status'),
+                                statuses__type__id=get.get('statuses__type')).distinct()
+        else:
+            q = queryset.filter(statuses__requirement__id=value).distinct()
+
+        return q
+
     class Meta:
         model = panopticum.ComponentVersionModel
         fields = []

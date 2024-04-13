@@ -170,35 +170,15 @@ Vue.component('widget-components-list', {
             let headerFilters = {};
             let queryParams='';
             Object.keys(this.headerFilters).map(key => {headerFilters[key] = null} );
-            const unknownOverallQuery = `&unknown_signoff_count!=0`;
-            const notReadyOverallQuery = `&negative_signoff_count!=0&unknown_signonff_count=0&max_signoff_count=${this.requirements.length}`;
-            const readyOverallQuery = `&unknown_signoff_count=0&negative_signoff_count=0&max_signoff_count=${this.requirements.length}`;
 
             console.log('command type', command.type);
             if (command != 'reset') {
-                if(command.type == 'component') {
-                    queryParams = command.status.id == window.REQ_STATUS_READY ? readyOverallQuery : notReadyOverallQuery;
-                } else if (command.type == 'overall') {
+                if (command.type == 'overall') {
                     queryParams = `&statuses__status=${command.status.id}&statuses__requirement=${command.requirement.id}&statuses__type=${window.REQ_OVERALL_STATUS}`
                 } else {
                     queryParams = `&statuses__status=${command.status.id}&statuses__requirement=${command.requirement.id}&statuses__type=${command.type == 'owner' ? window.REQ_OWNER_STATUS : window.REQ_SIGNEE_STATUS}`
                 }
-                if (command.status.id == window.REQ_STATUS_UNKNOWN) {  // unknown status
-                    if (command.type == 'component') {
-                        console.log("OK!");
-                        queryParams = unknownOverallQuery;
-                    } else {
-                        console.log("OOPS!");
-                        const notUnknownStatusesIds = this.statusDefinitions.owner.filter(s => s.id != window.REQ_STATUS_UNKNOWN ).map(s => s.id);
-                        queryParams = `&exclude_statuses=${notUnknownStatusesIds}&exclude_requirement=${command.requirement.id}&exclude_type=${command.type == 'owner' ? window.REQ_STATUS_UKNOWN : window.REQ_STATUS_NOT_READY }`
-                    }
-                }
-
-                if (command.type == 'component') {
-                    headerFilters['component'] = {status: command.status}
-                } else {
-                    headerFilters[command.requirement.id] = {status: command.status, type: command.type};
-                }
+                headerFilters[command.requirement.id] = {status: command.status, type: command.type};
             }
             this.headerFilters = headerFilters;
             return this.filterComponents(queryParams);
@@ -415,23 +395,6 @@ Vue.component('widget-components-list', {
                 align="center">
                 <template slot="header">
                     <span class="word-wrap">Status</span>
-                    <div>
-                            <el-dropdown trigger="click" placement="bottom-start" @command="handleDropdownCommand">
-                                <span style='height: 10px; margin: 0px;'>
-                                    <app-status v-if="headerFilters && headerFilters['component']" :status='headerFilters["component"].status' lightIcon/>
-                                    <i v-else class="el-icon-arrow-down" style="font-size: 9px; display: inline-block; margin-left: 0"></i>
-                                </span>
-                                <el-dropdown-menu slot="dropdown" class='panopticum-status-right'>
-                                    <el-dropdown-item :command="{requirement: null, type: 'component', status: status}"
-                                        v-for="status of statusDefinitions.overall" :key="status.id">
-                                        <app-status :status="status" lightIcon />{{ status.name | capitalize }}
-                                    </el-dropdown-item>
-                                    <el-dropdown-item command="reset" divided>
-                                        <i class="el-icon-circle-close"></i>Reset
-                                    </el-dropdown-item>
-                                </el-dropdown-menu>
-                            </el-dropdown>
-                    </div>
                 </template>
                 <template slot-scope="scope">
                     <span><app-status :status="componentStatuses[scope.row.id]" lightIcon></app-status></span>
