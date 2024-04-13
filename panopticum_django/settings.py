@@ -219,7 +219,7 @@ USE_TZ = True
 # Page content
 
 PAGE_TITLE = "Components Registry"
-PAGE_FOOTER = "Copyright © 2020"
+PAGE_FOOTER = "Copyright © 2024"
 PAGE_AUTH_REQUIRED = False  # Set PAGE_AUTH_REQUIRED to 'True' to mandate authentication for all pages; otherwise, keep it 'False'
 
 
