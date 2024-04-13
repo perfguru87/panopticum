@@ -1,5 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
+
+  {% include "layout/_menu_placeholder.html" %}
+
+  <!-- Bootstrap -->
+  <link href="/static/vendors/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+
+</html>
   <head>
     {% block head %}
       {% block meta %}
@@ -20,8 +27,6 @@
         <script src="/static/vendors/datatables.net/js/jquery.dataTables.js"></script>
 
       {% block stylesheets %}
-        <!-- Bootstrap -->
-        <link href="/static/vendors/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
         <!-- Font Awesome -->
         <link href="/static/vendors/font-awesome/css/font-awesome.min.css" rel="stylesheet">
         <!-- NProgress -->
