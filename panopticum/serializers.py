@@ -267,7 +267,7 @@ class ComponentVersionSerializerSimple(serializers.ModelSerializer):
     meta_locations = DeploymentLocationClassSerializer(read_only=True, many=True)
     meta_product_versions = ProductVersionSerializer(read_only=True, many=True)
 
-    statuses = RequirementStatusEntrySerializer(read_only=True, many=True)
+    # statuses = RequirementStatusEntrySerializer(read_only=True, many=True)
 
     def get_dev_languages(self, component):
         objs = component.dev_language.get_queryset()
