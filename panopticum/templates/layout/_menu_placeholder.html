@@ -1,0 +1,14 @@
+<!-- This is a hack until we have normal SPA - a menu placeholder to improve visual page composition during the page load on slower networks -->
+<style>
+*{
+    padding: 0 auto;
+}
+@media (min-width: 991px) {
+    html { background-color: #F7F7F7; }
+    div.menu_placeholder { width: 230px; background-color: #2a3f54; height: 100vh; display: block; margin: 0px; padding: 0px; position: absolute; top: 0px; bottom: 0px; left: 0px; }
+}
+@media (max-width: 991px) {
+    div.menu_placeholder { width: 0px; height: 0px; }
+}
+</style>
+<div class='menu_placeholder'></div>
