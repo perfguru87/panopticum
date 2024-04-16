@@ -211,7 +211,7 @@ function vue_components_init() {
 
 $(document).ready(function() {
     init_sidebar();
-
+    $('.menu_placeholder').hide();
     /*
        FIXME: temporary use server side menu rendering to simplify 2nd level menu rendering for components
        vue_components_init();
