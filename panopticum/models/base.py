@@ -325,6 +325,7 @@ class Requirement(models.Model):
 class RequirementSet(models.Model):
     """ Container for requirements. Example of usage: various requirement widgets at frontend """
     name = models.CharField(max_length=30, unique=True)
+    ui_slot = models.IntegerField(help_text="Components view UI slot: 0 - hidden; 1-4 - middle screen part; 5-9 right screen part", default=0)
     requirements = models.ManyToManyField(Requirement, related_name='sets')
     description = models.TextField(null=True, blank=True)
     doc_link = models.URLField("Documentation link URL", max_length=4096, blank=True)

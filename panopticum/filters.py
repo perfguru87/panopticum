@@ -25,6 +25,7 @@ class AutoFilterSet(FilterSet):
     ]
 
     def log(self, msg):
+        # import logging
         # logging.info(msg)
         pass
 
@@ -185,6 +186,8 @@ class RequirementStatusFilter(AutoFilterSet):
 
 
 class RequirementStatusEntryFilter(AutoFilterSet):
+    requirementset__ui_slot = NumberFilter(field_name='requirement__sets__ui_slot')
+
     class Meta:
         model = panopticum.RequirementStatusEntry
         fields = []

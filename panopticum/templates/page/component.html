@@ -56,8 +56,10 @@
                   {% include "widget/component_owners.html" %}
                 </div>
                 <div class="col-xs-12">
-                  <widget-requirements v-bind:requirementsets="requirementsets" v-bind:requirementsetid="1" v-bind:component_version="component.latest_version" v-cloak></widget-requirements>
-                  <widget-requirements v-bind:requirementsets="requirementsets" v-bind:requirementsetid="2" v-bind:component_version="component.latest_version" v-cloak></widget-requirements>
+                  <widget-requirements v-bind:requirementsets="requirementsets" v-bind:requirementset__ui_slot="1" v-bind:component_version="component.latest_version" v-cloak></widget-requirements>
+                  <widget-requirements v-bind:requirementsets="requirementsets" v-bind:requirementset__ui_slot="2" v-bind:component_version="component.latest_version" v-cloak></widget-requirements>
+                  <widget-requirements v-bind:requirementsets="requirementsets" v-bind:requirementset__ui_slot="3" v-bind:component_version="component.latest_version" v-cloak></widget-requirements>
+                  <widget-requirements v-bind:requirementsets="requirementsets" v-bind:requirementset__ui_slot="4" v-bind:component_version="component.latest_version" v-cloak></widget-requirements>
                 </div>
               </div>
             </div>
@@ -65,11 +67,11 @@
               <div class="row">
                 <div class="col-xs-12">
                   {% include "widget/component_quality_assurance.html" %}
-                  <widget-requirements v-if="requirementsets.length > 2" v-bind:requirementsets="requirementsets" v-bind:requirementsetid="3" v-bind:component_version="component.latest_version" v-cloak></widget-requirements>
-                  <widget-requirements v-if="requirementsets.length > 3" v-bind:requirementsets="requirementsets" v-bind:requirementsetid="4" v-bind:component_version="component.latest_version" v-cloak></widget-requirements>
-                  <widget-requirements v-if="requirementsets.length > 4" v-bind:requirementsets="requirementsets" v-bind:requirementsetid="5" v-bind:component_version="component.latest_version" v-cloak></widget-requirements>
-                  <widget-requirements v-if="requirementsets.length > 5" v-bind:requirementsets="requirementsets" v-bind:requirementsetid="6" v-bind:component_version="component.latest_version" v-cloak></widget-requirements>
-                  <widget-requirements v-if="requirementsets.length > 6" v-bind:requirementsets="requirementsets" v-bind:requirementsetid="7" v-bind:component_version="component.latest_version" v-cloak></widget-requirements>
+                  <widget-requirements v-bind:requirementsets="requirementsets" v-bind:requirementset__ui_slot="5" v-bind:component_version="component.latest_version" v-cloak></widget-requirements>
+                  <widget-requirements v-bind:requirementsets="requirementsets" v-bind:requirementset__ui_slot="6" v-bind:component_version="component.latest_version" v-cloak></widget-requirements>
+                  <widget-requirements v-bind:requirementsets="requirementsets" v-bind:requirementset__ui_slot="7" v-bind:component_version="component.latest_version" v-cloak></widget-requirements>
+                  <widget-requirements v-bind:requirementsets="requirementsets" v-bind:requirementset__ui_slot="8" v-bind:component_version="component.latest_version" v-cloak></widget-requirements>
+                  <widget-requirements v-bind:requirementsets="requirementsets" v-bind:requirementset__ui_slot="9" v-bind:component_version="component.latest_version" v-cloak></widget-requirements>
                 </div>
               </div>
             </div>

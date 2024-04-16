@@ -1,6 +1,6 @@
 
 Vue.component('widget-requirements', {
-    props: ['requirementsets', 'requirementsetid', 'component_version'],
+    props: ['requirementsets', 'requirementset__ui_slot', 'component_version'],
     data: function() {
       return {
         requirements: [],
@@ -31,7 +31,7 @@ Vue.component('widget-requirements', {
             return Number(idPattern.exec(href)[1]);
         },
         getStatuses: function () {
-            return axios.get(`${this.apiUrl}/requirement_status/?component_version=${this.$props.component_version.id}&requirementset=${this.$props.requirementsetid}`)
+            return axios.get(`${this.apiUrl}/requirement_status/?component_version=${this.$props.component_version.id}&requirementset__ui_slot=${this.$props.requirementset__ui_slot}`)
                 .then(resp => {
                     return resp.data.results.map(status => { 
                         status.status = this.statusDefinitions.find(s=> this.getIDfromHref(status.status) == s.id)
@@ -45,7 +45,7 @@ Vue.component('widget-requirements', {
         updateRequirements: function() {
             for (let i = 0; i < this.$props.requirementsets.length; i++) {
                 rs = this.$props.requirementsets[i];
-                if (rs.id == this.$props.requirementsetid) {
+                if (rs.ui_slot == this.$props.requirementset__ui_slot) {
                     this.id = rs.id;
                     this.title = rs.name;
                     this.doc_link = rs.doc_link;
