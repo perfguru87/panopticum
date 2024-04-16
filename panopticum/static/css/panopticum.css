@@ -535,7 +535,7 @@ div.owner {
 }
 
 /* Element UI */
-.el-card__header { padding: 5px 15px; }
+.el-card__header { padding: 2px 15px; }
 .el-card__body { padding: 10px 15px 10px 15px; }
 .el-card { margin-bottom: 15px; }
 .el-table td { padding: 0; }
