@@ -237,7 +237,7 @@
     "model": "panopticum.requirement",
     "pk": 22,
     "fields": {
-      "title": "Metris",
+      "title": "Metrics",
       "description": "Component provides all necessary metrics to understand if it works properly"
     }
   },
