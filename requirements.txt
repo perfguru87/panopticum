@@ -16,7 +16,7 @@ whitenoise
 gevent
 gunicorn
 jira-python
-psycopg2-binary==2.9.5
+psycopg2-binary==2.9.9
 pillow
 scalpl
 iso3166
