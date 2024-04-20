@@ -14,7 +14,6 @@ Vue.component('widget-techradar-ring', {
         }).catch(err => {
             console.error('Initialization of quadrants or rings failed', err);
         });
-        this.initEntries();
     },
     computed: {
     },

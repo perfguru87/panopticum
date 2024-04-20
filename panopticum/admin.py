@@ -269,7 +269,10 @@ class RequirementForm(django.forms.ModelForm):
         if owner_status.status.id in (REQ_STATUS_READY, REQ_STATUS_NOT_APPLICABLE):
             if not signee_status or not signee_status.status or not signee_status.status.id or signee_status.status.id == REQ_STATUS_UNKNOWN:
                 msg = "Waiting for approval..."
-                status = REQ_STATUS_WAITING_FOR_APPROVAL
+                if owner_status.status.id == REQ_STATUS_NOT_APPLICABLE:
+                    status = REQ_STATUS_WAITING_FOR_NA_APPROVAL
+                else:
+                    status = REQ_STATUS_WAITING_FOR_APPROVAL
             else:
                 status = signee_status.status.id
                 if signee_status.status.id == REQ_STATUS_NOT_READY:

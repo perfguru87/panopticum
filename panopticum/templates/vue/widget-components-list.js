@@ -286,11 +286,13 @@ Vue.component('widget-components-list', {
                     }
                     if (sid == window.REQ_STATUS_UNKNOWN)
                         this.componentStatuses[compVer.id] = s;
-                    if (sid == window.REQ_STATUS_NOT_APPLICABLE && this.componentStatuses[compVer.id] == undefined)
+                    else if (sid == window.REQ_STATUS_NOT_APPLICABLE && this.componentStatuses[compVer.id] == undefined)
                         this.componentStatuses[compVer.id] = s;
-                    if (sid == window.REQ_STATUS_READY && this.componentStatuses[compVer.id] == undefined)
+                    else if (sid == window.REQ_STATUS_READY && this.componentStatuses[compVer.id] == undefined)
                         this.componentStatuses[compVer.id] = s;
-                    if (sid == window.REQ_STATUS_WAITING_FOR_APPROVAL && this.componentStatuses[compVer.id] != undefined && this.componentStatuses[compVer.id].id != window.REQ_STATUS_UNKNOWN)
+                    else if (sid == window.REQ_STATUS_WAITING_FOR_APPROVAL && this.componentStatuses[compVer.id] != undefined && this.componentStatuses[compVer.id].id != window.REQ_STATUS_UNKNOWN)
+                        this.componentStatuses[compVer.id] = s;
+                    else if (sid == window.REQ_STATUS_WAITING_FOR_NA_APPROVAL && this.componentStatuses[compVer.id] != undefined && this.componentStatuses[compVer.id].id != window.REQ_STATUS_UNKNOWN)
                         this.componentStatuses[compVer.id] = s;
                 }
                 return data;
@@ -397,7 +399,7 @@ Vue.component('widget-components-list', {
                     <span class="word-wrap">Status</span>
                 </template>
                 <template slot-scope="scope">
-                    <span><app-status :status="componentStatuses[scope.row.id]" lightIcon></app-status></span>
+                    <span><widget-status :status="componentStatuses[scope.row.id]" lightIcon></widget-status></span>
                 </template>
             </el-table-column>
 
@@ -433,7 +435,7 @@ Vue.component('widget-components-list', {
                         <div style="position: absolute; left:0; bottom: 1px">
                             <el-dropdown trigger="click" @command="handleDropdownCommand">
                                 <span>
-                                    <app-status v-if="headerFilters && headerFilters[req.id] && headerFilters[req.id].type=='owner'" :status='headerFilters[req.id].status' lightIcon/>
+                                    <widget-status v-if="headerFilters && headerFilters[req.id] && headerFilters[req.id].type=='owner'" :status='headerFilters[req.id].status' lightIcon/>
                                     <i v-else class="el-icon-arrow-down" style="font-size: 9px; margin-left: 0;"></i>
                                 </span>
                                 <el-dropdown-menu slot="dropdown" class='panopticum-status-right'>
@@ -442,7 +444,7 @@ Vue.component('widget-components-list', {
                                     <el-dropdown-item align="right" 
                                     :command="{requirement: req, type: 'owner', status: status}"
                                     v-for="status of statusDefinitions.owner" :key="status.id">
-                                        {{ status.name |capitalize }}<app-status :status="status" lightIcon/>
+                                        {{ status.name |capitalize }}<widget-status :status="status" lightIcon/>
                                     </el-dropdown-item>
                                     <el-dropdown-item divided align="right" command="reset">
                                         Reset<i class="el-icon-circle-close"></i>

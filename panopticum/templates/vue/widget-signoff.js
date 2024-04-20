@@ -72,7 +72,7 @@ Vue.component('widget-signoff', {
       <div class="text item" v-if="status && status.notes && status.type=='requirement reviewer'">{{ status.notes }}</div>
     </div>
     <span slot="reference">
-      <app-status :status="status ? status.status : null " :class="classObject"></app-status>
+      <widget-status :status="status ? status.status : null " :class="classObject"></widget-status>
     </span>
   </el-popover>{% endverbatim %}
   `

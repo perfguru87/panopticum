@@ -216,7 +216,7 @@ table.col-3 tr td:first-child { text-align: right; }
 table.col-3 tr td:last-child { text-align: left; }
 
 table.col-3-center { width: 100%; margin: 5px 0px; }
-table.col-3-center tr td { width: 4%; text-align: center; padding: 1px 5px 1px 0px; vertical-align: top; white-space: nowrap; }
+table.col-3-center tr td { width: 4%; text-align: center; padding: 1px 5px 1px 0px; vertical-align: top; white-space: nowrap; line-height: 1.2em; }
 table.col-3-center tr td:first-child { width: 48%; text-align: right; }
 table.col-3-center tr td:last-child { width: 48%; text-align: left; }
 
@@ -321,6 +321,7 @@ table.status-table th, table.status-table td {
     padding: 1px 2px;
     border-left: 1px solid #aaa;
     text-align: center;
+    line-height: 1.2em;
 }
 table.status-table th {
     font-weight: bold;
@@ -330,6 +331,7 @@ table.status-table th {
 table.status-table th:first-child, table.status-table td:first-child { border-left: 0px; }
 table.status-table tr:nth-child(even) td { background-color: #f0f0f0; }
 table.status-table tr:nth-child(odd) td { background-color: #fff; }
+table.status-table tbody td.notes { line-height: 11px; }
 
 table.status-table-na tbody tr td { color: #999 !important; }
 

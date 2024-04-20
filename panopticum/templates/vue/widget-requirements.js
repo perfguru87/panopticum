@@ -5,14 +5,14 @@ Vue.component('widget-requirements', {
       return {
         requirements: [],
         applicable: true,
-        statuses: [],
+        statuses: {},
         table: [],
         title: "",
         na_status: {id: window.REQ_STATUS_NOT_APPLICABLE },
+        unknown_status: {id: window.REQ_STATUS_UNKNOWN },
         id: 0,
         doc_link: "",
         description: "",
-        statusDefinitions: []
       }
     },
     computed: {
@@ -21,23 +21,34 @@ Vue.component('widget-requirements', {
         }
     },
     methods: {
-        fetchStatusesDefinition() {
-            return axios.get('/api/status/?format=json&allow_for=1&allow_for=2&allow_for=3').then(resp => {
-                this.statusDefinitions = resp.data.results;
-            })
+        fetchStatuses: async function () {
+            return axios.get(`${this.apiUrl}/requirement_status/?component_version=${this.$props.component_version.id}&requirementset__ui_slot=${this.$props.requirementset__ui_slot}`)
+                .then(resp => {
+                    for (let i = 0; i < resp.data.results.length; i++) {
+                        row = resp.data.results[i];
+                        req_id = this.getIDfromHref(row.requirement);
+                        if (this.statuses[req_id] == undefined) {
+                            this.statuses[req_id] = {
+                                ownerStatus: this.unknown_status,
+                                ownerNotes: '',
+                                signeeStatus: this.unknown_status,
+                                signeeNotes: '',
+                            };
+                        }
+                        if (row.type == 'component owner') {
+                            this.statuses[req_id].ownerStatus = {id: this.getIDfromHref(row.status) }
+                            this.statuses[req_id].ownerNotes = row.notes;
+                        }
+                        if (row.type == 'requirement reviewer') {
+                            this.statuses[req_id].signeeStatus = {id: this.getIDfromHref(row.status) }
+                            this.statuses[req_id].signeeNotes = row.notes;
+                        }
+                    }
+                });
         },
         getIDfromHref(href) {
             const idPattern = new RegExp("^.*/(\\d+)/(?:\\?.+)?$");
             return Number(idPattern.exec(href)[1]);
-        },
-        getStatuses: function () {
-            return axios.get(`${this.apiUrl}/requirement_status/?component_version=${this.$props.component_version.id}&requirementset__ui_slot=${this.$props.requirementset__ui_slot}`)
-                .then(resp => {
-                    return resp.data.results.map(status => { 
-                        status.status = this.statusDefinitions.find(s=> this.getIDfromHref(status.status) == s.id)
-                        return status;
-                    })
-                })
         },
         getId: function (href) {
             return Number(href.split('/').slice(-2)[0])
@@ -58,34 +69,32 @@ Vue.component('widget-requirements', {
         updateTable: function() {
             this.table = [];
             for (let requirement of this.requirements) {
-                let ownerStatus = this.statuses.find(el => requirement.id == this.getId(el.requirement) && el.type == "component owner");
-                if (this.$props.component_version.excluded_requirement_set.includes(this.id))
+                if (this.$props.component_version.excluded_requirement_set.includes(this.id)) {
                     this.applicable = false;
-                if (ownerStatus == undefined) {
-                    this.table.push({title: requirement.title, doc_link: requirement.doc_link, status: null, signoffStatus: null, notes: ''})
+                    this.table.push({title: requirement.title, doc_link: requirement.doc_link, ownerStatus: this.na_status, signeeStatus: this.na_status, ownerNotes: "", signeeNotes: ""})
+                } else if (this.statuses[requirement.id] == undefined) {
+                    this.table.push({title: requirement.title, doc_link: requirement.doc_link, ownerStatus: null, signeeStatus: null, ownerNotes: "", signeeNotes: ""})
                 } else {
-                    let signeeStatus = this.statuses.find(el => requirement.id == this.getId(el.requirement) && el.type == "requirement reviewer");
+                    let s = this.statuses[requirement.id];
                     this.table.push({
                         title: requirement.title,
                         doc_link: requirement.doc_link,
-                        status: this.applicable ? ownerStatus : this.na_status,
-                        notes: ownerStatus.notes || ((signeeStatus && signeeStatus.notes) ? ('signee: ' + signeeStatus.notes) : ''),
-                        signoffStatus: this.applicable ? signeeStatus : this.na_status,
-                        signoffNotes: signeeStatus ? signeeStatus.notes : ""
-                    })
+                        ownerStatus: s.ownerStatus,
+                        ownerNotes: s.ownerNotes,
+                        signeeStatus: s.signeeStatus,
+                        signeeNotes: s.signeeNotes
+                    });
                 }
             }
         },
-        updateStatuses: function() {
-            if (!this.$props.component_version.id)
-                return;
-            return this.getStatuses().then(statuses => {this.statuses = statuses;}) 
-        }
     },
     mounted: function() {
-        this.fetchStatusesDefinition();
-        this.updateRequirements();
-        this.updateStatuses().then(_ => this.updateTable());
+        Promise.all([this.fetchStatuses()]).then(() => {
+            this.updateRequirements();
+            this.updateTable();
+        }).catch(err => {
+            console.error('Initialization of quadrants or rings failed', err);
+        });
     },
     watch: {
         component_version: function() {
@@ -112,14 +121,17 @@ Vue.component('widget-requirements', {
                 <td>{{ row.title }}</td>
 
                 <td>
-                   <widget-signoff v-if="applicable" v-bind:status="row.status" v-bind:signoff-status="row.signoffStatus"></widget-signoff>
-                   <app-status v-else v-bind:status="na_status" v-bind:signoff-status="na_status"></app-status>
+                   <widget-status v-if="applicable" v-bind:status="row.ownerStatus"></widget-status>
+                   <widget-status v-else v-bind:status="na_status"></widget-status>
                 </td>
                 <td>
-                   <widget-signoff v-if="applicable" v-bind:status="row.signoffStatus"></widget-signoff>
-                   <app-status v-else v-bind:status="na_status"></app-status>
+                   <widget-status v-if="applicable" v-bind:status="row.signeeStatus"></widget-status>
+                   <widget-status v-else v-bind:status="na_status"></widget-status>
                 </td>
-                <td class='pa-replace-urls'><widget-note :short="true">{{ row.notes }}</widget-note></td>
+                <td class='notes'>
+                   <widget-note v-if="row.ownerNotes && row.signeeNotes" v-bind:short="true">{{ row.ownerNotes }} / {{ row.signeeNotes }}</widget-note>
+                   <widget-note v-else v-bind:short="true">{{ row.ownerNotes }}{{ row.signeeNotes }}</widget-note>
+                </td>
             </tr>
             </tbody>
         </table>
