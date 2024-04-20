@@ -9,8 +9,11 @@ Vue.component('widget-techradar-ring', {
         }
     },
     created: async function() {
-        await this.initQuadrants();
-        await this.initRings();
+        Promise.all([this.initQuadrants(), this.initRings()]).then(() => {
+            this.initEntries();
+        }).catch(err => {
+            console.error('Initialization of quadrants or rings failed', err);
+        });
         this.initEntries();
     },
     computed: {
