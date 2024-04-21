@@ -5,6 +5,7 @@
               [[ component.description ]]
           </div>
         </div>
+        <div class='row'><div class='col-md-12'></div></div>
         <div class='panopticum-side-by-side-table'>
           <div class='col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-6'>
             <div>
@@ -16,6 +17,8 @@
                 <tr><td>Life status</td><td>:</td><td><div v-cloak>[[ component.life_status ]]</div></td></tr>
                 <tr><td>API is public</td><td>:</td><td><div v-cloak>[[ component.latest_version?.dev_api_is_public ]]</div></td></tr>
                 <tr><td>Data access</td><td>:</td><td><div v-cloak>[[ component.data_privacy_class?.name ]]</div></td></tr>
+                <tr><td>Query builder</td><td>:</td><td><div v-cloak>[[ component.latest_version?.dev_orm ]]</div></td></tr>
+                <tr><td>Code KLOC</td><td>:</td><td><div v-cloak>[[ component.latest_version?.dev_code_kloc ]]</div></td></tr>
               </table> 
             </div>
           </div>
@@ -29,6 +32,8 @@
                 <tr><td>Public Docs</td><td>:</td><td><widget-links v-cloak :text="component.latest_version?.dev_public_docs || ''"></widget-links></td></tr>
                 <tr><td>Internal Docs</td><td>:</td><td><widget-links v-cloak :text="component.latest_version?.dev_docs || ''"></widget-links></td></tr>
                 <tr><td>Build job</td><td>:</td><td><widget-links v-cloak :text="component?.latest_version?.dev_build_jenkins_job || ''"></widget-links></td></tr>
+                <tr><td>Prod metrics</td><td>:</td><td><widget-links v-cloak :text="component?.latest_version?.dev_metrics_link || ''"></widget-links></td></tr>
+                <tr><td>Prod logs</td><td>:</td><td><widget-links v-cloak :text="component?.latest_version?.dev_logs_link || ''"></widget-links></td></tr>
               </table>
             </div>
           </div>

@@ -514,7 +514,7 @@ class ComponentVersionAdmin(admin.ModelAdmin):
                                   ('owner_product_manager', 'owner_program_manager'),
                                   ('owner_expert', 'owner_escalation_list'), 'owner_architect')}),
         ('Development', {'classes': ('collapse',),
-                          'fields': ('dev_language', 'dev_framework', 'dev_database', 'dev_orm', 'dev_logging',
+                          'fields': ('dev_language', 'dev_framework', 'dev_code_kloc', 'dev_database', 'dev_orm', 'dev_logging',
                                      ('dev_raml', 'dev_issuetracker_component'),
                                      ('dev_repo', 'dev_public_repo'),
                                      ('dev_docs', 'dev_public_docs'),

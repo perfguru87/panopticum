@@ -381,13 +381,17 @@ class ComponentVersionModel(models.Model):
     dev_orm = models.ManyToManyField(ORMModel, verbose_name="ORM", blank=True)
     dev_logging = models.ManyToManyField(LoggerModel, verbose_name="Logging framework", blank=True)
 
-    dev_raml = panopticum.fields.SmartTextField("RAML link", help_text=links_help_msg)
+    dev_code_kloc = models.DecimalField(verbose_name="Code KLOC (approx)", max_digits=10, decimal_places=1, blank=True, null=True)
+
+    dev_raml = panopticum.fields.SmartTextField("API spec link", help_text=links_help_msg)
     dev_repo = panopticum.fields.SmartTextField("Repository", help_text=links_help_msg)
     dev_public_repo = panopticum.fields.SmartTextField("Public Repository", help_text=links_help_msg)
     dev_issuetracker_component = panopticum.fields.SmartTextField("Issue tracker component", help_text=links_help_msg)
-    dev_build_jenkins_job = panopticum.fields.SmartTextField("Jenkins job to build the component", help_text=links_help_msg)
+    dev_build_jenkins_job = panopticum.fields.SmartTextField("Builds job link", help_text=links_help_msg)
     dev_docs = panopticum.fields.SmartTextField("Documentation entry page", help_text=links_help_msg)
     dev_public_docs = panopticum.fields.SmartTextField("Public Documentation", help_text=links_help_msg)
+    dev_metrics_link = panopticum.fields.SmartTextField("Production metrics link", help_text=links_help_msg)
+    dev_logs_link = panopticum.fields.SmartTextField("Production logs link", help_text=links_help_msg)
     dev_commit_link = panopticum.fields.SmartTextField("Commit link", help_text=links_help_msg)
 
     dev_api_is_public = panopticum.fields.NoPartialYesField("API is public")

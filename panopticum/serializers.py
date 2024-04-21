@@ -27,6 +27,7 @@ class DynamicFieldsModelSerializer(serializers.ModelSerializer):
             for field_name in existing - allowed:
                 self.fields.pop(field_name)
 
+
 class HistoricalComponentVersionSerializer(serializers.HyperlinkedModelSerializer):
     """ Model for history of Component version changes. Check https://django-simple-history.readthedocs.io"""
     class Meta:
@@ -258,6 +259,7 @@ class ComponentVersionSerializerSimple(serializers.ModelSerializer):
     owner_architect = UserSerializer(read_only=True, many=True)
 
     dev_languages = serializers.SerializerMethodField()
+    dev_orm = serializers.SerializerMethodField()
     dev_framework = FrameworkSerializer(many=True, read_only=True)
 
     quality_assurance = serializers.SerializerMethodField()
@@ -271,6 +273,10 @@ class ComponentVersionSerializerSimple(serializers.ModelSerializer):
 
     def get_dev_languages(self, component):
         objs = component.dev_language.get_queryset()
+        return ", ".join([o.name for o in objs])
+
+    def get_dev_orm(self, component):
+        objs = component.dev_orm.get_queryset()
         return ", ".join([o.name for o in objs])
 
     def _serialize_fields(self, component, applicable, fields):
