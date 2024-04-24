@@ -78,6 +78,7 @@ Vue.component('widget-requirements', {
                     let s = this.statuses[requirement.id];
                     this.table.push({
                         title: requirement.title,
+                        description: pa_tooltip_from_text(requirement.description),
                         doc_link: requirement.doc_link,
                         ownerStatus: s.ownerStatus,
                         ownerNotes: s.ownerNotes,
@@ -92,6 +93,10 @@ Vue.component('widget-requirements', {
         Promise.all([this.fetchStatuses()]).then(() => {
             this.updateRequirements();
             this.updateTable();
+
+            $('.req-title-tooltip').each(function(index, el) {
+                 pa_tooltip(el);
+            });
         }).catch(err => {
             console.error('Initialization of quadrants or rings failed', err);
         });
@@ -118,7 +123,7 @@ Vue.component('widget-requirements', {
             </thead>
             <tbody>
             <tr v-for="row of table">
-                <td>{{ row.title }}</td>
+                <td><span class='req-title-tooltip' v-cloak data-toggle="tooltip" data-placement="bottom" data-container="body" :title="row.description">{{ row.title }}</span></td>
 
                 <td>
                    <widget-status v-if="applicable" v-bind:status="row.ownerStatus"></widget-status>

@@ -134,9 +134,7 @@ class RequirementInlineAdmin(admin.TabularInline):
 
 
 class RequirementForm(django.forms.ModelForm):
-    """ Custom admin form for Requirement row. We merge 2 requirement statuses to Requirement row.
-    Pay attention: we does not have model for Requirement row. We do not need it until we can calculate it
-    from requirement statues by django admin form and frontend """
+    """ Custom admin form for Requirement row based on a mix of owner and signee (approver) requiremets statuses"""
     owner_status = panopticum.fields.RequirementStatusChoiceField(queryset=RequirementStatus.objects.
                                                                   filter(allow_for=REQ_OWNER_STATUS),
                                                                   label='Readiness')
@@ -153,12 +151,18 @@ class RequirementForm(django.forms.ModelForm):
                                            widget=django.forms.Textarea({'rows': '2'}),
                                            max_length=16 * pow(2, 10),
                                            required=False)
+
+    description = django.forms.CharField(label='Description',
+                                         widget=django.forms.Textarea({'rows': '3'}),
+                                         required=False)
+
     user = AnonymousUser()
 
     class Meta:
         fields = '__all__'
         model = RequirementStatusEntry
         labels = {
+            'description': 'Description',
             'owner_status': 'Readiness',
             'owner_notes': 'Notes',
             'approve_status': 'Sign off',
@@ -170,14 +174,19 @@ class RequirementForm(django.forms.ModelForm):
         # define initial fields values
         self.base_fields['owner_status'].initial = REQ_STATUS_UNKNOWN
         self.base_fields['approve_status'].initial = REQ_STATUS_UNKNOWN
+        self.base_fields['description'].disabled = True
 
         if kwargs.get('instance'):
             # read and set field values from status models
             owner_status_obj = self.get_status(kwargs['instance'], REQ_OWNER_STATUS)
+            requirement_obj = kwargs['instance'].requirement
             initial = {
                 'owner_status': owner_status_obj.status.pk,
-                'owner_notes': owner_status_obj.notes
+                'owner_notes': owner_status_obj.notes,
+                'description': requirement_obj.description
             }
+            self.base_fields['owner_status'].initial = requirement_obj.description
+
             try:
                 signee_status_obj = self.get_status(kwargs['instance'], REQ_SIGNEE_STATUS)
                 initial['approve_status'] = signee_status_obj.status.pk
@@ -324,7 +333,7 @@ class RequirementForm(django.forms.ModelForm):
 class RequirementStatusEntryAdmin(admin.TabularInline):
     model = RequirementStatusEntry
     form = RequirementForm
-    fields = ('requirement', 'owner_status', 'owner_notes', 'approve_status', 'approve_notes')
+    fields = ('requirement', 'description', 'owner_status', 'owner_notes', 'approve_status', 'approve_notes')
     classes = ('collapse', 'requirements-admin', 'no-upper')
     extra = 1
     verbose_name_plural = "Requirements"
@@ -389,9 +398,15 @@ class RequirementStatusEntryAdmin(admin.TabularInline):
 
 
 class RequirementAdmin(admin.ModelAdmin):
-    list_display = ['title']
+    list_display = ['title', 'get_sets_name']
     model = Requirement
     search_fields = ('title',)
+
+    def get_sets_name(self, obj):
+        # Assuming 'sets' is the related name for a ForeignKey or ManyToManyField in the Requirement model.
+        # You will need to adjust 'sets' and 'name' to match your actual related field and its attribute.
+        return ", ".join([set.name for set in obj.sets.all()])
+    get_sets_name.short_description = 'Sets Name'  # This will be the column title in the admin interface
 
 
 class RequirementSetAdmin(admin.ModelAdmin):

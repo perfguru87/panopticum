@@ -59,6 +59,12 @@ function pa_tooltip(el) {
     $(el).tooltip({ 'container': 'body', 'html': true });
 }
 
+function pa_tooltip_from_text(text) {
+    if (!text)
+        return "";
+    return text.replaceAll('\r\n', '<br>').replaceAll('\n', '<br>');
+}
+
 function pa_tooltip_from_list(title, str) {
     if (!str)
         return "";

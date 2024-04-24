@@ -145,7 +145,6 @@ class RequirementsStorage {
                     $(option).closest("tr").hide();
             });
 
-
             var attach_before = $(tbody).find('tr:first');
             storage.finalize();
 
@@ -176,8 +175,31 @@ class RequirementsStorage {
 
                     var div = $(tr).find('td.field-requirement select').closest('div');
 
+                    var span = $('<span>', {
+                        'class': 'req-name',
+                        text: req.name,
+                        mouseenter: function() {
+                            // Create the tooltip element
+                            const $tooltip_outer = $('<div>', {
+                                'class': 'tooltip fade bootom in',
+                                css: { display: 'block', position: 'absolute', zIndex: '1070', }
+                            });
+
+                            var html = $(tr).find('td.field-description textarea').html();
+                            if (html)
+                                html = html.replaceAll("\n", "<br>");
+
+                            $tooltip_outer.append($('<div>', { 'class': 'tooltip-inner', html: html, }));
+                            $(this).append($tooltip_outer);
+                            $tooltip_outer.fadeIn('fast');
+                        },
+                        mouseleave: function() {
+                          $(this).find('.tooltip').fadeOut('fast', function() { $(this).remove(); });
+                        }
+                    });
+
                     $(div).hide();
-                    $(div).after("<span class='req-name'>" + req.name + "</span>");
+                    $(div).after(span);
                     $(tr).find('td.original p').hide();
                     $(tr).removeClass("row1");
                     $(tr).removeClass("row2");
@@ -189,7 +211,7 @@ class RequirementsStorage {
 
                 var requirement_set_title = "#requirement-set-title-" + group.id;
                 var excluded_requirement_set_checkbox = "input[name='excluded_requirement_set'][value='" + group.id + "']";
-                var applicable_requirement_set_checkbox = "#applicable-requirement-set-" + group.id; 
+                var applicable_requirement_set_checkbox = "#applicable-requirement-set-" + group.id;
                 var requirement_set_section = "tr[for='" + requirement_set_id + "']";
 
                 $(requirement_set_title).after("<input style='margin-left: 5px'; type='checkbox' id='applicable-requirement-set-" + group.id + "'></input>");
