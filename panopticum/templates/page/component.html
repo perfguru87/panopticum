@@ -347,6 +347,7 @@ function vue_component_init() {
           this.versions = versions;
           this.requirementsets = requirementsets;
           this.component = component;
+          this.component.description_html = marked.parse(this.component.description);
           this.loading = false;
           this.$nextTick(function () {
             update_component_page_elements(this.component);

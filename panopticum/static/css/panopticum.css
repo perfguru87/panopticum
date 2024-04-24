@@ -384,6 +384,7 @@ div.signoff-popover {
     border-color: #999;
 }
 
+div.pa-summary { line-height: 1.0em; padding-bottom: 5px; }
 td.pa-status { white-space: nowrap; text-align: center; }
 td.pa-status { white-space: nowrap; text-align: center;}
 td.pa-status i.fa-star { color: green; }

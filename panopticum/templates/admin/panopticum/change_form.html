@@ -3,5 +3,6 @@
 
 {% block admin_change_form_document_ready %}
 {{ block.super }}
+<script type="text/javascript" src="{% static 'vendors/marked/marked.min.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/admin_formset_handlers.js' %}"></script>
 {% endblock %}

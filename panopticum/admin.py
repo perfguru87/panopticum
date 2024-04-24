@@ -667,7 +667,7 @@ class ComponentVersionAdmin(admin.ModelAdmin):
 
     class Media:
         css = {
-                  'all': ('/static/css/admin.css',)
+                  'all': ('/static/css/admin.css', '/static/css/markdown.css')
               }
 
 

@@ -255,7 +255,7 @@ class ComponentType(models.Model):
 
 class ComponentModel(models.Model):
     name = models.CharField(max_length=64, help_text="Component short name")
-    description = models.TextField(blank=True, null=True)
+    description = models.TextField(blank=True, null=True, help_text="Component description (supports Markdown)")
 
     life_status = models.CharField(max_length=16, choices=LIFE_STATUS, default=LIFE_STATUS[0][0])
     type = models.ForeignKey(ComponentType, on_delete=models.PROTECT)
@@ -314,7 +314,7 @@ class RequirementStatusEntry(models.Model):
 class Requirement(models.Model):
     """ base model for requirement equal requirement header in widget """
     title = models.CharField(max_length=30, unique=True)  # backup, logging storage
-    description = models.TextField(max_length=1024)  # that requirements about ...
+    description = models.TextField(max_length=1024, help_text='Requirement description (supports Markdown)')  # that requirements about ...
 
     def __unicode__(self):
         return f"{self.sets.first().name}: {self.title}" if self.sets.exists() else f"{__class__.__name__}: {self.title}"

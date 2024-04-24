@@ -187,9 +187,9 @@ class RequirementsStorage {
 
                             var html = $(tr).find('td.field-description textarea').html();
                             if (html)
-                                html = html.replaceAll("\n", "<br>");
+                                html = marked.parse(html);
 
-                            $tooltip_outer.append($('<div>', { 'class': 'tooltip-inner', html: html, }));
+                            $tooltip_outer.append($('<div>', { 'class': 'tooltip-inner markdown', html: html, }));
                             $(this).append($tooltip_outer);
                             $tooltip_outer.fadeIn('fast');
                         },

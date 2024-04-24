@@ -56,13 +56,9 @@ class Refcounter {
  * Tooltips
  */
 function pa_tooltip(el) {
-    $(el).tooltip({ 'container': 'body', 'html': true });
-}
-
-function pa_tooltip_from_text(text) {
-    if (!text)
-        return "";
-    return text.replaceAll('\r\n', '<br>').replaceAll('\n', '<br>');
+    $(el).tooltip({ container: 'body',
+                    html: true,
+                    template: '<div class="tooltip markdown" role="tooltip"><div class="tooltip-arrow"></div><div class="tooltip-inner"></div></div>'});
 }
 
 function pa_tooltip_from_list(title, str) {

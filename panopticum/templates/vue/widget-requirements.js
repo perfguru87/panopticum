@@ -78,7 +78,7 @@ Vue.component('widget-requirements', {
                     let s = this.statuses[requirement.id];
                     this.table.push({
                         title: requirement.title,
-                        description: pa_tooltip_from_text(requirement.description),
+                        description: marked.parse(requirement.description),
                         doc_link: requirement.doc_link,
                         ownerStatus: s.ownerStatus,
                         ownerNotes: s.ownerNotes,

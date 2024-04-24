@@ -15,7 +15,7 @@ Vue.directive('tooltip', {
       placement: binding.arg,
       trigger: trigger,
       html: binding.modifiers.html,
-      container: 'body'
+      container: 'body',
     });
   },
   update: function bsTooltipUpdate(el, binding) {
