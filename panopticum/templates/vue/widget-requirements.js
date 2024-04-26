@@ -69,16 +69,19 @@ Vue.component('widget-requirements', {
         updateTable: function() {
             this.table = [];
             for (let requirement of this.requirements) {
+                var description = requirement.description ? marked.parse(requirement.description) : '';
                 if (this.$props.component_version.excluded_requirement_set.includes(this.id)) {
                     this.applicable = false;
-                    this.table.push({title: requirement.title, doc_link: requirement.doc_link, ownerStatus: this.na_status, signeeStatus: this.na_status, ownerNotes: "", signeeNotes: ""})
+                    this.table.push({title: requirement.title, description: description, doc_link: requirement.doc_link,
+                                     ownerStatus: this.na_status, signeeStatus: this.na_status, ownerNotes: "", signeeNotes: ""})
                 } else if (this.statuses[requirement.id] == undefined) {
-                    this.table.push({title: requirement.title, doc_link: requirement.doc_link, ownerStatus: null, signeeStatus: null, ownerNotes: "", signeeNotes: ""})
+                    this.table.push({title: requirement.title, description: description, doc_link: requirement.doc_link,
+                                     ownerStatus: null, signeeStatus: null, ownerNotes: "", signeeNotes: ""})
                 } else {
                     let s = this.statuses[requirement.id];
                     this.table.push({
                         title: requirement.title,
-                        description: marked.parse(requirement.description),
+                        description: description,
                         doc_link: requirement.doc_link,
                         ownerStatus: s.ownerStatus,
                         ownerNotes: s.ownerNotes,
@@ -94,8 +97,10 @@ Vue.component('widget-requirements', {
             this.updateRequirements();
             this.updateTable();
 
-            $('.req-title-tooltip').each(function(index, el) {
-                 pa_tooltip(el);
+            this.$nextTick(() => {
+                $('.req-title-tooltip').each(function(index, el) {
+                    pa_tooltip(el);
+                });
             });
         }).catch(err => {
             console.error('Initialization of quadrants or rings failed', err);
