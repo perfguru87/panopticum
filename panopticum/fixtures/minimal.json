@@ -48,7 +48,7 @@
     "model": "panopticum.requirementstatus",
     "pk": 6,
     "fields": {
-      "name": "waiting",
+      "name": "waiting_na",
       "description": "waiting for n/a approval",
       "allow_for": [3 ]
     }
