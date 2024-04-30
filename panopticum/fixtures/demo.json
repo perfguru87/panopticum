@@ -420,6 +420,17 @@
   }
 },
 {
+  "model": "panopticum.requirementstatus",
+  "pk": 6,
+  "fields": {
+    "name": "waiting",
+    "description": "waiting for n/a approval",
+    "allow_for": [
+      3
+    ]
+  }
+},
+{
   "model": "panopticum.requirementstatusentry",
   "pk": 153,
   "fields": {
