@@ -138,11 +138,9 @@ function init_sidebar() {
     $MENU_TOGGLE.on('click', menu_toggle_on_click);
     $MENU_TOGGLE_SMALL.on('click', menu_toggle_on_click);
 
-    // check active menu
-    $SIDEBAR_MENU.find('a[href="' + CURRENT_URL + '"]').parent('li').addClass('current-page');
-
+    // set active menu
     $SIDEBAR_MENU.find('a').filter(function() {
-        return this.href.startsWith(CURRENT_URL);
+        return this.href === CURRENT_URL || this.href.startsWith(CURRENT_URL + "#") || this.href.startsWith(CURRENT_URL + "?");
     }).parent('li').addClass('current-page').parents('ul').slideDown($SLIDE_DURATION_MS, function() {
         setContentHeight();
     }).parent().addClass('active');
