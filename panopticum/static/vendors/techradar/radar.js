@@ -57,11 +57,11 @@ function radar_visualization(config) {
   ];
 
   const footer_offset =
-    { x: -590, y: 380 };
+    { x: -64, y: 350 };
 
   const legend_offset = [
-    { x: 320, y: 150 },
-    { x: -590, y: 150 },
+    { x: 320, y: 100 },
+    { x: -590, y: 100 },
     { x: -590, y: -325 },
     { x: 320, y: -325 }
   ];
