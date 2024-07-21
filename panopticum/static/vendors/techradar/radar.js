@@ -365,6 +365,33 @@ function radar_visualization(config) {
         .attr("height", bbox.height + 4);
       d3.select("#bubble path")
         .attr("transform", translate(bbox.width / 2 - 5, 3));
+
+      d3.select(".techradar-description-popup").remove();
+
+      if (d.description) {
+
+        // Get the bounding box of the selected element
+        var element = d3.event.target;
+        var elementBBox = element.getBoundingClientRect();
+
+        description = d.description
+                        .replace(/</g, "&lt;")
+                        .replace(/>/g, "&gt;");
+        description = marked.parse(description);
+
+        // Create a popup element for the description
+        var descriptionPopup = d3.select("body").append("div")
+            .attr("class", "techradar-description-popup markdown pa-tooltip")
+            .style("position", "absolute")
+            .style("left", (elementBBox.x + window.pageXOffset) + "px")
+            .style("top", (elementBBox.y + window.pageYOffset + 15) + "px")
+            .style("background", "#fff")
+            .style("border", "1px solid #ccc")
+            .style("padding", "10px")
+            .style("box-shadow", "0 0 10px rgba(0, 0, 0, 0.1)")
+            .style("z-index", 1000)
+            .html(description);
+      }
     }
   }
 
@@ -453,4 +480,9 @@ function radar_visualization(config) {
     .velocityDecay(0.19) // magic number (found by experimentation)
     .force("collision", d3.forceCollide().radius(12).strength(0.85))
     .on("tick", ticked);
+
+  // Add onclick event listener to the div with id=radar
+  d3.select("#radar").on("click", function(event) {
+    d3.select(".techradar-description-popup").remove();
+  });
 }

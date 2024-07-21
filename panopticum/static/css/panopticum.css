@@ -593,3 +593,5 @@ table.techradar_info th:first-child { border-left: 1px solid #ddd; }
 table.techradar_info th:last-child { border-right: 1px solid #ddd; }
 
 table.techradar_info td { padding: 1px 5px 1px 5px; border: 1px solid #eee; }
+
+.techradar-description-popup { color: #000; }

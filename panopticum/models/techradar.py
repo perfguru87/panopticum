@@ -49,7 +49,7 @@ class TechradarRing(models.Model):
 
 class TechradarEntry(models.Model):
     label = models.CharField("Entry name", max_length=64, default="", blank=False)
-    description = models.TextField(blank=True, null=True)
+    description = models.TextField(blank=True, null=True, help_text="TechRadar entry description in markdown format")
     quadrant = models.ForeignKey(TechradarQuadrant, on_delete=models.CASCADE)
     ring = models.ForeignKey(TechradarRing, on_delete=models.CASCADE)
     moved = models.IntegerField("Short history tracking", choices=TECH_RADAR_MOVE, default=TECH_RADAR_MOVE[0][0])
