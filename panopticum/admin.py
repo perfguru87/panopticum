@@ -533,7 +533,8 @@ class ComponentVersionAdmin(admin.ModelAdmin):
                                      ('dev_raml', 'dev_issuetracker_component'),
                                      ('dev_repo', 'dev_public_repo'),
                                      ('dev_docs', 'dev_public_docs'),
-                                     ('dev_build_jenkins_job', 'dev_api_is_public'))}),
+                                     ('dev_build_jenkins_job', 'dev_metrics_link'),
+                                     ('dev_logs_link', 'dev_api_is_public'))}),
         ('Requiremet set', {'classes': ('collapse', 'hidden'), 'fields': ('excluded_requirement_set',)}), # hidden and handled by admin_formset_handlers.js
         ('Quality Assurance', {'classes': ('collapse', 'show_hide_applicable'),
                           'fields': ('qa_applicable',
